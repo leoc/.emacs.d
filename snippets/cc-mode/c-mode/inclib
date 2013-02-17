@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# name: #include <stdlib.h>
+# --
+#include <stdlib.h>

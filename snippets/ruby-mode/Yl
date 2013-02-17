@@ -1,0 +1,4 @@
+# -*- mode: yasnippet -*-
+#name : YAML.dump(.., file)
+# --
+File.open(${1:"${2:path/to/file}.yaml"}, "w") { |${3:file}| YAML.load($3) }

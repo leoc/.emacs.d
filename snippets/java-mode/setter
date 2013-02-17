@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name : public void setVariable() { ... }
+# --
+public void set${1:Variable}(${2:Object} ${1:$(s-lower-camel-case text)}) {
+    this.${1:$(s-lower-camel-case text)} = ${1:$(s-lower-camel-case text)};
+}$0

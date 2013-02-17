@@ -1,0 +1,9 @@
+#name : frame with figure
+# --
+\begin{frame}
+ \frametitle{${1:Title Of This Figure}}
+ \begin{figure}[h]
+  \includegraphics[${2:width=0.8\textwidth}]{${3:filename}}
+  \caption{${4:caption of figure}}
+ \end{figure}
+\end{frame}

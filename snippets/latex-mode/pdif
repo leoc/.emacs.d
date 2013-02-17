@@ -1,0 +1,3 @@
+#name : partial differential
+# --
+\frac{\partial${1:numerator}}{\partial${2:denominator}}

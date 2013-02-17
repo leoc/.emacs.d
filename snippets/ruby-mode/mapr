@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name : map.resource
+# --
+${1:map}.resource :${2:resource}${10: do |$2|
+  $0
+end}

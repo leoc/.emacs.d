@@ -1,0 +1,4 @@
+# -*- mode: yasnippet -*-
+#name : downto(0) { |n| .. }
+# --
+downto(${1:0}) { |$2| $3 }$0

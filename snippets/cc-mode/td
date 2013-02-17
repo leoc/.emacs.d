@@ -1,0 +1,3 @@
+#name : typedef x x
+# --
+typedef ${defined_to} ${1:new_type}_t;$0

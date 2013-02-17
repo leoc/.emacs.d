@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : fill(range) { |i| .. }
+# --
+fill(${1:range}) { ${2:i} }

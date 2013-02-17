@@ -1,0 +1,10 @@
+#name : orgpres
+# --
+#+LaTeX_CLASS: beamer
+#+MACRO: BEAMERMODE presentation
+#+MACRO: BEAMERTHEME Singapore
+#+MACRO: BEAMERCOLORTHEME seagull
+#+MACRO: BEAMERSUBJECT RMRF
+#+MACRO: BEAMERINSTITUTE 
+#+TITLE: Presentation with Org-Mode and Beamer
+#+AUTHOR: Arthur Andersen

@@ -1,0 +1,5 @@
+#name : each_index { |i| ... }
+# --
+each_index do |${i}| 
+	$0
+end

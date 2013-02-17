@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: its
+# key: its
+# --
+its(:${member}) { should ${2: == ${3:'something'}} }$0

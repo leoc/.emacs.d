@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : <%= text_field(" ... ", " ... ") %>
+# --
+<%= text_field "${1:object_name}", "${2:method}"$0 %>

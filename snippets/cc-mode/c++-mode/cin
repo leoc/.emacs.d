@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# name: standard input
+# --
+std::cin >> ${1:variable};$0

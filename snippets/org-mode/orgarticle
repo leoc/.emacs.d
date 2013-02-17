@@ -1,0 +1,6 @@
+#name : orgarticle
+# --
+#+LaTeX_CLASS: article
+#+TITLE: Presentation with Org-Mode and Beamer
+#+AUTHOR: Arthur Andersen
+

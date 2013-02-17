@@ -1,0 +1,4 @@
+# -*- mode: yasnippet -*-
+#name : gsub(/../) { |match| .. }
+# --
+gsub(/${1:pattern}/) { |${2:match}| $0 }

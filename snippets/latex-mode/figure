@@ -1,0 +1,8 @@
+#name : figure(Env with basic settings)
+# --
+\begin{figure}[${1:htb}]
+  \centering
+  \includegraphics[${2:width=70mm}]{${3:filename}}
+  \caption{${4:caption of figure}}
+  \label{${5:label of figure}}
+\end{figure}

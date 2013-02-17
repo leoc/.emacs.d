@@ -1,0 +1,4 @@
+#name : partial
+#condition :  (not (YaTeX-in-math-mode-p))
+# --
+$\partial$

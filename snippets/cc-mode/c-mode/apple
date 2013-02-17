@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: apple
+# --
+#ifdef __APPLE__
+$0
+#endif

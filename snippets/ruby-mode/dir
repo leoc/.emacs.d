@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : directory()
+# --
+File.dirname(__FILE__)

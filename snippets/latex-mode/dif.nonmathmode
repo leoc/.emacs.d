@@ -1,0 +1,4 @@
+#name : differential
+#condition : (not (YaTeX-in-math-mode-p))
+# --
+$\frac{d${1:numerator}}{d${2:denominator}}$

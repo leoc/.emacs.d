@@ -1,0 +1,6 @@
+#name : frame(Env)
+# --
+\begin{frame}
+  \frametitle{${1:Title Of This Slide}}
+  $0
+\end{frame}

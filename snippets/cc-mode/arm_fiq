@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# name: function is an interrupt handler
+# --
+__attribute__ ((interrupt ("FIQ")))

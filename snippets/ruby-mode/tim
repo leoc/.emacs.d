@@ -1,0 +1,4 @@
+# -*- mode: yasnippet -*-
+#name : times { |n| .. }
+# --
+times { |${1:n}| $0 }

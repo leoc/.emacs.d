@@ -1,0 +1,4 @@
+# -*- mode: yasnippet -*-
+#name : transaction( .. ) { .. }
+# --
+transaction(${1:true}) { $0 }

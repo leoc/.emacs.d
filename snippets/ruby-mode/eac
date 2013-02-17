@@ -1,0 +1,5 @@
+#name : each_cons(...) { |...| ... }
+# --
+each_cons(${1:2}) do |${group}|
+	$0
+end

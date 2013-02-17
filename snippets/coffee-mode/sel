@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: selector
+# key: sel
+# --
+$('$1')$0

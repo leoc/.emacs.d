@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: union
+# --
+typedef union {
+        $0
+} ${1:name};

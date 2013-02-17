@@ -1,0 +1,4 @@
+# -*- mode: yasnippet -*-
+#name : Array.new(10) { |i| .. }
+# --
+Array.new(${1:10}) { $2 }$0

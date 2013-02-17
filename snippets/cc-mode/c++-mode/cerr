@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# name: error output
+# --
+std::cerr << "${1:output}" << std:endl;$0

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+#name : forj
+# --
+for(Iterator ${1:iter}Iter = ${2:getIterator()}; $1Iter.hasNext();) {
+    ${3:Class} $1Ind = ((Resource)$1Iter.next()).as($3.class);
+    $0
+}

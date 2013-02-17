@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : open("path/or/url", "w") { |io| .. }
+# --
+open(${1:"${2:path/or/url/or/pipe}"}, "w") { |${4:io}| $0 }

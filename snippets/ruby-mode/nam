@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name : namespace :.. do .. end
+# --
+namespace :${1:namespace} do
+	$0
+end

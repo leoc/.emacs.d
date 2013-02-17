@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : max { |a, b| .. }
+# --
+max { |a, b| $0 }

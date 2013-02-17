@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+#name : Create Column in Table
+# --
+t.column ${1:title}, :${2:string}
+$0

@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# name: standard output
+# --
+std::cout << "${1:output}" << std::endl;

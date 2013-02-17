@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: \begin{equation} ... \end{equation}
+# --
+\begin{equation}
+\label{${1:$(unless yas/modified-p (reftex-label nil 'dont-insert))}}
+$0
+\end{equation}

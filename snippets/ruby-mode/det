@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : detect { |...| ... }
+# --
+detect { |${e}| $0 }

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key : cha
+# name : \chapter
+# --
+\chapter*{${1:name}}
+\label{${2:$(unless yas/modified-p (reftex-label nil 'dont-insert))}}
+$0

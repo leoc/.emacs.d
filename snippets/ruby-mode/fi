@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : Fixtures.identify(:symbol)
+# --
+Fixtures.identify(:${1:name})

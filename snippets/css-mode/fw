@@ -1,0 +1,4 @@
+#contributor : jney <jeansebastien.ney@gmail.com>
+#name : font-weight
+# --
+font-weight: ${bold};

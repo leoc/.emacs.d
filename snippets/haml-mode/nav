@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+#name : nav
+# --
+%nav
+  $0

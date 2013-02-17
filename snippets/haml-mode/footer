@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+#name : footer
+# --
+%footer
+  $0

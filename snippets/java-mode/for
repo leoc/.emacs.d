@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name : Jena Iterator
+# --
+for(Iterator ${1:iter} = ${2:getIterator()}; $1.hasNext();) {
+
+}

@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# name: function deprecated
+# --
+__attribute__ ((deprecated))

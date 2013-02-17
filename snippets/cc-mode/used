@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# name: variable is used
+# --
+__attribute__((used))

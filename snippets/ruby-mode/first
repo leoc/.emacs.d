@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : first
+# --
+first(${1::conditions => ['${2:${3:field} = ?}', ${5:true}]})

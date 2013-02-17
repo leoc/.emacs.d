@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name : public void getVariable() { ... }
+# --
+public ${1:Object} get${2:Variable}() {
+    return ${2:$(s-lower-camel-case text)};
+}$0

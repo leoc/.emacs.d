@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : exactly
+# --
+exactly(${1:n}).times

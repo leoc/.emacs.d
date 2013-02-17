@@ -1,0 +1,5 @@
+#name : part
+#condition : (not (YaTeX-in-math-mode-p))
+# --
+\part{${1:title}}
+$0
