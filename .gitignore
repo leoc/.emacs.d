@@ -15,3 +15,4 @@ auto-save-list
 /url/cookies
 /ac-comphist.dat
 /.org-id-locations
+/projectile.cache
