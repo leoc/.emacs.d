@@ -119,7 +119,7 @@
 (global-set-key (kbd "C-c C-c") 'eval-region)
 (global-set-key (kbd "C-c s") 'swap-windows)
 (global-set-key (kbd "C-c d") 'duplicate-current-line-or-region)
-(global-set-key (kbd "C-c h") 'helm-custom)
+(global-set-key (kbd "C-c h") 'helm-projectile)
 
 ;; Frame zooming
 (global-set-key (kbd "C-M-*") 'zoom-frm-in)

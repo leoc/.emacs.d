@@ -22,6 +22,9 @@
 ;; HTML
 (add-to-list 'auto-mode-alist '("\\.html\\'" . html-mode))
 
+;; Puppet
+(add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+
 ;; Ruby
 (autoload 'rhtml-mode "rhtml-mode")
 (add-to-list 'auto-mode-alist '("\\.rake$" . ruby-mode))

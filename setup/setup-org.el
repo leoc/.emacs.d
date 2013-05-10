@@ -1,26 +1,10 @@
 (require 'org-habit)
 (require 'org-helpers)
+(require 'org-export)
 
 ;; POMODORO SETTINGS
 (add-to-list 'load-path (expand-file-name "org-pomodoro" vendor-dir))
 (require 'org-pomodoro)
-
-(global-set-key (kbd "C-c C-x C-i") 'org-pomodoro)
-(global-set-key (kbd "C-c C-x C-o") 'org-pomodoro)
-
-(require 'weblock)
-
-(add-hook 'org-pomodoro-started-hook
-          '(lambda ()
-             (weblock/toggle 'on)))
-
-(add-hook 'org-pomodoro-finished-hook
-          '(lambda ()
-             (weblock/toggle 'off)))
-
-(add-hook 'org-pomodoro-killed-hook
-          '(lambda ()
-             (weblock/toggle 'off)))
 
 ;; sets the default workflow keywords and their faces
 (setq org-todo-keywords
@@ -42,16 +26,9 @@
 
 ;; sets the
 (setq org-tag-alist '((:startgroup . nil)
-                      ("@ftown" . ?f)
-                      ("@mehringdamm" . ?m)
-                      ("@proberaum" . ?p)
-                      ("@büro" . ?b)
-                      (:endgroup . nil)
-                      ("cla" . ?c)
-                      ("git" . ?g)
-                      ("sax" . ?s)
-                      ("voc" . ?v)
-                      ("laptop" . ?l)))
+                      ("@home" . ?h)
+                      ("@office" . ?o)
+                      (:endgroup . nil)))
 
 ;; The default agenda files. inbox.org is used only in custom agenda.
 (setq org-agenda-files (list "~/.org/tasks.org"
@@ -76,13 +53,8 @@
  '(org-agenda-show-all-dates t)
  ;; Sorting order for tasks on the agenda
  '(org-agenda-sorting-strategy
-   (quote ((agenda
-            habit-down
-            time-up
-            user-defined-up
-            priority-down
-            effort-up
-            category-keep)
+   (quote ((agenda habit-down time-up user-defined-up
+            priority-down effort-up category-keep)
            (todo category-up priority-down effort-up)
            (tags category-up priority-down effort-up)
            (search category-up))))
@@ -101,6 +73,17 @@
  '(org-agenda-skip-scheduled-if-done t)
  ;; Remove completed items from search results
  '(org-agenda-skip-timestamp-if-done t)
+ ;; Display tags farther right
+ '(org-agenda-tags-column -102)
+ '(org-agenda-persistent-filter t)
+ ;; Enable display of the time grid
+ ;; so we can see the marker for the current time
+ '(org-agenda-time-grid (quote ((daily today remove-match)
+                                #("----------------" 0 16 (org-heading t))
+                                (830 1000 1200 1300 1500 1700))))
+ ;; Do not dim blocked tasks
+ '(org-agenda-dim-blocked-tasks nil)
+
  ;; Show lot sof clocking history so it's easy to pick items off the C-F11 list
  '(org-clock-history-length 36)
  ;; Separate drawers for clocking and logs
@@ -114,17 +97,7 @@
  '(org-clock-persist-query-resume nil)
  ;; Include current clocking task in clock reports
  '(org-clock-report-include-clocking-task t)
- '(org-fast-tag-selection-single-key 'expert)
- '(org-agenda-skip-scheduled-if-done t)
- ;; Display tags farther right
- '(org-agenda-tags-column -102)
- ;; Enable display of the time grid
- ;; so we can see the marker for the current time
- '(org-agenda-time-grid (quote ((daily today remove-match)
-                                #("----------------" 0 16 (org-heading t))
-                                (830 1000 1200 1300 1500 1700))))
- ;; Do not dim blocked tasks
- '(org-agenda-dim-blocked-tasks nil))
+ '(org-fast-tag-selection-single-key 'expert))
 
 
 (setq org-refile-targets '(("~/.org/tasks.org" :level . 1)
@@ -132,35 +105,27 @@
                            ("~/.org/references.org" :level . 1)
                            ("~/.org/mevents.org" :level . 1)))
 
-(setq org-capture-templates
-      '(("r" "Todo" entry (file+headline "~/.org/inbox.org" "Inbox")
-         "* TODO %?")
-        ("j" "Journal" entry (file+datetree "~/.org/journal.org")
-         (file "~/.org/templates/review"))))
-
-(define-key global-map "\C-cr"
-  (lambda () (interactive) (org-capture nil "r")))
-(define-key global-map "\C-cj"
-  (lambda () (interactive) (org-capture nil "j")))
+(setq org-capture-templates '(("r" "Todo" entry (file+headline "~/.org/inbox.org" "Inbox") "* TODO %?")))
+(define-key global-map "\C-cr" (lambda () (interactive) (org-capture nil "r")))
 
 ;; Resume clocking task when emacs is restarted
 (org-clock-persistence-insinuate)
 
+(setq require-final-newline t)
+
+(custom-set-faces
+ '(org-mode-line-clock ((t (:foreground "red" :box (:line-width -1 :style released-button)))) t))
+
 (setq org-habit-graph-column 102)
-(setq org-habit-following-days 7)
-(setq org-habit-preceding-days 21)
+(setq org-habit-following-days 3)
+(setq org-habit-preceding-days 12)
 
 ;; Some keybindings that should be activated in org-mode
 (defun custom-org-agenda-mode-defaults ()
   (org-defkey org-agenda-mode-map "W" 'oh/agenda-remove-restriction)
   (org-defkey org-agenda-mode-map "N" 'oh/agenda-restrict-to-subtree)
   (org-defkey org-agenda-mode-map "P" 'oh/agenda-restrict-to-project)
-  (org-defkey org-agenda-mode-map "q" 'bury-buffer)
-  (org-defkey org-agenda-mode-map "I" 'org-pomodoro)
-  (org-defkey org-agenda-mode-map "O" 'org-pomodoro)
-  (org-defkey org-agenda-mode-map (kbd "C-c C-x C-i") 'org-pomodoro)
-  (org-defkey org-agenda-mode-map (kbd "C-c C-x C-o") 'org-pomodoro))
-
+  (org-defkey org-agenda-mode-map "q" 'bury-buffer))
 (add-hook 'org-agenda-mode-hook 'custom-org-agenda-mode-defaults 'append)
 
 ;; configure org remember functions and hooks
@@ -176,9 +141,8 @@
                      ((org-agenda-overriding-header "Stuck Projects")
                       (org-agenda-skip-function
                        '(oh/agenda-skip :headline-if '(non-project)
-                                        :subtree-if '(inactive habit scheduled deadline)
-                                        :headline-if-restricted-and '(non-stuck-project)
-                                        :subtree-if-unrestricted-and '(non-stuck-project)))))
+                                        :subtree-if '(non-stuck-project inactive habit scheduled deadline)))
+                        (org-tags-match-list-sublevels 'intended)))
           (tags-todo "-WAITING-CANCELLED/!NEXT"
                      ((org-agenda-overriding-header "Next Tasks")
                       (org-agenda-skip-function
@@ -186,7 +150,7 @@
                                         :subtree-if '(inactive habit scheduled deadline)
                                         :subtree-if-unrestricted-and '(subtask)
                                         :subtree-if-restricted-and '(single-task)))
-                      (org-tags-match-list-sublevels t)
+                      (org-tags-match-list-sublevels 'indented)
                       (org-agenda-sorting-strategy '(todo-state-down effort-up category-keep))))
           (tags-todo "-CANCELLED/!-NEXT-HOLD-WAITING"
                      ((org-agenda-overriding-header "Available Tasks")
@@ -195,18 +159,21 @@
                                         :subtree-if '(inactive habit scheduled deadline)
                                         :subtree-if-unrestricted-and '(subtask)
                                         :subtree-if-restricted-and '(single-task)))
-                      (org-agenda-sorting-strategy '(category-keep))))
+                      (org-agenda-sorting-strategy '(category-keep))
+                      (org-tags-match-list-sublevels nil)))
           (tags-todo "-CANCELLED/!"
                      ((org-agenda-overriding-header "Currently Active Projects")
                       (org-agenda-skip-function
                        '(oh/agenda-skip :subtree-if '(non-project stuck-project inactive habit)
                                         :headline-if-unrestricted-and '(subproject)
                                         :headline-if-restricted-and '(top-project)))
+                      (org-tags-match-list-sublevels 'indented)
                       (org-agenda-sorting-strategy '(category-keep))))
           (tags-todo "-CANCELLED/!WAITING|HOLD"
                      ((org-agenda-overriding-header "Waiting and Postponed Tasks")
                       (org-agenda-skip-function
-                       '(oh/agenda-skip :subtree-if '(project habit))))))
+                       '(oh/agenda-skip :subtree-if '(project habit)))
+                      (org-tags-match-list-sublevels nil))))
          nil)
         ("r" "Tasks to Refile" alltodo ""
          ((org-agenda-overriding-header "Tasks to Refile")
@@ -244,138 +211,8 @@
 (defun custom-org-mode-defaults ()
   (electric-indent-mode -1)
   (org-defkey org-mode-map (kbd "M-p") 'org-metaup)
-  (org-defkey org-mode-map (kbd "M-n") 'org-metadown)
-  (org-defkey org-mode-map (kbd "C-c C-x C-i") 'org-pomodoro)
-  (org-defkey org-mode-map (kbd "C-c C-x C-o") 'org-pomodoro))
-
-
+  (org-defkey org-mode-map (kbd "M-n") 'org-metadown))
 (add-hook 'org-mode-hook 'custom-org-mode-defaults)
-
-
-(unless (boundp 'org-export-latex-classes)
-  (setq org-export-latex-classes nil))
-
-(add-to-list 'org-export-latex-classes
-             ;; beamer class, for presentations
-             '("beamer"
-               "\\documentclass[11pt]{beamer}\n
-                \\mode<{{{beamermode}}}>\n
-                \\usetheme{{{{beamertheme}}}}\n
-                \\usecolortheme{{{{beamercolortheme}}}}\n
-                \\beamertemplateballitem\n
-                \\setbeameroption{show notes}
-                \\usepackage[utf8]{inputenc}\n
-                \\usepackage[T1]{fontenc}\n
-                \\usepackage{hyperref}\n
-                \\usepackage{minted}\n
-                \\usepackage{color}
-                \\usepackage{listings}
-                \\lstset{numbers=none,language=[ISO]C++,tabsize=4,
-                      frame=single,
-                      basicstyle=\\small,
-                      showspaces=false,showstringspaces=false,
-                      showtabs=false,
-                      keywordstyle=\\color{blue}\\bfseries,
-                      commentstyle=\\color{red},
-                      }\n
-                \\usepackage{verbatim}\n
-                \\institute{{{{beamerinstitute}}}}\n
-                \\subject{{{{beamersubject}}}}\n"
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\begin{frame}[fragile]\\frametitle{%s}"
-                "\\end{frame}"
-                "\\begin{frame}[fragile]\\frametitle{%s}"
-                "\\end{frame}")))
-
-(add-to-list 'org-export-latex-classes
-             '("letter"
-               "\\documentclass[11pt]{letter}\n
-                \\usepackage[utf8]{inputenc}\n
-                \\usepackage[T1]{fontenc}\n
-                \\usepackage{minted}\n
-                \\usepackage{color}"
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")
-               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-(add-to-list 'org-export-latex-classes
-             '("article"
-               "\\documentclass{article}\n
-                \\usepackage[utf8]{inputenc}\n
-                \\usepackage[T1]{fontenc}\n
-                \\usepackage{minted}\n
-                \\usepackage{color}"
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")
-               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-(add-to-list 'org-export-latex-classes
-             '("ieee"
-               "\\documentclass{IEEEtran}\n
-                \\usepackage[utf8]{inputenc}\n
-                \\usepackage[T1]{fontenc}\n
-                \\usepackage{minted}\n
-                \\usepackage{color}"
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-
-(setq org-export-latex-classes nil)
-(add-to-list 'org-export-latex-classes
-             '("daidoc"
-"\\documentclass{daidoc}
-\\usepackage[utf8]{inputenc}
-\\usepackage{rotating}
-\\usepackage{datetime,color,listings,booktabs}
-\\usepackage[ngerman]{babel}
-\\usepackage{minted}
-\\usepackage{listings}
-\\definecolor{dkgreen}{rgb}{0,0.6,0}
-\\definecolor{gray}{rgb}{0.3,0.3,0.3}
-\\definecolor{mauve}{rgb}{0.58,0,0.82}
-\\lstset{
-  basicstyle=\\footnotesize\\ttfamily,
-  keywordstyle=\\color{OliveGreen},
-  commentstyle=\\color{gray},
-  stepnumber=1,
-  numbersep=5pt,
-  backgroundcolor=\\color{white},
-  frame=shadowbox,
-  rulesepcolor=\\color{black},
-  tabsize=2,
-  captionpos=t,
-  breaklines=true,                        % Automatic line breaking?
-  breakatwhitespace=false,                % Automatic breaks only at whitespace?
-  showspaces=false,                       % Dont make spaces visible
-  showtabs=false,                         % Dont make tabls visible
-  morekeywords={__global__, __device__},
-  title=\\lstname,
-  keywordstyle=\\color{black},
-  commentstyle=\\color{gray},
-  stringstyle=\\color{dkgreen},
-  literate=%
-  {Ö}{{\\\"O}}1
-  {Ä}{{\\\"A}}1
-  {Ü}{{\\\"U}}1
-  {ß}{{\\\ss}}2
-  {ü}{{\\\"u}}1
-  {ä}{{\\\"a}}1
-  {ö}{{\\\"o}}1
-}
-\\usepackage{hyperref}
-\\makeindex
-\\newcolumntype{C}[1]{>{\\centering\\arraybackslash}p{#1}}
-\[NO-DEFAULT-PACKAGES\]
-\[NO-PACKAGES\]"
-               ("\\chapter{%s}" . "\\chapter*{%s}")
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection*{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")))
 
 (setq org-ditaa-jar-path (concat vendor-dir "/ditaa0_9.jar"))
 (setq org-plantuml-jar-path (concat vendor-dir "/plantuml.jar"))
@@ -408,5 +245,6 @@
 (require 'org-latex)
 (setq org-export-latex-listings 'minted)
 (add-to-list 'org-export-latex-packages-alist '("" "minted"))
+
 
 (provide 'setup-org)

@@ -13,15 +13,21 @@
     ace-jump-mode
     ack-and-a-half
     auto-complete
-    auto-complete-clang
+    browse-kill-ring
+    bash-completion
     clojure-mode
     coffee-mode
     dired-details
     expand-region
     elisp-slime-nav
+    ess
+    emacs-eclim
     find-file-in-project
     fill-column-indicator
+    feature-mode
     flycheck
+    frame-cmds
+    frame-fns
     gist
     git-commit-mode
     gitconfig-mode
@@ -30,26 +36,37 @@
     haskell-mode
     helm
     helm-projectile
+    htmlize
     key-chord
     inf-ruby
+    ido-ubiquitous
     ibuffer-vc
     less-css-mode
     lua-mode
     magit
     markdown-mode
     multiple-cursors
+    markup
     melpa
+    org
+    org-plus-contrib
     paredit
     popup
+    puppet-mode
     rainbow-mode
     revive
+    robe
+    rinari
     ruby-block
     ruby-end
     ruby-tools
     rvm
     sass-mode
     scss-mode
+    smooth-scrolling
     smex
+    smart-forward
+    shell-command
     volatile-highlights
     wgrep
     yaml-mode
@@ -57,66 +74,7 @@
     zoom-frm)
   "A list of packages to ensure are installed at launch.")
 
-(setq custom-packages
-      '(ac-slime
-        ace-jump-mode
-        ack-and-a-half
-        auto-complete
-        auto-complete-clang
-        browse-kill-ring
-        bash-completion
-        clojure-mode
-        coffee-mode
-        dired-details
-        expand-region
-        elisp-slime-nav
-        eproject
-        ess
-        emacs-eclim
-        find-file-in-project
-        fill-column-indicator
-        flycheck
-        frame-cmds
-        frame-fns
-        gist
-        git-commit-mode
-        gitconfig-mode
-        gitignore-mode
-        haml-mode
-        haskell-mode
-        helm
-        helm-projectile
-        key-chord
-        inf-ruby
-        ido-ubiquitous
-        ibuffer-vc
-        less-css-mode
-        lua-mode
-        magit
-        markdown-mode
-        multiple-cursors
-        markup
-        melpa
-        paredit
-        popup
-        rainbow-mode
-        revive
-        ruby-block
-        ruby-end
-        ruby-tools
-        rvm
-        sass-mode
-        scss-mode
-        undo-tree
-        smooth-scrolling
-        smex
-        smart-forward
-        shell-command
-        volatile-highlights
-        wgrep
-        yaml-mode
-        yasnippet
-        zoom-frm))
+;; (setq custom-packages '())
 
 (defun custom-packages-installed-p ()
   (loop for p in custom-packages

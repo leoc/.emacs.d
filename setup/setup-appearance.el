@@ -62,6 +62,14 @@
                                            'help-echo "Buffer is read-only"))))
    "] " "%M"))
 
+
+;; shorten the eshell prompt
+(setq eshell-prompt-function
+      (function
+       (lambda ()
+         (concat (file-name-nondirectory (eshell/pwd))
+                 (if (= (user-uid) 0) " # " " $ ")))))
+
 ;; Bring the background through after init ..
 (defun transparency (value &optional frame)
   "Sets the transparency of the frame window. 0=transparent/100=opaque"
@@ -71,6 +79,6 @@
     (set-frame-parameter frame 'alpha value)))
 
 (add-hook 'after-make-frame-functions '(lambda (frame) (transparency 95 frame)))
-
+(add-hook 'after-init-hook '(lambda () (transparency 95)))
 
 (provide 'setup-appearance)
