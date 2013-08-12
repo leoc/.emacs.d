@@ -7,7 +7,7 @@
 (add-to-list 'auto-mode-alist '("Carton$" . emacs-lisp-mode))
 
 ;; CSS
-(add-to-list 'auto-mode-alist '("\\.scss$" . css-mode))
+(add-to-list 'auto-mode-alist '("\\.scss$" . scss-mode))
 
 ;; HAML
 (add-to-list 'auto-mode-alist '("\\.hamlc$" . haml-mode))
@@ -28,6 +28,7 @@
 ;; Ruby
 (autoload 'rhtml-mode "rhtml-mode")
 (add-to-list 'auto-mode-alist '("\\.rake$" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\.rabl$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.watchr$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Rakefile$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.gemspec$" . ruby-mode))

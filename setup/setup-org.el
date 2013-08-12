@@ -1,9 +1,9 @@
+(require 'org)
 (require 'org-habit)
 (require 'org-helpers)
-(require 'org-export)
+;; (require 'org-export)
 
 ;; POMODORO SETTINGS
-(add-to-list 'load-path (expand-file-name "org-pomodoro" vendor-dir))
 (require 'org-pomodoro)
 
 ;; sets the default workflow keywords and their faces
@@ -151,7 +151,7 @@
                                         :subtree-if-unrestricted-and '(subtask)
                                         :subtree-if-restricted-and '(single-task)))
                       (org-tags-match-list-sublevels 'indented)
-                      (org-agenda-sorting-strategy '(todo-state-down effort-up category-keep))))
+                      (org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
           (tags-todo "-CANCELLED/!-NEXT-HOLD-WAITING"
                      ((org-agenda-overriding-header "Available Tasks")
                       (org-agenda-skip-function
@@ -159,7 +159,7 @@
                                         :subtree-if '(inactive habit scheduled deadline)
                                         :subtree-if-unrestricted-and '(subtask)
                                         :subtree-if-restricted-and '(single-task)))
-                      (org-agenda-sorting-strategy '(category-keep))
+                      (org-agenda-sorting-strategy '(priority-down category-keep))
                       (org-tags-match-list-sublevels nil)))
           (tags-todo "-CANCELLED/!"
                      ((org-agenda-overriding-header "Currently Active Projects")
@@ -168,7 +168,7 @@
                                         :headline-if-unrestricted-and '(subproject)
                                         :headline-if-restricted-and '(top-project)))
                       (org-tags-match-list-sublevels 'indented)
-                      (org-agenda-sorting-strategy '(category-keep))))
+                      (org-agenda-sorting-strategy '(priority-down category-keep))))
           (tags-todo "-CANCELLED/!WAITING|HOLD"
                      ((org-agenda-overriding-header "Waiting and Postponed Tasks")
                       (org-agenda-skip-function
@@ -188,7 +188,7 @@
           (org-agenda-skip-function
            '(oh/agenda-skip :subtree-if '(inactive project habit scheduled deadline)))
           (org-tags-match-list-sublevels t)
-          (org-agenda-sorting-strategy '(todo-state-down effort-up category-keep))))
+          (org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
         ("R" "Tasks" tags-todo "-CANCELLED/!-NEXT-HOLD-WAITING"
          ((org-agenda-overriding-header "Available Tasks")
           (org-agenda-skip-function
@@ -196,12 +196,12 @@
                             :subtree-if '(inactive habit scheduled deadline)
                             :subtree-if-unrestricted-and '(subtask)
                             :subtree-if-restricted-and '(single-task)))
-          (org-agenda-sorting-strategy '(category-keep))))
+          (org-agenda-sorting-strategy '(priority-down category-keep))))
         ("p" "Projects" tags-todo "-CANCELLED/!"
          ((org-agenda-overriding-header "Currently Active Projects")
           (org-agenda-skip-function
            '(oh/agenda-skip :subtree-if '(non-project inactive habit)))
-          (org-agenda-sorting-strategy '(category-keep))
+          (org-agenda-sorting-strategy '(priority-down category-keep))
           (org-tags-match-list-sublevels 'indented)))
         ("w" "Waiting Tasks" tags-todo "-CANCELLED/!WAITING|HOLD"
          ((org-agenda-overriding-header "Waiting and Postponed Tasks")
@@ -233,6 +233,7 @@
    (plantuml . t)
    (latex . t)))
 
+
 ;; Do not prompt to confirm evaluation
 ;; This may be dangerous - make sure you understand the consequences
 ;; of setting this -- see the docstring for details
@@ -242,9 +243,9 @@
 (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
 
 ;; Use pygments for syntax coloring
-(require 'org-latex)
-(setq org-export-latex-listings 'minted)
-(add-to-list 'org-export-latex-packages-alist '("" "minted"))
+;; (require 'org-latex)
+;; (setq org-export-latex-listings 'minted)
+;; (add-to-list 'org-export-latex-packages-alist '("" "minted"))
 
 
 (provide 'setup-org)

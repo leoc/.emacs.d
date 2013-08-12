@@ -1,5 +1,4 @@
-;; Do not use ugly icons, maybe I will change the speedbar
-;; icons some day to use something more beautiful
+;; Only use ASCII stuff
 (setq speedbar-use-images nil)
 
 ;; Do not update automatically.

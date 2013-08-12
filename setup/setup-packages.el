@@ -40,6 +40,7 @@
     key-chord
     inf-ruby
     ido-ubiquitous
+    ido-vertical-mode
     ibuffer-vc
     less-css-mode
     lua-mode
@@ -50,6 +51,7 @@
     melpa
     org
     org-plus-contrib
+    org-pomodoro
     paredit
     popup
     puppet-mode

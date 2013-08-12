@@ -1,6 +1,5 @@
 (require 'dash)
 (require 'dired)
-(require 'dired-a)
 (require 'dired-x)
 
 (setq dired-to-archive-copy-alist
