@@ -63,6 +63,7 @@
 (require 'setup-ruby)
 (require 'setup-slime)
 (require 'setup-xml)
+(require 'setup-mail)
 
 ;; Associate extensions with their specific modes
 (require 'setup-mode-mappings)
