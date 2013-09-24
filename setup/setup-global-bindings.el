@@ -104,7 +104,7 @@
 (define-key global-map "\C-cop" '(lambda () (interactive) (find-file "~/.org/projects.org")))
 (define-key global-map "\C-coj" '(lambda () (interactive) (find-file "~/.org/journal.org")))
 (define-key global-map "\C-coc" '(lambda () (interactive) (find-file "~/.org/calendar.org")))
-(define-key global-map "\C-com" '(lambda () (interactive) (find-file "~/.org/mevents.org")))
+(define-key global-map "\C-cob" '(lambda () (interactive) (find-file "~/.org/business.org")))
 
 
 (global-set-key (kbd "C-c C-o") 'open-with)
