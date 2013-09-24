@@ -36,7 +36,8 @@
  '(org-fast-tag-selection-single-key (quote expert))
  '(org-log-done t)
  '(org-startup-indented t)
- '(speedbar-use-images nil t))
+ '(send-mail-function (quote smtpmail-send-it))
+ '(speedbar-use-images nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
