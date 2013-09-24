@@ -45,7 +45,7 @@
       user-full-name "Arthur Leonard Andersen"
       mu4e-headers-date-format "%d/%b/%Y %H:%M" ; date format
 
-      mu4e-html2text-command "pandoc -f html -t org"
+      mu4e-html2text-command "pandoc --columns=79 -f html -t org"
 
       message-kill-buffer-on-exit t
       message-send-mail-function 'smtpmail-send-it
