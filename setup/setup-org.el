@@ -98,6 +98,8 @@
  '(org-clock-report-include-clocking-task t)
  '(org-fast-tag-selection-single-key 'expert))
 
+(setq org-habit-show-habits nil)
+(run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
 
 (setq org-refile-targets '(("~/.org/tasks.org" :level . 1)
                            ("~/.org/projects.org" :level . 1)
