@@ -4,6 +4,38 @@
 
 ;;; Code:
 
+(defvar frame-winset-mode-line "")
+(put 'frame-winset-mode-line 'risky-local-variable t)
+
+(unless (memq 'frame-winset-mode-line global-mode-string)
+  (setq global-mode-string (append '(frame-winset-mode-line)
+                                   global-mode-string)))
+
+(defface frame-winset-active-face
+  '((t (:foreground "yellow" :bold 't)))
+  "Winset mode line color"
+  :group 'faces)
+
+(defface frame-winset-inactive-face
+  '((t (:foreground "gray")))
+  "Winset mode line color"
+  :group 'faces)
+
+(defun frame-winset-update-mode-line ()
+  "Set the modeline accordingly to the current state."
+  (let ((current-index (frame-parameter nil 'window-configuration-index)))
+    (setq frame-winset-mode-line
+          (loop for element in '("[" 0 1 2 3 4 5 6 7 8 "]")
+                collect (let ((element-string (format "%s " (if (stringp element)
+                                                               element
+                                                              (+ 1 element)))))
+                          (if (eq element current-index)
+                              (propertize element-string
+                                          'face 'frame-winset-active-face)
+                            (propertize element-string
+                                        'face 'frame-winset-inactive-face)))))
+  (force-mode-line-update)))
+
 (defun window-toggle-maximize ()
   "Make the current window the maximum and go back."
   (interactive)
@@ -42,7 +74,8 @@
       (set-frame-parameter nil 'window-configuration-index index)
       (if (nth index configurations)
           (set-window-configuration (nth index configurations))
-        (delete-other-windows)))))
+        (delete-other-windows))
+      (frame-winset-update-mode-line))))
 
 (global-set-key (kbd "M-1") '(lambda () (interactive) (window-switch-to-configuration 1)))
 (global-set-key (kbd "M-2") '(lambda () (interactive) (window-switch-to-configuration 2)))
