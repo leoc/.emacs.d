@@ -24,10 +24,9 @@
         ("HOLD"      :foreground "#9b859d" :weight bold)
         ("CANCELLED" :foreground "#9eb9a7" :weight bold)))
 
-;; sets the
 (setq org-tag-alist '((:startgroup . nil)
-                      ("@home" . ?h)
-                      ("@office" . ?o)
+                      ("business" . ?b)
+                      ("personal" . ?p)
                       (:endgroup . nil)))
 
 ;; The default agenda files. inbox.org is used only in custom agenda.
@@ -35,8 +34,8 @@
                              "~/.org/tasks.org_archive"
                              "~/.org/projects.org"
                              "~/.org/projects.org_archive"
-                             "~/.org/mevents.org"
-                             "~/.org/mevents.org_archive"
+                             "~/.org/business.org"
+                             "~/.org/business.org_archive"
                              "~/.org/calendar.org"))
 
 ;; my org settings
@@ -103,7 +102,7 @@
 (setq org-refile-targets '(("~/.org/tasks.org" :level . 1)
                            ("~/.org/projects.org" :level . 1)
                            ("~/.org/references.org" :level . 1)
-                           ("~/.org/mevents.org" :level . 1)))
+                           ("~/.org/business.org" :level . 1)))
 
 (setq org-capture-templates '(("r" "Todo" entry (file+headline "~/.org/inbox.org" "Inbox") "* TODO %?")))
 (define-key global-map "\C-cr" (lambda () (interactive) (org-capture nil "r")))
