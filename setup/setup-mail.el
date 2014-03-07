@@ -1,4 +1,4 @@
-;;; setup-meil.el --- Setup mu4e
+;;; setup-mail.el --- Setup mu4e
 
 ;;; Commentary:
 
