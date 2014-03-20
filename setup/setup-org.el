@@ -1,3 +1,9 @@
+;;; setup-org.el -- My personal org-mode setup
+
+;;; Commentary:
+
+;;; Code:
+
 (require 'org)
 (require 'org-habit)
 (require 'org-helpers)
