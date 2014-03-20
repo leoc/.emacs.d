@@ -107,6 +107,10 @@
 (define-key global-map "\C-cob" '(lambda () (interactive) (find-file "~/.org/business.org")))
 
 
+(global-set-key (kbd "M-l") 'downcase-dwim)
+(global-set-key (kbd "M-u") 'upcase-dwim)
+(global-set-key (kbd "M-c") 'capitalize-dwim)
+
 (global-set-key (kbd "C-c C-o") 'open-with)
 (global-set-key (kbd "C-c g") 'search-google)
 (global-set-key (kbd "C-c C-g") 'search-dict)
