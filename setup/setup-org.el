@@ -3,20 +3,21 @@
 ;;; Commentary:
 
 ;;; Code:
-
+(ensure-packages '(org org-plus-contrib))
 (require 'org)
 (require 'org-habit)
 (require 'org-helpers)
 
-;; POMODORO SETTINGS
+;; Configure org-pomodoro
+(ensure-package 'org-pomodoro)
 (require 'org-pomodoro)
 
-;; ORG-REVEAL
-(add-to-list 'load-path "~/.emacs.d/vendor/org-reveal")
-(setq org-reveal-root "/home/arthur/.emacs.d/vendor/org-reveal/reveal.js-2.6.1")
+;; Configure org-reveal
+(ensure-package 'ox-reveal)
 (require 'ox-reveal)
+(setq org-reveal-root "/home/arthur/.emacs.d/vendor/org-reveal/reveal.js-2.6.1")
 
-;; sets the default workflow keywords and their faces
+;; Set the default workflow keywords and their faces
 (setq org-todo-keywords
       '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!/!)")
         (sequence "WAITING(w@/!)" "HOLD(h@/!)" "SOMEDAY(o)" "|" "CANCELLED(c@/!)")))
@@ -34,12 +35,13 @@
         ("HOLD"      :foreground "#9b859d" :weight bold)
         ("CANCELLED" :foreground "#9eb9a7" :weight bold)))
 
+;; Set fast selections for tags
 (setq org-tag-alist '((:startgroup . nil)
                       ("business" . ?b)
                       ("personal" . ?p)
                       (:endgroup . nil)))
 
-;; The default agenda files. inbox.org is used only in custom agenda.
+;; The default agenda files. inbox.org is used only in custom agenda
 (setq org-agenda-files (list "~/.org/tasks.org"
                              "~/.org/tasks.org_archive"
                              "~/.org/projects.org"
@@ -48,75 +50,70 @@
                              "~/.org/business.org_archive"
                              "~/.org/calendar.org"))
 
-;; my org settings
-(custom-set-variables
- '(org-startup-indented t)
- '(org-log-done t)
- '(org-completion-use-ido t)
- '(org-agenda-start-on-weekday nil)
- '(org-agenda-ndays 1)
- '(org-agenda-include-diary t)
- '(org-agenda-window-setup 'current-window)
- '(org-agenda-repeating-timestamp-show-all t)
- ;; Show all agenda dates - even if they are empty
- '(org-agenda-show-all-dates t)
- ;; Sorting order for tasks on the agenda
- '(org-agenda-sorting-strategy
-   (quote ((agenda habit-down time-up user-defined-up
-            priority-down effort-up category-keep)
-           (todo category-up priority-down effort-up)
-           (tags category-up priority-down effort-up)
-           (search category-up))))
- '(org-agenda-cmp-user-defined 'oh/agenda-sort)
- ;; Keep tasks with dates on the global todo lists
- '(org-agenda-todo-ignore-with-date nil)
- ;; Keep tasks with deadlines on the global todo lists
- '(org-agenda-todo-ignore-deadlines nil)
- ;; Keep tasks with scheduled dates on the global todo lists
- '(org-agenda-todo-ignore-scheduled nil)
- ;; Keep tasks with timestamps on the global todo lists
- '(org-agenda-todo-ignore-timestamp nil)
- ;; Remove completed deadline tasks from the agenda view
- '(org-agenda-skip-deadline-if-done t)
- ;; Remove completed scheduled tasks from the agenda view
- '(org-agenda-skip-scheduled-if-done t)
- ;; Remove completed items from search results
- '(org-agenda-skip-timestamp-if-done t)
- ;; Display tags farther right
- '(org-agenda-tags-column -102)
- '(org-agenda-persistent-filter t)
- ;; Enable display of the time grid
- ;; so we can see the marker for the current time
- '(org-agenda-time-grid (quote ((daily today remove-match)
-                                #("----------------" 0 16 (org-heading t))
-                                (830 1000 1200 1300 1500 1700))))
- ;; Do not dim blocked tasks
- '(org-agenda-dim-blocked-tasks nil)
+;; Configure basic org-mode
+(setq org-startup-indented t
+      org-log-done t
+      org-completion-use-ido t
+      org-agenda-start-on-weekday nil
+      org-agenda-ndays 1
+      org-agenda-include-diary t
+      org-agenda-window-setup 'current-window
+      org-agenda-repeating-timestamp-show-all t
+      ;; Show all agenda dates - even if they are empty
+      org-agenda-show-all-dates t
+      ;; Sorting order for tasks on the agenda
+      org-agenda-sorting-strategy '((agenda habit-down time-up user-defined-up priority-down effort-up category-keep)
+                                    (todo category-up priority-down effort-up)
+                                    (tags category-up priority-down effort-up)
+                                    (search category-up))
+      org-agenda-cmp-user-defined 'oh/agenda-sort
+      ;; Keep tasks with dates on the global todo lists
+      org-agenda-todo-ignore-with-date nil
+      ;; Keep tasks with deadlines on the global todo lists
+      org-agenda-todo-ignore-deadlines nil
+      ;; Keep tasks with scheduled dates on the global todo lists
+      org-agenda-todo-ignore-scheduled nil
+      ;; Keep tasks with timestamps on the global todo lists
+      org-agenda-todo-ignore-timestamp nil
+      ;; Remove completed deadline tasks from the agenda view
+      org-agenda-skip-deadline-if-done t
+      ;; Remove completed scheduled tasks from the agenda view
+      org-agenda-skip-scheduled-if-done t
+      ;; Remove completed items from search results
+      org-agenda-skip-timestamp-if-done t
+      ;; Display tags farther right
+      org-agenda-tags-column -102
+      org-agenda-persistent-filter t
+      ;; Enable display of the time grid
+      ;; so we can see the marker for the current time
+      org-agenda-time-grid '((daily today remove-match)
+                             #("----------------" 0 16 (org-heading t))
+                             (830 1000 1200 1300 1500 1700))
+      ;; Do not dim blocked tasks
+      org-agenda-dim-blocked-tasks nil
 
- ;; Show lot sof clocking history so it's easy to pick items off the C-F11 list
- '(org-clock-history-length 36)
- ;; Separate drawers for clocking and logs
- '(org-drawers (quote ("PROPERTIES" "LOGBOOK")))
- ;; Save clock data and state changes and notes in the LOGBOOK drawer
- '(org-clock-into-drawer t)
- ;; Sometimes I change tasks I'm clocking quickly
- ;; this removes clocked tasks with 0:00 duration
- '(org-clock-out-remove-zero-time-clocks t)
- ;; Do not prompt to resume an active clock
- '(org-clock-persist-query-resume nil)
- ;; Include current clocking task in clock reports
- '(org-clock-report-include-clocking-task t)
- '(org-fast-tag-selection-single-key 'expert))
-
-(setq org-habit-show-habits nil)
-(run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
-
-(setq org-refile-targets '(("~/.org/tasks.org" :level . 1)
+      ;; Show lot sof clocking history so it's easy to pick items off the C-F11 list
+      org-clock-history-length 36
+      ;; Separate drawers for clocking and logs
+      org-drawers (quote ("PROPERTIES" "LOGBOOK"))
+      ;; Save clock data and state changes and notes in the LOGBOOK drawer
+      org-clock-into-drawer t
+      ;; Sometimes I change tasks I'm clocking quickly
+      ;; this removes clocked tasks with 0:00 duration
+      org-clock-out-remove-zero-time-clocks t
+      ;; Do not prompt to resume an active clock
+      org-clock-persist-query-resume nil
+      ;; Include current clocking task in clock reports
+      org-clock-report-include-clocking-task t
+      org-fast-tag-selection-single-key 'expert
+      ;; Set refile targets
+      org-refile-targets '(("~/.org/tasks.org" :level . 1)
                            ("~/.org/projects.org" :level . 1)
                            ("~/.org/thoughts.org" :level . 1)
                            ("~/.org/calendar.org" :level . 1)
                            ("~/.org/business.org" :level . 1)))
 
+;; Configure capturing
 (setq org-capture-templates '(("r" "Remember" entry (file+headline "~/.org/inbox.org" "Inbox") "* TODO %?")
                               ("j" "Journal Entry" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))))
 (define-key global-map "\C-cr" (lambda () (interactive) (org-capture nil "r")))
@@ -124,7 +121,6 @@
 
 ;; Resume clocking task when emacs is restarted
 (org-clock-persistence-insinuate)
-
 (setq require-final-newline t)
 
 (custom-set-faces
@@ -136,6 +132,7 @@
 
 ;; Some keybindings that should be activated in org-mode
 (defun custom-org-agenda-mode-defaults ()
+  "Executed as org-agenda-mode-hook."
   (org-defkey org-agenda-mode-map "W" 'oh/agenda-remove-restriction)
   (org-defkey org-agenda-mode-map "N" 'oh/agenda-restrict-to-subtree)
   (org-defkey org-agenda-mode-map "P" 'oh/agenda-restrict-to-project)
@@ -175,6 +172,11 @@
                                         :subtree-if-restricted-and '(single-task)))
                       (org-agenda-sorting-strategy '(priority-down category-keep))
                       (org-tags-match-list-sublevels nil)))
+          (tags-todo "-CANCELLED/!WAITING|HOLD"
+                     ((org-agenda-overriding-header "Waiting and Postponed Tasks")
+                      (org-agenda-skip-function
+                       '(oh/agenda-skip :subtree-if '(project habit)))
+                      (org-tags-match-list-sublevels nil)))
           (tags-todo "-CANCELLED/!"
                      ((org-agenda-overriding-header "Currently Active Projects")
                       (org-agenda-skip-function
@@ -182,12 +184,7 @@
                                         :headline-if-unrestricted-and '(subproject)
                                         :headline-if-restricted-and '(top-project)))
                       (org-tags-match-list-sublevels 'indented)
-                      (org-agenda-sorting-strategy '(priority-down category-keep))))
-          (tags-todo "-CANCELLED/!WAITING|HOLD"
-                     ((org-agenda-overriding-header "Waiting and Postponed Tasks")
-                      (org-agenda-skip-function
-                       '(oh/agenda-skip :subtree-if '(project habit)))
-                      (org-tags-match-list-sublevels nil))))
+                      (org-agenda-sorting-strategy '(priority-down category-keep)))))
          nil)
         ("r" "Tasks to Refile" alltodo ""
          ((org-agenda-overriding-header "Tasks to Refile")
@@ -221,16 +218,17 @@
          ((org-agenda-overriding-header "Waiting and Postponed Tasks")
           (org-agenda-skip-function '(oh/agenda-skip :subtree-if '(project habit)))))))
 
-
 (defun custom-org-mode-defaults ()
+  "Executed as org-mode-hook."
   (electric-indent-mode -1)
   (org-defkey org-mode-map (kbd "M-p") 'org-metaup)
   (org-defkey org-mode-map (kbd "M-n") 'org-metadown)
   (org-shifttab 2))
 (add-hook 'org-mode-hook 'custom-org-mode-defaults)
 
+(require 'org-exp-blocks)
+
 (setq org-ditaa-jar-path (concat vendor-dir "/ditaa0_9.jar"))
-(setq org-plantuml-jar-path (concat vendor-dir "/plantuml.jar"))
 
 (org-babel-do-load-languages
  (quote org-babel-load-languages)
@@ -248,20 +246,12 @@
    (plantuml . t)
    (latex . t)))
 
-
 ;; Do not prompt to confirm evaluation
 ;; This may be dangerous - make sure you understand the consequences
 ;; of setting this -- see the docstring for details
 (setq org-confirm-babel-evaluate nil)
 
-;; Use fundamental mode when editing plantuml blocks with C-c '
-(add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
-
-;; Use pygments for syntax coloring
-;; (require 'org-latex)
-;; (setq org-export-latex-listings 'minted)
-;; (add-to-list 'org-export-latex-packages-alist '("" "minted"))
-
+;; Configure latex classes for org-mode
 (setq org-latex-classes
       '(("scrartcl"
          "\\documentclass{scrartcl}
@@ -277,3 +267,5 @@
          ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 
 (provide 'setup-org)
+
+;;; setup-org.el ends here
