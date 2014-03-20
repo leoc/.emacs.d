@@ -252,5 +252,18 @@
 ;; (setq org-export-latex-listings 'minted)
 ;; (add-to-list 'org-export-latex-packages-alist '("" "minted"))
 
+(setq org-latex-classes
+      '(("scrartcl"
+         "\\documentclass{scrartcl}
+                 [NO-DEFAULT-PACKAGES]
+                 [EXTRA]
+                \\usepackage[utf8]{inputenc}
+                \\usepackage{hyperref}
+                \\usepackage[ngerman]{babel} "
+         ("\\section{%s}" . "\\section*{%s}")
+         ("\\subsection{%s}" . "\\subsection*{%s}")
+         ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+         ("\\paragraph{%s}" . "\\paragraph*{%s}")
+         ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 
 (provide 'setup-org)
