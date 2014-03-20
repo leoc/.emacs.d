@@ -142,7 +142,7 @@
                      ((org-agenda-overriding-header "Stuck Projects")
                       (org-agenda-skip-function
                        '(oh/agenda-skip :headline-if '(non-project)
-                                        :subtree-if '(non-stuck-project inactive habit scheduled deadline)))
+                                        :subtree-if '(non-stuck-project inactive-project habit scheduled deadline)))
                         (org-tags-match-list-sublevels 'intended)))
           (tags-todo "-WAITING-CANCELLED/!NEXT"
                      ((org-agenda-overriding-header "Next Tasks")
@@ -165,7 +165,7 @@
           (tags-todo "-CANCELLED/!"
                      ((org-agenda-overriding-header "Currently Active Projects")
                       (org-agenda-skip-function
-                       '(oh/agenda-skip :subtree-if '(non-project stuck-project inactive habit)
+                       '(oh/agenda-skip :subtree-if '(non-project stuck-project inactive-project habit)
                                         :headline-if-unrestricted-and '(subproject)
                                         :headline-if-restricted-and '(top-project)))
                       (org-tags-match-list-sublevels 'indented)
