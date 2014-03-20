@@ -1,3 +1,8 @@
+;;; setup-auto-complete.el --- Setup auto-complete.
+;;; Commentary:
+;;; Code:
+
+(ensure-packages '(auto-complete ac-slime))
 (require 'auto-complete-config)
 
 (global-auto-complete-mode t)
@@ -5,7 +10,6 @@
 (setq ac-auto-show-menu t)
 
 (setq ac-dwim 3)
-(setq ac-override-local-map nil)
 
 (global-set-key (kbd "C-.") 'auto-complete)
 
@@ -20,6 +24,6 @@
 (define-key ac-menu-map "\t" 'ac-complete)
 (define-key ac-menu-map "\r" nil)
 
-
-
 (provide 'setup-auto-complete)
+
+;;; setup-auto-complete.el ends here
