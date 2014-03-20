@@ -17,3 +17,5 @@ auto-save-list
 /.org-id-locations
 /projectile.cache
 /projectile-bookmarks.eld
+/tmp*
+*.elc
