@@ -3,8 +3,7 @@
 ;;; Commentary:
 
 ;;; Code:
-;; (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
-(add-to-list 'load-path "~/.emacs.d/vendor/mu4e")
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
 (require 'mu4e)
 (require 'smtpmail)
 
@@ -25,8 +24,14 @@
                                 ("/icloud/Trash"         . ?c)
                                 ("/tuberlin/Trash"       . ?v))
 
-      mu4e-headers-fields '((:date    . 25)
-                            (:flags   .  6)
+      mu4e-bookmarks '(("flag:unread AND NOT flag:trashed"      "Unread messages"      ?u)
+                       ("date:today..now AND NOT flag:trashed"  "Today's messages"     ?t)
+                       ("date:7d..now AND NOT flag:trashed"     "Last 7 days"          ?w)
+                       ("mime:image/*"                          "Messages with images" ?p))
+
+      mu4e-headers-fields '((:maildir . 20)
+                            (:date    . 19)
+                            (:flags   . 6)
                             (:from    . 28)
                             (:subject . nil))
 
@@ -45,46 +50,32 @@
       mu4e-attachment-dir "~/Downloads"
 
       user-full-name "Arthur Leonard Andersen"
-      mu4e-headers-date-format "%d/%b/%Y %H:%M" ; date format
+      mu4e-headers-date-format "%d.%b %Y %H:%M" ; date format
 
-      mu4e-html2text-command "pandoc --columns=79 -f html -t org"
+      mu4e-html2text-command nil
 
       message-kill-buffer-on-exit t
       message-send-mail-function 'smtpmail-send-it
       mail-user-agent 'mu4e-user-agent)
 
+(load "~/.mu4e-refile-assocs.el")
+
 ;; Smart refile locations
 (setq mu4e-refile-folder
-      (lambda (msg)
+      '(lambda (msg)
         (let* ((maildir (mu4e-message-field msg :maildir))
-               (account (my-mu4e-find-account 'mu4e-maildir-prefix maildir)))
-          (cond
-           ((equal account "Gmail")
-            (cond
-             ((mu4e-message-contact-field-matches msg :from "uploaded.net") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "Host Europe - Rechnung") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "Sony Entertainment Network") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "service@hhv.de") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "momox") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "reBuy.de") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "buchankauf24") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "ShipRise Media") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "astrilda.de") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "cybertix.eu") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "[tT]+hreadless") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "[cC]+ashfix") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "paypal") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "Easy-Ankauf") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "deutschepost.de") "/gmail/Buy and Sell")
-             ((mu4e-message-contact-field-matches msg :from "bonavendi") "/gmail/Buy and Sell")
-             (t "/gmail/Archive")))
-           ((equal account "iCloud")
-            (cond (t "/icloud/Archive")))
-           ((equal account "TU Berlin")
-            (cond (t "/tuberlin/Archive")))
-           ((equal account "Beloved King")
-            (cond (t "/arthurorg/Archive")))
-           (t "/Archive")))))
+               (account (my-mu4e-find-account 'mu4e-maildir-prefix maildir))
+               (maildir-prefix (my-mu4e-account-value account 'mu4e-maildir-prefix))
+               (maildir-postfix (catch 'found
+                                  (dolist (assoc my-mu4e-refile-assocs)
+                                    (let ((postfix (car assoc))
+                                          (sender-list (cdr assoc)))
+                                      (dolist (sender sender-list)
+                                        (when (mu4e-message-contact-field-matches msg :from sender)
+                                          (throw 'found postfix))))))))
+          (if maildir-postfix
+              (concat maildir-prefix "/" maildir-postfix)
+            (concat maildir-prefix "/Archive")))))
 
 (setq mu4e-maildir-prefix "/gmail"
       mu4e-sent-folder "/Sent"
@@ -96,57 +87,12 @@
       smtpmail-local-domain "gmail.com"
       smtpmail-smtp-server "smtp.gmail.com"
       starttls-use-gnutls t
+      message ""
       smtpmail-smtp-service 587)
 
-(defvar my-mu4e-account-alist
-  '(("Gmail"
-     (mu4e-maildir-prefix "/gmail")
-     (mu4e-sent-folder "/gmail/Sent Messages")
-     (mu4e-drafts-folder "/gmail/Drafts")
-     (mu4e-trash-folder  "/gmail/Trash")
-     (user-mail-address "leoc.git@gmail.com")
-     (message-signature-file ".gmail_signature.txt")
-     (smtpmail-default-smtp-server "smtp.gmail.com")
-     (smtpmail-local-domain "gmail.com")
-     (smtpmail-smtp-server "smtp.gmail.com")
-     (starttls-use-gnutls t)
-     (smtpmail-smtp-service 587))
-    ("iCloud"
-     (mu4e-maildir-prefix "/icloud")
-     (mu4e-sent-folder "/icloud/Sent")
-     (mu4e-drafts-folder "/icloud/Drafts")
-     (mu4e-trash-folder  "/icloud/Trash")
-     (user-mail-address "a.andersen@me.com")
-     (message-signature-file ".icloud_signature.txt")
-     (smtpmail-default-smtp-server "smtp.mail.me.com")
-     (smtpmail-local-domain "me.com")
-     (smtpmail-smtp-server "smtp.mail.me.com")
-     (starttls-use-gnutls t)
-     (smtpmail-smtp-service 587))
-    ("TU Berlin"
-     (mu4e-maildir-prefix "/tuberlin")
-     (mu4e-sent-folder "/tuberlin/Sent")
-     (mu4e-drafts-folder "/tuberlin/Drafts")
-     (mu4e-trash-folder  "/tuberlin/Trash")
-     (user-mail-address "a.andersen@mailbox.tu-berlin.de")
-     (message-signature-file ".tuberlin_signature.txt")
-     (smtpmail-default-smtp-server "mail.tu-berlin.de")
-     (smtpmail-local-domain "tu-berlin.de")
-     (smtpmail-smtp-server "mail.tu-berlin.de")
-     (starttls-use-gnutls t)
-     (smtpmail-smtp-service 587))
-    ("Beloved King"
-     (mu4e-maildir-prefix "/arthurorg")
-     (mu4e-sent-folder "/arthurorg/INBOX.Sent")
-     (mu4e-drafts-folder "/arthurorg/INBOX.Drafts")
-     (mu4e-trash-folder  "/arthurorg/INBOX.Trash")
-     (user-mail-address "arthur@beloved-king.org")
-     (message-signature-file ".arthurorg_signature.txt")
-     (smtpmail-default-smtp-server "smtp.art-hur.org")
-     (smtpmail-local-domain "beloved-king.org")
-     (smtpmail-smtp-server "smtp.art-hur.org")
-     (starttls-use-gnutls t)
-     (smtpmail-smtp-service 587))))
+(defvar my-mu4e-account-alist nil
+  "Defines all mu4e accounts.")
+(load "~/.mu4e-accounts.el")
 
 (defun my-mu4e-find-account (variable value)
   "Find the first account that match VARIABLE with VALUE.
@@ -163,6 +109,17 @@ which VARIABLE value is a member of the VALUE sequence."
                             (t (equal variable-value value)))))
                 my-mu4e-account-alist)))
 
+(defun my-mu4e-account-value (account var)
+  "Find the value for a given ACCOUNT VAR."
+  (let ((account-vars (cdr (assoc account my-mu4e-account-alist)))
+        value)
+    (if account-vars
+        (mapc #'(lambda (pair)
+                  (if (eq (car pair) var)
+                      (setq value (cadr pair))))
+              account-vars))
+    value))
+
 (defun my-mu4e-set-account-variables (account)
   "Set the account variables for given email ACCOUNT."
   (let ((account-vars
@@ -178,12 +135,10 @@ which VARIABLE value is a member of the VALUE sequence."
          (account (my-mu4e-find-account 'mu4e-maildir-prefix maildir)))
     (my-mu4e-set-account-variables account)))
 
-;; (ad-update 'mu4e~get-folder)
-
 (ad-activate 'mu4e~get-folder)
 
-(defun my-mu4e-set-account ()
-  "Set the account for composing a message."
+(defun my-mu4e-set-account-for-composition ()
+  "Ask for and set the account to compose a new message with."
   (let* ((account (if mu4e-compose-parent-message
                       (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
                         (my-mu4e-find-account 'mu4e-maildir-prefix maildir))
@@ -193,7 +148,12 @@ which VARIABLE value is a member of the VALUE sequence."
                                      nil t nil nil (caar my-mu4e-account-alist)))))
     (my-mu4e-set-account-variables account)))
 
-(add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account)
+(add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account-for-composition)
+
+;; Update the awesomewm widget that displays the count of new messages
+(add-hook 'mu4e-index-updated-hook
+          '(lambda ()
+             (shell-command "echo \"update_mail_widget()\" | awesome-client")))
 
 (provide 'setup-mail)
 ;;; setup-mail.el ends here
