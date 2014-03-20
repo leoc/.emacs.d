@@ -141,4 +141,6 @@
 (define-key occur-mode-map (kbd "n") 'next-line)
 (define-key occur-mode-map (kbd "p") 'previous-line)
 
+(global-set-key (kbd "C-z") 'toggle-quotes)
+
 (provide 'setup-global-bindings)
