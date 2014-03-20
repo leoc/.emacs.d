@@ -3,6 +3,27 @@
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
+;; Pre-define cleanup-buffer-safe, in case anything goes wrong during initialization.
+(defun cleanup-buffer-safe ()
+  (interactive))
+
+;; Packages should be installed in the file in which they are configured.
+(package-refresh-contents)
+(defun ensure-package-and-require (package &optional require-package)
+  (let ((require-package (or require-package package)))
+    (unless (package-installed-p package)
+      (package-install package))
+    (require require-package)))
+
+(defun ensure-package (package)
+  (unless (package-installed-p package)
+    (package-install package)))
+
+(defun ensure-packages (packages)
+  (dolist (package packages)
+    (unless (package-installed-p package)
+      (package-install package))))
+
 ;; No splash screen please ... jeez
 (setq inhibit-startup-message t)
 
