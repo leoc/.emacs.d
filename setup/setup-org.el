@@ -6,6 +6,11 @@
 ;; POMODORO SETTINGS
 (require 'org-pomodoro)
 
+;; ORG-REVEAL
+(add-to-list 'load-path "~/.emacs.d/vendor/org-reveal")
+(setq org-reveal-root "/home/arthur/.emacs.d/vendor/org-reveal/reveal.js-2.6.1")
+(require 'ox-reveal)
+
 ;; sets the default workflow keywords and their faces
 (setq org-todo-keywords
       '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!/!)")
