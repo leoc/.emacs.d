@@ -1,7 +1,6 @@
 (require 'org)
 (require 'org-habit)
 (require 'org-helpers)
-;; (require 'org-export)
 
 ;; POMODORO SETTINGS
 (require 'org-pomodoro)
