@@ -212,7 +212,8 @@
 (defun custom-org-mode-defaults ()
   (electric-indent-mode -1)
   (org-defkey org-mode-map (kbd "M-p") 'org-metaup)
-  (org-defkey org-mode-map (kbd "M-n") 'org-metadown))
+  (org-defkey org-mode-map (kbd "M-n") 'org-metadown)
+  (org-shifttab 2))
 (add-hook 'org-mode-hook 'custom-org-mode-defaults)
 
 (setq org-ditaa-jar-path (concat vendor-dir "/ditaa0_9.jar"))
