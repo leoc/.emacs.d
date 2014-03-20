@@ -57,7 +57,7 @@
 ;; Buffer file functions
 (global-set-key (kbd "C-x t") 'touch-buffer-file)
 (global-set-key (kbd "C-x C-k") 'delete-current-buffer-file)
-(global-set-key (kbd "C-x C-r") 'rename-current-buffer-Browse)
+(global-set-key (kbd "C-x C-r") 'eval-and-replace)
 
 ;; file the kill ring
 (global-set-key (kbd "C-x C-y") 'browse-kill-ring)
