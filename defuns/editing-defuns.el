@@ -286,3 +286,37 @@ region-end is used. Adds the duplicated text to the kill ring."
   (next-line 1)
   (transpose-lines 1)
   (previous-line 1))
+
+(defun downcase-dwim ()
+  (interactive)
+  (save-excursion
+    (if (region-active-p)
+        (downcase-region)
+      (downcase-word))))
+
+(defun capitalize-dwim ()
+  (interactive)
+  (if (region-active-p)
+      (save-excursion (capitalize-region (region-beginning) (region-end)))
+    (capitalize-word 1)))
+
+(defun upcase-dwim ()
+  (interactive)
+  (if (region-active-p)
+      (save-excursion (upcase-region (region-beginning) (region-end)))
+    (upcase-word 1)))
+
+(defun downcase-dwim ()
+  (interactive)
+  (if (region-active-p)
+      (save-excursion (downcase-region (region-beginning) (region-end)))
+    (downcase-word 1)))
+
+(defun backward-transpose-words (arg)
+  "Interchange words around point, leaving point at end of them.
+With prefix arg ARG, effect is to take word before or around point
+and drag it backward past ARG other words (backward if ARG negative).
+If ARG is zero, the words around or after point and around or after mark
+are interchanged."
+  (interactive "*p")
+  (transpose-subr 'backward-word arg))
