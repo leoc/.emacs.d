@@ -103,7 +103,8 @@
 
 (setq org-refile-targets '(("~/.org/tasks.org" :level . 1)
                            ("~/.org/projects.org" :level . 1)
-                           ("~/.org/references.org" :level . 1)
+                           ("~/.org/thoughts.org" :level . 1)
+                           ("~/.org/calendar.org" :level . 1)
                            ("~/.org/business.org" :level . 1)))
 
 (setq org-capture-templates '(("r" "Remember" entry (file+headline "~/.org/inbox.org" "Inbox") "* TODO %?")
