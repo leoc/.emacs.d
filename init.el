@@ -56,7 +56,6 @@
 (require 'setup-coffeescript)
 (require 'setup-java)
 (require 'setup-ledger)
-(require 'setup-latex)
 (require 'setup-lisp)
 (require 'setup-tramp)
 (require 'setup-elisp)
