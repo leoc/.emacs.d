@@ -1,25 +1,23 @@
 ;;; window-defuns.el --- Some window helpers
-
 ;;; Commentary:
-
 ;;; Code:
 
-(defvar frame-winset-mode-line "")
-(put 'frame-winset-mode-line 'risky-local-variable t)
+;; (defvar frame-winset-mode-line "")
+;; (put 'frame-winset-mode-line 'risky-local-variable t)
 
-(unless (memq 'frame-winset-mode-line global-mode-string)
-  (setq global-mode-string (append '(frame-winset-mode-line)
-                                   global-mode-string)))
+;; (unless (memq 'frame-winset-mode-line global-mode-string)
+;;   (setq global-mode-string (append '(frame-winset-mode-line)
+;;                                    global-mode-string)))
 
-(defface frame-winset-active-face
-  '((t (:foreground "yellow" :bold 't)))
-  "Winset mode line color"
-  :group 'faces)
+;; (defface frame-winset-active-face
+;;   '((t (:foreground "yellow" :bold 't)))
+;;   "Winset mode line color"
+;;   :group 'faces)
 
-(defface frame-winset-inactive-face
-  '((t (:foreground "gray")))
-  "Winset mode line color"
-  :group 'faces)
+;; (defface frame-winset-inactive-face
+;;   '((t (:foreground "gray")))
+;;   "Winset mode line color"
+;;   :group 'faces)
 
 (defun frame-winset-update-mode-line ()
   "Set the modeline accordingly to the current state."
