@@ -1,4 +1,3 @@
-
 (ensure-packages '(git-commit-mode
                    gitconfig-mode
                    gitignore-mode))
@@ -24,7 +23,8 @@
 
 ;; full screen magit-status
 (defadvice magit-status (around magit-fullscreen activate)
-  (window-configuration-to-register :magit-fullscreen)
+  (unless (get-register :magit-fullscreen)
+      (window-configuration-to-register :magit-fullscreen))
   ad-do-it
   (delete-other-windows))
 
@@ -32,12 +32,12 @@
   "Restores the previous window configuration and kills the magit buffer"
   (interactive)
   (kill-buffer)
-  (jump-to-register :magit-fullscreen))
+  (jump-to-register :magit-fullscreen)
+  (set-register :magit-fullscreen nil))
 
 (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
 
 ;; full screen vc-annotate
-
 (defun vc-annotate-quit ()
   "Restores the previous window configuration and kills the vc-annotate buffer"
   (interactive)
@@ -50,7 +50,6 @@
        (window-configuration-to-register :vc-annotate-fullscreen)
        ad-do-it
        (delete-other-windows))
-
      (define-key vc-annotate-mode-map (kbd "q") 'vc-annotate-quit)))
 
 ;; ignore whitespace
