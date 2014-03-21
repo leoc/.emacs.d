@@ -7,7 +7,9 @@
 (require 'mu4e)
 (require 'smtpmail)
 
-(setq mu4e-get-mail-command "/home/arthur/.bin/force_mbsync -a"
+(setq send-mail-function 'smtpmail-send-it
+
+      mu4e-get-mail-command "/home/arthur/.bin/force_mbsync -a"
       mu4e-update-interval 60
       mu4e-maildir "~/.mail/"
       mu4e-my-email-addresses '("a.andersen@me.com"
@@ -59,6 +61,8 @@
       mail-user-agent 'mu4e-user-agent)
 
 (load "~/.mu4e-refile-assocs.el")
+
+;; Set custom faces
 
 ;; Smart refile locations
 (setq mu4e-refile-folder
