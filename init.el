@@ -3,27 +3,6 @@
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-;; Pre-define cleanup-buffer-safe, in case anything goes wrong during initialization.
-(defun cleanup-buffer-safe ()
-  (interactive))
-
-;; Packages should be installed in the file in which they are configured.
-(package-refresh-contents)
-(defun ensure-package-and-require (package &optional require-package)
-  (let ((require-package (or require-package package)))
-    (unless (package-installed-p package)
-      (package-install package))
-    (require require-package)))
-
-(defun ensure-package (package)
-  (unless (package-installed-p package)
-    (package-install package)))
-
-(defun ensure-packages (packages)
-  (dolist (package packages)
-    (unless (package-installed-p package)
-      (package-install package))))
-
 ;; No splash screen please ... jeez
 (setq inhibit-startup-message t)
 
@@ -50,8 +29,10 @@
 ;; Are we on a mac?
 (setq is-mac (equal system-type 'darwin))
 
-;; Install packages from MELPA
-(require 'setup-packages)
+;; Functions (load all files in defuns-dir)
+(dolist (file (directory-files defuns-dir t "\\w+"))
+  (when (file-regular-p file)
+    (load file)))
 
 ;; Give me less insanity
 (require 'setup-sane-defaults)
@@ -87,11 +68,6 @@
 
 ;; Associate extensions with their specific modes
 (require 'setup-mode-mappings)
-
-;; Functions (load all files in defuns-dir)
-(dolist (file (directory-files defuns-dir t "\\w+"))
-  (when (file-regular-p file)
-    (load file)))
 
 (require 'setup-css)
 
