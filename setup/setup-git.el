@@ -73,7 +73,7 @@
 (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)
 
 ;; Configure gist.el
-(ensure-package-and-require 'gist)
+(ensure-package-and-require 'yagist)
 
 ;; Group version controlled buffers by repository root
 (ensure-package-and-require 'ibuffer-vc)
