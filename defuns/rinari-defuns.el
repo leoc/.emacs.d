@@ -1,9 +1,6 @@
 ;;; rinari-defuns.el --- Some additional functions to enhance rinari.
-
 ;;; Commentary:
-
 ;;; Code:
-
 (defun leoc/shell-buffer-name (name)
   (concat "*" name "*"))
 

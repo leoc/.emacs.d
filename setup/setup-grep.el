@@ -1,3 +1,5 @@
+(ensure-package-and-require 'wgrep)
+
 (require 's)
 
 (defun rgrep-fullscreen (regexp &optional files dir confirm)
@@ -77,4 +79,4 @@
      ;; Use same keybinding as occur
      (setq wgrep-enable-key "e")))
 
-(provide 'setup-rgrep)
+(provide 'setup-grep)

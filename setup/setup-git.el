@@ -1,4 +1,8 @@
-(require 'magit)
+
+(ensure-packages '(git-commit-mode
+                   gitconfig-mode
+                   gitignore-mode))
+(ensure-package-and-require 'magit)
 
 ;; Load git configurations
 ;; For instance, to run magit-svn-mode in a project, do:
@@ -69,4 +73,11 @@
 
 (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)
 
-(provide 'setup-magit)
+;; Configure gist.el
+(ensure-package-and-require 'gist)
+
+;; Group version controlled buffers by repository root
+(ensure-package-and-require 'ibuffer-vc)
+(add-hook 'ibuffer-mode-hook 'ibuffer-vc-set-filter-groups-by-vc-root)
+
+(provide 'setup-git)

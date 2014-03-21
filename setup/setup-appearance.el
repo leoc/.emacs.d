@@ -33,7 +33,7 @@
 (scroll-bar-mode -1)
 
 ;; Make zooming affect frame instead of buffers
-(require 'zoom-frm)
+(ensure-package-and-require 'zoom-frm)
 
 ;; use my custom theme
 (load (expand-file-name "summered-theme.el" themes-dir))

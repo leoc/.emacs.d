@@ -37,7 +37,7 @@
         ("\\.g?[zZ]$" . "gzip -d %s")))
 
 ;; Make dired less verbose
-(require 'dired-details)
+(ensure-package-and-require 'dired-details)
 (setq-default dired-details-hidden-string "--- ")
 (dired-details-install)
 

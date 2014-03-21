@@ -41,15 +41,20 @@
   (when (file-regular-p file)
     (load file)))
 
-;; Give me less insanity
+;; TODO: the following packages should be required and installed by
+;; there respective packages.
+(ensure-packages '(alert markup popup))
+
+;; Give me less insanity and setup the editor wisely
 (require 'setup-sane-defaults)
+(require 'setup-editor)
 
 ;; Setup extensions
-(eval-after-load 'ido '(require 'setup-ido))
-(eval-after-load 'dired '(require 'setup-dired))
-(eval-after-load 'magit '(require 'setup-magit))
-(eval-after-load 'grep '(require 'setup-rgrep))
-(eval-after-load 'shell '(require 'setup-shell))
+(require 'setup-ido)
+(require 'setup-dired)
+(require 'setup-git)
+(require 'setup-grep)
+(require 'setup-shell)
 (require 'setup-org)
 (require 'setup-irc)
 (require 'setup-auto-complete)
@@ -57,58 +62,41 @@
 (require 'setup-snippets)
 (require 'setup-hippie)
 (require 'setup-speedbar)
+(require 'setup-tramp)
+(require 'setup-mail)
+
+;; Flycheck everywhere!
+(ensure-package-and-require 'flycheck)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
+;; Require regex builder to conveniently build regular expressions
+(require 're-builder)
+(setq reb-re-syntax 'string)
+
+;; In some modes it is interesting to see RGB colors directly
+(ensure-package-and-require 'rainbow-mode)
 
 ;; Setup language specific modes
 (require 'setup-programming)
 (require 'setup-cc)
-(require 'setup-javascript)
+(require 'setup-clojure)
 (require 'setup-coffeescript)
+(require 'setup-css)
+(require 'setup-cucumber)
+(require 'setup-html)
 (require 'setup-java)
+(require 'setup-javascript)
 (require 'setup-ledger)
 (require 'setup-lisp)
-(require 'setup-tramp)
-(require 'setup-elisp)
 (require 'setup-ruby)
-(require 'setup-slime)
 (require 'setup-xml)
-(require 'setup-mail)
+(ensure-package-and-require 'lua-mode)
+(ensure-package-and-require 'markdown-mode)
+(ensure-package-and-require 'puppet-mode)
+(ensure-package-and-require 'yaml-mode)
 
 ;; Associate extensions with their specific modes
 (require 'setup-mode-mappings)
-
-(require 'setup-css)
-
-(require 'flycheck)
-(add-hook 'after-init-hook #'global-flycheck-mode)
-
-;; Require packages that are not available automatically
-(require 're-builder)
-(setq reb-re-syntax 'string)
-(require 'expand-region)
-(require 'multiple-cursors)
-(require 'key-chord)
-(key-chord-mode 1)
-(require 'wgrep)
-(require 'smart-forward)
-(require 'projectile)
-(projectile-global-mode)
-
-
-;; Group those buffers by vc repository root
-(require 'ibuffer-vc)
-(add-hook 'ibuffer-mode-hook 'ibuffer-vc-set-filter-groups-by-vc-root)
-
-;; Fill column indicator
-(require 'fill-column-indicator)
-(setq fci-rule-color "#444446")
-
-;; Browse kill ring
-(require 'browse-kill-ring)
-(setq browse-kill-ring-quit-action 'save-and-restore)
-
-;; Smart M-x is smart
-(require 'smex)
-(smex-initialize)
 
 ;; Setup global key-bindings
 (require 'setup-global-bindings)

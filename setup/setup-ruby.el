@@ -1,3 +1,11 @@
+(ensure-packages '(inf-ruby
+                   robe
+                   rinari
+                   ruby-block
+                   ruby-end
+                   ruby-tools
+                   rvm))
+
 (defun custom-ruby-hook ()
   "Define a custom ruby mode hook."
   (robe-mode)

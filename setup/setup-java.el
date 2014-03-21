@@ -1,3 +1,5 @@
+(ensure-packages '(emacs-eclim))
+
 (require 'eclim)
 (require 'eclimd)
 (require 'ac-emacs-eclim-source)

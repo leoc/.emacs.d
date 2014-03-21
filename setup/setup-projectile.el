@@ -1,11 +1,14 @@
 ;;; setup-projectile.el --- Configure projectile.
 ;;; Commentary:
-;; Obvious
 ;;; Code:
+(ensure-package-and-require 'projectile)
+(require 'projectile)
+(projectile-global-mode)
 
-(setq projectile-remember-window-configs t)
-(setq projectile-switch-project-action 'projectile-dired)
-(setq projectile-indexing-method 'git)
-(setq projectile-completion-system 'ido)
+(setq projectile-remember-window-configs t
+      projectile-switch-project-action 'projectile-dired
+      projectile-indexing-method 'git
+      projectile-completion-system 'ido)
 
 (provide 'setup-projectile)
+;;; setup-projectile.el ends here

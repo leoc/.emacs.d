@@ -1,3 +1,7 @@
+;;; setup-sane-defaults.el --- Setup sane defaults.
+;;; Commentary:
+;;; code:
+
 ;; Write backup files to own directory
 (setq backup-directory-alist `((".*" . ,tmp-dir)))
 (setq auto-save-file-name-transforms `((".*" ,tmp-dir t)))
@@ -74,7 +78,16 @@
 (setq-default truncate-lines t)
 
 ;; Keep cursor away from edges when scrolling up/down
+(ensure-package 'smooth-scrolling)
 (require 'smooth-scrolling)
+
+;; make scrolling smooth
+(setq redisplay-dont-pause t
+      scroll-margin 1
+      scroll-step 1
+      scroll-conservatively 10000
+      scroll-preserve-screen-position 1)
+
 
 ;; org-mode: Don't ruin S-arrow to switch windows please (use M-+ and M-- instead to toggle)
 (setq org-replace-disputed-keys t)
@@ -85,11 +98,11 @@
 ;; Sentences do not need double spaces to end. Period.
 (set-default 'sentence-end-double-space nil)
 
+(require 'saveplace)
 ;; saveplace remembers your location in a file when saving files
 (setq save-place-file (concat user-emacs-directory "saveplace"))
 ;; activate it for all buffers
 (setq-default save-place t)
-(require 'saveplace)
 
 ;; savehist keeps track of some history
 (setq savehist-additional-variables
@@ -175,13 +188,9 @@
 (show-paren-mode t)
 (setq show-paren-style 'parenthesis)
 
-;; make scrolling smooth
-(setq redisplay-dont-pause t
-      scroll-margin 1
-      scroll-step 1
-      scroll-conservatively 10000
-      scroll-preserve-screen-position 1)
-
-(require 'smooth-scrolling)
+;; Smart M-x is smart
+(ensure-package-and-require 'smex)
+(smex-initialize)
 
 (provide 'setup-sane-defaults)
+;;; setup-sane-defaults.el ends here

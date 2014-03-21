@@ -1,4 +1,4 @@
-(require 'yasnippet)
+(ensure-package-and-require 'yasnippet)
 
 ;; Use only own snippets, do not use bundled ones
 (setq yas/snippet-dirs `(,snippets-dir))

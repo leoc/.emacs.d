@@ -1,8 +1,8 @@
 ;;; setup-mail.el --- Setup mu4e
-
 ;;; Commentary:
-
 ;;; Code:
+
+;; Require mu4e. Mu4e is installed on my archlinux system from AUR.
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
 (require 'mu4e)
 (require 'smtpmail)
