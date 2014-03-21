@@ -36,6 +36,12 @@
 ;; Are we on a mac?
 (setq is-mac (equal system-type 'darwin))
 
+;; Use cl macros like loop and defun*
+(eval-when-compile (require 'cl))
+
+;; Setup package.el and helper functions
+(require 'setup-package)
+
 ;; Functions (load all files in defuns-dir)
 (dolist (file (directory-files defuns-dir t "\\w+"))
   (when (file-regular-p file)
