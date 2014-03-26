@@ -9,12 +9,10 @@
 (require 'org-helpers)
 
 ;; Configure org-pomodoro
-(ensure-package 'org-pomodoro)
-(require 'org-pomodoro)
+(ensure-package-and-require 'org-pomodoro)
 
 ;; Configure org-reveal
-(ensure-package 'ox-reveal)
-(require 'ox-reveal)
+(ensure-package-and-require 'ox-reveal)
 (setq org-reveal-root "/home/arthur/.emacs.d/vendor/org-reveal/reveal.js-2.6.1")
 
 ;; Set the default workflow keywords and their faces
