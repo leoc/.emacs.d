@@ -250,6 +250,8 @@
 (setq org-confirm-babel-evaluate nil)
 
 ;; Configure latex classes for org-mode
+(require 'ox-koma-letter)
+
 (setq org-latex-classes
       '(("scrartcl"
          "\\documentclass{scrartcl}
@@ -262,7 +264,31 @@
          ("\\subsection{%s}" . "\\subsection*{%s}")
          ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
          ("\\paragraph{%s}" . "\\paragraph*{%s}")
-         ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+         ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+        ("velaluqa-letter"
+         "\\documentclass[a4paper,firsthead=false,enlargefirstpage=true]{scrlttr2}
+          \\setkoma
+          \[NO-DEFAULT-PACKAGES]
+          \[EXTRA]")))
+
+;; Set default letter class
+(setq org-koma-letter-default-class "velaluqa-letter")
+
+;; Use Xetex to compile latex
+(setq org-latex-pdf-process
+      '("xelatex -interaction nonstopmode -output-directory %o %f"
+        "xelatex -interaction nonstopmode -output-directory %o %f"
+        "xelatex -interaction nonstopmode -output-directory %o %f")
+      ;; Use velaluqa lco by default
+      org-koma-letter-class-option-file "/home/arthur/.velaluqa-templates/velaluqa.scrlttr2"
+      ;; Configure letter variables
+      org-koma-letter-author "Arthur Leonard Andersen"
+      org-koma-letter-signature "\\includegraphics[width=4.5cm]{~/.velaluqa-templates/sig_arthur.png} \\\\Arthur Leonard Andersen"
+      org-koma-letter-place "Berlin"
+      org-koma-letter-closing "Mit freundlichen Grüßen,"
+      org-koma-letter-special-tags-after-closing '(ps cc encl)
+      org-koma-letter-use-backaddress nil
+      org-koma-letter-subject-format 'left)
 
 (provide 'setup-org)
 
