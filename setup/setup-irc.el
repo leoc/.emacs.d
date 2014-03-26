@@ -14,7 +14,9 @@
 ;; Configure ZNC
 (ensure-package 'znc)
 (require 'znc)
-(setq znc-servers `(("arthur.vela" 8887 t ((freenode ,erc-znc-user ,erc-znc-pass)))))
+
+(setq znc-servers `(("arthur.vela" 8887 t ((freenode ,erc-freenode-user ,erc-freenode-pass)
+                                           (oftc ,erc-oftc-user ,erc-oftc-pass)))))
 
 ;; Show timestamps!
 (erc-timestamp-mode t)
