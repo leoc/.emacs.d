@@ -280,10 +280,10 @@
         "xelatex -interaction nonstopmode -output-directory %o %f"
         "xelatex -interaction nonstopmode -output-directory %o %f")
       ;; Use velaluqa lco by default
-      org-koma-letter-class-option-file "/home/arthur/.velaluqa-templates/velaluqa.scrlttr2"
+      org-koma-letter-class-option-file "/usr/share/velaluqa-templates/velaluqa.scrlttr2"
       ;; Configure letter variables
-      org-koma-letter-author "Arthur Leonard Andersen"
-      org-koma-letter-signature "\\includegraphics[width=4.5cm]{~/.velaluqa-templates/sig_arthur.png} \\\\Arthur Leonard Andersen"
+      org-koma-letter-author "Arthur Andersen"
+      org-koma-letter-signature "\\includegraphics[width=7cm]{/usr/share/velaluqa-templates/sig_arthur.png}\\\\Arthur Andersen"
       org-koma-letter-place "Berlin"
       org-koma-letter-closing "Mit freundlichen Grüßen,"
       org-koma-letter-special-tags-after-closing '(ps cc encl)
