@@ -19,3 +19,4 @@ auto-save-list
 /projectile-bookmarks.eld
 /tmp*
 *.elc
+/.cask/
