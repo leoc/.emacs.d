@@ -2,9 +2,9 @@
 (ensure-package 'paredit)
 
 ;; Configure Common LISP environment
-;; (load (expand-file-name "~/quicklisp/slime-helper.el"))
-;; (setq inferior-lisp-program "sbcl")
-;; (require 'slime)
+(load (expand-file-name "~/.quicklisp/slime-helper.el"))
+(setq inferior-lisp-program "sbcl")
+(require 'slime)
 
 ;; (add-hook 'lisp-mode-hook (lambda () (paredit-mode +1)))
 ;; (add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
