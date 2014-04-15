@@ -1,12 +1,16 @@
-(ensure-packages '(emacs-eclim))
+(ensure-package 'emacs-eclim)
 
 (require 'eclim)
 (require 'eclimd)
-(require 'ac-emacs-eclim-source)
+(require 'company-emacs-eclim)
 
-(setq eclim-executable "/home/arthur/.eclipse/org.eclipse.platform_4.2.0_1543616141/eclim")
-(setq eclimd-executable "/home/arthur/.eclipse/org.eclipse.platform_4.2.0_1543616141/eclimd")
-(custom-set-variables '(eclim-eclipse-dirs '("~/.eclipse")))
+(setq eclim-eclipse-dirs '("~/.eclipse"))
+(setq eclim-executable "/home/arthur/.eclipse/eclim")
+(setq eclim-auto-save t)
+(setq eclimd-executable "/home/arthur/.eclipse/eclimd")
+(setq eclimd-default-workspace "/home/arthur/projects")
+
+(global-eclim-mode)
 
 (define-key eclim-mode-map (kbd "C-c C-e m i") '(lambda ()
                                                   "Run maven install goal."
@@ -19,13 +23,7 @@
 
 (add-hook 'java-mode-hook '(lambda ()
                              (eclim-mode)
-                             (ac-emacs-eclim-java-setup)
-                             (set (make-local-variable 'ac-delay) 2)
-                             (setq eclim-auto-save t)
-                             (setq help-at-pt-display-when-idle t)
-                             (setq help-at-pt-timer-delay 0.1)
-                             (help-at-pt-set-timer)
-                             (setq eclim-print-debug-messages t)
+                             (company-emacs-eclim-setup)
                              ;; Adjust to the Eclipse styling.
                              (setq c-basic-offset 4
                                    tab-width 4
