@@ -41,6 +41,9 @@
 (setq-default dired-details-hidden-string "--- ")
 (dired-details-install)
 
+(add-hook 'dired-mode-hook '(lambda ()
+                              (diff-hl-dired-mode)))
+
 ;; Reload dired after making changes
 (--each '(dired-do-rename
           dired-create-directory
