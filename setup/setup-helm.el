@@ -4,7 +4,9 @@
 (ensure-packages '(helm
                    helm-dash
                    helm-projectile
-                   helm-grep))
+                   helm-google
+                   helm-swoop
+                   helm-descbinds))
 
 (require 'eww)
 
