@@ -63,7 +63,7 @@
 (require 'setup-shell)
 (require 'setup-org)
 (require 'setup-irc)
-(require 'setup-auto-complete)
+(require 'setup-auto-completion)
 (require 'setup-projectile)
 (require 'setup-snippets)
 (require 'setup-hippie)

@@ -34,7 +34,6 @@
   (turn-on-eldoc-mode)
   (remove-corresponding-elc)
   (elisp-slime-nav-mode t)
-  (ac-emacs-lisp-mode-setup)
   (rainbow-mode +1)
   (paredit-mode +1))
 

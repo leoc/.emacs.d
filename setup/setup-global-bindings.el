@@ -23,9 +23,6 @@
                            isearch-string
                          (regexp-quote isearch-string)))))))
 
-;; Auto-complete with C-tab
-(global-set-key [C-tab] 'auto-complete)
-
 ;; Expand Region
 (key-chord-define-global "pn" 'er/expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
