@@ -49,7 +49,7 @@
 
 ;; TODO: the following packages should be required and installed by
 ;; there respective packages.
-(ensure-packages '(alert markup popup))
+(ensure-packages '(alert markup popup frame-fns s f kv))
 
 ;; Give me less insanity and setup the editor wisely
 (require 'setup-sane-defaults)
