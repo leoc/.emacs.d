@@ -3,7 +3,8 @@
 ;;; Code:
 
 (ensure-package-and-require 'company)
-(global-company-mode 1)
+
+(add-hook 'after-init-hook 'global-company-mode)
 
 (global-set-key [C-tab] 'company-complete)
 
