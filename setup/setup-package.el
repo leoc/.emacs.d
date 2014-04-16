@@ -4,8 +4,10 @@
 (add-to-list 'package-archives '("org"   . "http://orgmode.org/elpa/") t)
 (package-initialize)
 
+(unless (file-exists-p package-user-dir)
+  (package-refresh-contents))
+
 ;; Packages should be installed in the file in which they are configured.
-(package-refresh-contents)
 (defun ensure-package-and-require (package &optional require-package)
   (let ((require-package (or require-package package)))
     (unless (package-installed-p package)
