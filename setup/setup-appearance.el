@@ -81,13 +81,4 @@
 (add-hook 'after-make-frame-functions '(lambda (frame) (transparency 95 frame)))
 (add-hook 'after-init-hook '(lambda () (transparency 95)))
 
-;; diff-hl highlights changes in the buffer
-(ensure-package-and-require 'diff-hl)
-(global-diff-hl-mode)
-(defadvice git-commit-commit (after git-commit-commit-after activate)
-  (dolist (buffer (buffer-list))
-    (with-current-buffer buffer
-      (when diff-hl-mode
-        (diff-hl-update)))))
-
 (provide 'setup-appearance)
