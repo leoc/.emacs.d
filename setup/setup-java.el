@@ -48,4 +48,9 @@
                              (local-set-key (kbd "M-.") 'eclim-java-find-declaration)
                              (local-set-key (kbd "M-,") 'pop-tag-mark)))
 
+(ensure-package 'android-mode)
+(require 'android-mode)
+
+(setq android-mode-key-prefix "\C-c \C-p")
+
 (provide 'setup-java)
