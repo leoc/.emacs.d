@@ -52,7 +52,6 @@
                                                                       (region-end))
                                                          (deactivate-mark)))))
 (define-key emacs-lisp-mode-map (kbd "C-c C-e") 'pp-last-sexp)
-(define-key emacs-lisp-mode-map (kbd "C-x t") 'ert-silently)
-
+(define-key emacs-lisp-mode-map (kbd "C-x C-t") 'ert-silently)
 
 (provide 'setup-lisp)
