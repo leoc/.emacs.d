@@ -5,10 +5,10 @@
 (require 'company-emacs-eclim)
 
 (setq eclim-eclipse-dirs '("~/.eclipse"))
-(setq eclim-executable "/home/arthur/.eclipse/eclim")
+(setq eclim-executable (expand-file-name "~/.eclipse/eclim"))
 (setq eclim-auto-save t)
-(setq eclimd-executable "/home/arthur/.eclipse/eclimd")
-(setq eclimd-default-workspace "/home/arthur/projects")
+(setq eclimd-executable (expand-file-name "~/.eclipse/eclimd"))
+(setq eclimd-default-workspace (expand-file-name "~/projects"))
 
 (global-eclim-mode)
 

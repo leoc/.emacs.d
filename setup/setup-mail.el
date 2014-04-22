@@ -9,7 +9,7 @@
 
 (setq send-mail-function 'smtpmail-send-it
 
-      mu4e-get-mail-command "/home/arthur/.bin/force_mbsync -a"
+      mu4e-get-mail-command (expand-file-name "~/.bin/force_mbsync -a")
       mu4e-update-interval 60
       mu4e-maildir "~/.mail/"
       mu4e-my-email-addresses '("a.andersen@me.com"

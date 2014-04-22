@@ -13,7 +13,7 @@
 
 ;; Configure org-reveal
 (ensure-package-and-require 'ox-reveal)
-(setq org-reveal-root "/home/arthur/.emacs.d/vendor/org-reveal/reveal.js-2.6.1")
+(setq org-reveal-root (expand-file-name ".emacs.d/vendor/org-reveal/reveal.js-2.6.1" user-emacs-directory))
 
 ;; Set the default workflow keywords and their faces
 (setq org-todo-keywords
