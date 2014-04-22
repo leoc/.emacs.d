@@ -1,0 +1,6 @@
+[submodule "vendor/org-helpers"]
+	path = vendor/org-helpers
+	url = https://github.com/leoc/org-helpers.el.git
+[submodule "vendor/summered-theme"]
+	path = vendor/summered-theme
+	url = https://github.com/leoc/summered-emacs.git

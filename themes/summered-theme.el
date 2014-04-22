@@ -1,1 +1,0 @@
-../../projects/summered-emacs/summered-theme.el

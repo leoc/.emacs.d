@@ -36,7 +36,8 @@
 (ensure-package-and-require 'zoom-frm)
 
 ;; use my custom theme
-(load (expand-file-name "summered-theme.el" themes-dir))
+(add-to-list 'load-path (expand-file-name "summered-theme" vendor-dir))
+(load (expand-file-name "summered-theme/summered-theme.el" vendor-dir))
 (load-theme 'summered t)
 
 ;; Customize the mode line

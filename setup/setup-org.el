@@ -6,6 +6,8 @@
 (ensure-packages '(org org-plus-contrib))
 (require 'org)
 (require 'org-habit)
+
+(add-to-list 'load-path (expand-file-name "org-helpers" vendor-dir))
 (require 'org-helpers)
 
 ;; Configure org-pomodoro

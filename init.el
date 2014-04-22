@@ -7,9 +7,6 @@
 (setq inhibit-startup-message t)
 
 ;; Set the dir variables used by these init scripts
-(defvar themes-dir (expand-file-name "themes" user-emacs-directory)
-  "Specifies where the themes can be found.")
-(add-to-list 'load-path themes-dir)
 (defvar vendor-dir (expand-file-name "vendor" user-emacs-directory)
   "Specifies where vendored libs can be found.")
 (add-to-list 'load-path vendor-dir)
