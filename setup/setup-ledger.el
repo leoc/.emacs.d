@@ -1,5 +1,5 @@
 ;; Ledger mode
-(add-to-list 'load-path (expand-file-name "ledger" vendor-dir))
+(ensure-package 'ledger-mode)
 (require 'ledger)
 
 (provide 'setup-ledger)
