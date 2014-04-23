@@ -252,7 +252,7 @@
 (setq org-confirm-babel-evaluate nil)
 
 ;; Configure velaluqa templates
-(load "~/velaluqa/documents/templates/emacs.el")
+(load "~/projects/velaluqa/documents/templates/emacs.el")
 
 (provide 'setup-org)
 
