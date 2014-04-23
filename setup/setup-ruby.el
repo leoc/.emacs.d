@@ -9,7 +9,7 @@
 (defun custom-ruby-hook ()
   "Define a custom ruby mode hook."
   (robe-mode)
-  (push 'ac-source-robe ac-sources)
+  (push 'company-robe company-backends)
   (set (make-local-variable 'ac-delay) 2))
 
 (add-hook 'ruby-mode-hook 'custom-ruby-hook)
