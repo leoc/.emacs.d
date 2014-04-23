@@ -115,8 +115,10 @@
 
 ;; Configure capturing
 (setq org-capture-templates '(("r" "Remember" entry (file+headline "~/.org/inbox.org" "Inbox") "* TODO %?")
+                              ("c" "Phone call" entry (file+headline "~/.org/inbox.org" "Inbox") "* %u %?" :clock-in t :clock-resume t)
                               ("j" "Journal Entry" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))))
 (define-key global-map "\C-cr" (lambda () (interactive) (org-capture nil "r")))
+(define-key global-map "\C-cc" (lambda () (interactive) (org-capture nil "c")))
 (define-key global-map "\C-cj" (lambda () (interactive) (org-capture nil "j")))
 
 ;; Resume clocking task when emacs is restarted
