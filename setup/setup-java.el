@@ -63,6 +63,6 @@
              ('ant 'android-ant-debug-install)
              ('maven 'android-maven-install-android-deploy))))
 
-(push '("\t" . android-build-debug-and-install) android-mode-keys)
+(define-key android-mode-map (kbd "C-c C-p C-i") 'android-build-debug-and-install)
 
 (provide 'setup-java)
