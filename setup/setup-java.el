@@ -53,14 +53,14 @@
 
 (setq android-mode-key-prefix "\C-c \C-p")
 
-(android-defun-ant-task "debug installd")
+(android-defun-ant-task "debug install")
 (android-defun-maven-task "install android:deploy")
 
 (defun android-build-debug-and-install ()
   "Build the application in a debug mode."
   (interactive)
   (funcall (case android-mode-builder
-             ('ant 'android-ant-debug-installd)
+             ('ant 'android-ant-debug-install)
              ('maven 'android-maven-install-android-deploy))))
 
 (push '("\t" . android-build-debug-and-install) android-mode-keys)
