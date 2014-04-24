@@ -54,11 +54,19 @@
       user-full-name "Arthur Leonard Andersen"
       mu4e-headers-date-format "%d.%b %Y %H:%M" ; date format
 
-      mu4e-html2text-command nil
+      mu4e-html2text-command 'my-html2text
 
       message-kill-buffer-on-exit t
       message-send-mail-function 'smtpmail-send-it
       mail-user-agent 'mu4e-user-agent)
+
+(defun my-html2text ()
+  "Replacement for standard html2text using shr."
+  (interactive)
+  (let ((dom (libxml-parse-html-region (point-min) (point-max))))
+    (erase-buffer)
+    (shr-insert-document dom)
+    (goto-char (point-min))))
 
 (load "~/.mu4e-refile-assocs.el")
 
