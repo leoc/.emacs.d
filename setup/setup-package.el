@@ -7,14 +7,23 @@
 (unless (file-exists-p package-user-dir)
   (package-refresh-contents))
 
+(defvar package-refreshed-contents-this-run nil)
+
+(defadvice package-refresh-contents (around package-refresh-contents-conditionized)
+  (unless package-refreshed-contents-this-run
+    (progn
+      ad-do-it
+      (setq package-refreshed-contents-this-run t))))
+(ad-activate 'package-refresh-contents)
+
 ;; Packages should be installed in the file in which they are configured.
 (defun ensure-package-and-require (package &optional require-package)
   (let ((require-package (or require-package package)))
-    (unless (package-installed-p package)
-      (package-install package))
+    (ensure-package package)
     (require require-package)))
 
 (defun ensure-package (package)
+  (package-refresh-contents)
   (unless (package-installed-p package)
     (package-install package)))
 
