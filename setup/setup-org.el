@@ -228,8 +228,6 @@
   (org-shifttab 2))
 (add-hook 'org-mode-hook 'custom-org-mode-defaults)
 
-(require 'org-exp-blocks)
-
 (setq org-ditaa-jar-path (concat vendor-dir "/ditaa0_9.jar"))
 
 (org-babel-do-load-languages
