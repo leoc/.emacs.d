@@ -11,7 +11,6 @@
 
 (defun custom-css-mode-hook ()
   "Set custom css defaults for SCSS and CSS mode."
-  (ac-css-mode-setup)
   (setq css-indent-offset 2)
   ;; do not compile on save
   (setq scss-compile-at-save nil)
