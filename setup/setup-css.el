@@ -5,7 +5,7 @@
 
 ;;; Code:
 
-(ensure-packages '(scss-mode sass-mode))
+(ensure-packages '(scss-mode sass-mode stylus-mode))
 (require 'css-mode)
 (require 'scss-mode)
 
@@ -18,9 +18,11 @@
 
 (add-hook 'css-mode-hook 'custom-css-mode-hook)
 (add-hook 'scss-mode-hook 'custom-css-mode-hook)
+(add-hook 'stylus-mode-hook 'custom-css-mode-hook)
 
 (add-to-list 'yank-indent-modes 'css-mode)
 (add-to-list 'yank-indent-modes 'scss-mode)
+(add-to-list 'yank-indent-modes 'stylus-mode)
 
 (provide 'setup-css)
 
