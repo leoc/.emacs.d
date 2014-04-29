@@ -31,7 +31,8 @@
                        ("date:7d..now AND NOT flag:trashed"     "Last 7 days"          ?w)
                        ("mime:image/*"                          "Messages with images" ?p))
 
-      mu4e-headers-fields '((:maildir . 20)
+      mu4e-headers-fields '(
+                            ; (:maildir . 20)
                             (:date    . 19)
                             (:flags   . 6)
                             (:from    . 28)
