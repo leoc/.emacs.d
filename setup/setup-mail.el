@@ -144,9 +144,10 @@ which VARIABLE value is a member of the VALUE sequence."
       (error (format "No email account found: %S" account)))))
 
 (defadvice mu4e~get-folder (before load-corresponding-account (foldervar msg))
-  (let* ((maildir (mu4e-message-field msg :maildir))
-         (account (my-mu4e-find-account 'mu4e-maildir-prefix maildir)))
-    (my-mu4e-set-account-variables account)))
+  (when msg
+    (let* ((maildir (mu4e-message-field msg :maildir))
+           (account (my-mu4e-find-account 'mu4e-maildir-prefix maildir)))
+      (my-mu4e-set-account-variables account))))
 
 (ad-activate 'mu4e~get-folder)
 
@@ -162,11 +163,6 @@ which VARIABLE value is a member of the VALUE sequence."
     (my-mu4e-set-account-variables account)))
 
 (add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account-for-composition)
-
-;; Update the awesomewm widget that displays the count of new messages
-(add-hook 'mu4e-index-updated-hook
-          '(lambda ()
-             (shell-command "echo \"update_mail_widget()\" | awesome-client")))
 
 (provide 'setup-mail)
 ;;; setup-mail.el ends here
