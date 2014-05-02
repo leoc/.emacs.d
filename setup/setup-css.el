@@ -22,7 +22,6 @@
 
 (add-to-list 'yank-indent-modes 'css-mode)
 (add-to-list 'yank-indent-modes 'scss-mode)
-(add-to-list 'yank-indent-modes 'stylus-mode)
 
 (provide 'setup-css)
 
