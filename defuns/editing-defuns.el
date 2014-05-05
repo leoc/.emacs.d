@@ -57,6 +57,9 @@ region-end is used. Adds the duplicated text to the kill ring."
                             js2-mode)
   "Modes in which to indent regions that are yanked (or yank-popped)")
 
+(defvar yank-indent-ignore-modes '(coffee-mode)
+  "Modes in which not to indent regions that are yanked (or yank-popped)")
+
 (defvar yank-advised-indent-threshold 1000
   "Threshold (# chars) over which indentation does not automatically occur.")
 
@@ -68,14 +71,16 @@ region-end is used. Adds the duplicated text to the kill ring."
 (defadvice yank (after yank-indent activate)
   "If current mode is one of 'yank-indent-modes, indent yanked text (with prefix arg don't indent)."
   (if (and (not (ad-get-arg 0))
-           (--any? (derived-mode-p it) yank-indent-modes))
+           (and (--any? (derived-mode-p it) yank-indent-modes)
+                (not (--any? (derived-mode-p it) yank-indent-ignore-modes))))
       (let ((transient-mark-mode nil))
         (yank-advised-indent-function (region-beginning) (region-end)))))
 
 (defadvice yank-pop (after yank-pop-indent activate)
   "If current mode is one of 'yank-indent-modes, indent yanked text (with prefix arg don't indent)."
   (if (and (not (ad-get-arg 0))
-           (member major-mode yank-indent-modes))
+           (and (member major-mode yank-indent-modes)
+                (not (member major-mode yank-indent-ignore-modes))))
       (let ((transient-mark-mode nil))
         (yank-advised-indent-function (region-beginning) (region-end)))))
 
