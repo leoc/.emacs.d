@@ -126,6 +126,17 @@
 (org-clock-persistence-insinuate)
 (setq require-final-newline t)
 
+;; Save buffer when clocks begin or end
+(add-hook 'org-clock-in-hook '(lambda ()
+                                (save-excursion
+                                  (org-clock-goto)
+                                  (save-buffer))))
+
+(add-hook 'org-clock-out-hook '(lambda ()
+                                 (save-excursion
+                                   (org-clock-goto)
+                                   (save-buffer))))
+
 (custom-set-faces
  '(org-mode-line-clock ((t (:foreground "red" :box (:line-width -1 :style released-button)))) t))
 
