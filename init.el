@@ -58,6 +58,7 @@
 (require 'setup-git)
 (require 'setup-grep)
 (require 'setup-shell)
+(require 'setup-helm)
 (require 'setup-org)
 (require 'setup-auto-completion)
 (require 'setup-projectile)
