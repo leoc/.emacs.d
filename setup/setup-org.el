@@ -127,15 +127,14 @@
 (setq require-final-newline t)
 
 ;; Save buffer when clocks begin or end
-(add-hook 'org-clock-in-hook '(lambda ()
-                                (save-excursion
-                                  (org-clock-goto)
-                                  (save-buffer))))
+(defun my-save-on-clocking-command ()
+  (save-excursion
+    (save-window-excursion
+      (org-clock-goto)
+      (save-buffer))))
 
-(add-hook 'org-clock-out-hook '(lambda ()
-                                 (save-excursion
-                                   (org-clock-goto)
-                                   (save-buffer))))
+(add-hook 'org-clock-in-hook 'my-save-on-clocking-command)
+(add-hook 'org-clock-out-hook 'my-save-on-clocking-command)
 
 (custom-set-faces
  '(org-mode-line-clock ((t (:foreground "red" :box (:line-width -1 :style released-button)))) t))
