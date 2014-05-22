@@ -59,7 +59,6 @@
 (require 'setup-grep)
 (require 'setup-shell)
 (require 'setup-org)
-(require 'setup-irc)
 (require 'setup-auto-completion)
 (require 'setup-projectile)
 (require 'setup-snippets)
