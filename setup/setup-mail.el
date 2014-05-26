@@ -47,7 +47,7 @@
       mu4e-view-image-max-width 800
 
       ;; use 'fancy' non-ascii characters in various places in mu4e
-      mu4e-use-fancy-chars nil
+      mu4e-use-fancy-chars t
 
       ;; save attachment to my desktop (this can also be a function)
       mu4e-attachment-dir "~/Downloads"
@@ -60,6 +60,26 @@
       message-kill-buffer-on-exit t
       message-send-mail-function 'smtpmail-send-it
       mail-user-agent 'mu4e-user-agent)
+
+(setq mu4e-headers-draft-mark     (purecopy '("D" . "D")))
+(setq mu4e-headers-flagged-mark   (purecopy '("F" . "F")))
+(setq mu4e-headers-new-mark       (purecopy '("N" . "N")))
+(setq mu4e-headers-passed-mark    (purecopy '("P" . "P")))
+(setq mu4e-headers-replied-mark   (purecopy '("R" . "R")))
+(setq mu4e-headers-seen-mark      (purecopy '("S" . "S")))
+(setq mu4e-headers-trashed-mark   (purecopy '("T" . "T")))
+(setq mu4e-headers-attach-mark    (purecopy '("a" . "a")))
+(setq mu4e-headers-encrypted-mark (purecopy '("x" . "x")))
+(setq mu4e-headers-signed-mark    (purecopy '("s" . "s")))
+(setq mu4e-headers-unread-mark    (purecopy '("u" . "u")))
+
+;; thread prefix marks
+(setq mu4e-headers-has-child-prefix    (purecopy '("+"  . "└┬")))
+(setq mu4e-headers-empty-parent-prefix (purecopy '("-"  . "─")))
+(setq mu4e-headers-first-child-prefix  (purecopy '("\\" . "├")))
+(setq mu4e-headers-duplicate-prefix    (purecopy '("="  . "═")))
+(setq mu4e-headers-default-prefix       (purecopy '("|"  . "├")))
+
 
 (defun my-html2text ()
   "Replacement for standard html2text using shr."
