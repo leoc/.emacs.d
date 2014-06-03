@@ -12,7 +12,9 @@
       mu4e-get-mail-command (expand-file-name "~/.bin/force_mbsync -a")
       mu4e-update-interval 60
       mu4e-maildir "~/.mail/"
-      mu4e-my-email-addresses '("a.andersen@me.com"
+      mu4e-my-email-addresses '("aandersen@velalu.qa"
+                                "info@velalu.qa"
+                                "a.andersen@me.com"
                                 "leoc.git@gmail.com"
                                 "arthur@beloved-king.org")
       mu4e-use-fancy-chars t
