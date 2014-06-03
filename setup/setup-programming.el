@@ -2,10 +2,6 @@
 (require 'which-func)
 (which-func-mode 1)
 
-;; Fill column indicator
-(ensure-package-and-require 'fill-column-indicator)
-(setq fci-rule-color "#444446")
-
 ;; diff-hl highlights changes in the buffer
 (ensure-package-and-require 'diff-hl)
 (defadvice git-commit-commit (after git-commit-commit-after activate)
