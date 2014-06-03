@@ -31,12 +31,12 @@
                        ("date:7d..now AND NOT flag:trashed"     "Last 7 days"          ?w)
                        ("mime:image/*"                          "Messages with images" ?p))
 
-      mu4e-headers-fields '((:maildir . 30)
-                            (:date          . 19)
-                            (:flags         . 6)
-                            (:from-or-to    . 28)
-                            (:mailing-list  . 20)
-                            (:subject       . nil))
+      mu4e-headers-fields '((:maildir      . 30)
+                            (:date         . 19)
+                            (:flags        . 6)
+                            (:from-or-to   . 28)
+                            (:mailing-list . 20)
+                            (:subject      . nil))
 
       ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
       mu4e-sent-messages-behavior 'delete
