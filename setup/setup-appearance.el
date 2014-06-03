@@ -79,7 +79,10 @@
                    (selected-frame))))
     (set-frame-parameter frame 'alpha value)))
 
-(add-hook 'after-make-frame-functions '(lambda (frame) (transparency 95 frame)))
-(add-hook 'after-init-hook '(lambda () (transparency 95)))
+(defun set-frame-transparency (&optional frame)
+  (transparency 98 frame))
+
+(add-hook 'after-make-frame-functions 'set-frame-transparency)
+(add-hook 'after-init-hook 'set-frame-transparency)
 
 (provide 'setup-appearance)
