@@ -114,13 +114,15 @@
                            ("~/.org/business.org" :level . 1)))
 
 ;; Configure capturing
-(setq org-capture-templates '(("r" "Remember" entry (file+headline "~/.org/inbox.org" "Inbox") "* TODO %?")
-                              ("c" "Phone call" entry (file+headline "~/.org/inbox.org" "Inbox") "* %u %?" :clock-in t :clock-resume t)
+(setq org-capture-templates '(("r" "Remember" entry (file+headline "~/.org/refile.org" "Inbox") "* TODO %?\nADDED: %U")
+                              ("c" "Clockable Interruption" entry (file+headline "~/.org/refile.org" "Inbox") "* %u %?\nADDED: %U" :clock-in t :clock-resume t)
                               ("f" "Food" entry (file+headline "~/.org/track_food.org" "Food") "* %u %?")
-                              ("j" "Journal Entry" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))))
+                              ("j" "Journal Entry" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))
+                              ("m" "Respond to mail" entry (file "~/.org/refile.org") "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n\n" :clock-in t :clock-resume t :immediate-finish t)))
 (define-key global-map "\C-cr" (lambda () (interactive) (org-capture nil "r")))
 (define-key global-map "\C-cc" (lambda () (interactive) (org-capture nil "c")))
 (define-key global-map "\C-cj" (lambda () (interactive) (org-capture nil "j")))
+(define-key global-map "\C-cm" (lambda () (interactive) (org-capture nil "m")))
 
 ;; Resume clocking task when emacs is restarted
 (org-clock-persistence-insinuate)
@@ -264,6 +266,53 @@
 
 ;; Configure velaluqa templates
 (load "~/projects/velaluqa/documents/templates/emacs.el")
+
+;; Store links from mu4e
+(require 'org-mu4e)
+
+(defun org-mu4e-store-link ()
+  "Store a link to a mu4e message or query."
+  (cond
+   ;; storing links to queries
+   ((eq major-mode 'mu4e-headers-mode)
+    (let* ((query (mu4e-last-query))
+           desc link)
+      (org-store-link-props :type "mu4e" :query query)
+      (setq
+       desc (concat "mu4e:query:" query)
+       link desc)
+      (org-add-link-props :link link :description desc)
+      link))
+   ;; storing links to messages
+   ((eq major-mode 'mu4e-view-mode)
+    (org-mu4e-store-message-link))))
+
+(defun org-mu4e-store-message-link ()
+  "Store a link to a mu4e message either in headers or message buffer."
+  (let* ((msg  (mu4e-message-at-point))
+         (msgid   (or (plist-get msg :message-id) "<none>"))
+         (from (car (car (mu4e-message-field msg :from))))
+         (to (car (car (mu4e-message-field msg :to))))
+         (subject (mu4e-message-field msg :subject))
+         link)
+
+    (org-store-link-props
+     :type "mu4e"
+     :from from
+     :link link
+     :to to
+     :subject subject
+     :message-id msgid)
+    (setq link (concat "mu4e:msgid:" msgid))
+    (org-add-link-props
+     :link link
+     :description (funcall org-mu4e-link-desc-func msg))
+
+    link))
+
+(org-add-link-type "mu4e" 'org-mu4e-open)
+;; Do not link queries. Store links to the message at point!
+(add-hook 'org-store-link-functions 'org-mu4e-store-message-link)
 
 (provide 'setup-org)
 
