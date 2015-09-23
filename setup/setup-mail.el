@@ -51,6 +51,8 @@
       mu4e-view-show-images t
       mu4e-view-image-max-width 800
 
+      mu4e-user-mail-address-list mu4e-my-email-addresses
+      mu4e-compose-dont-reply-to-self t
       ;; use 'fancy' non-ascii characters in various places in mu4e
       mu4e-use-fancy-chars t
 
