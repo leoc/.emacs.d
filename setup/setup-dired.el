@@ -57,5 +57,6 @@
 ;; Delete with C-x C-k to match file buffers and magit
 (define-key dired-mode-map (kbd "C-x C-k") 'dired-do-delete)
 (define-key dired-mode-map (kbd "C-o") 'open-in-external-app)
+(define-key dired-mode-map (kbd "C-c C-o") 'dired-omit-mode)
 
 (provide 'setup-dired)
