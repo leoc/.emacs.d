@@ -122,10 +122,13 @@
       org-fast-tag-selection-single-key 'expert
       ;; Set refile targets
       org-refile-targets '(("~/.org/tasks.org" :level . 1)
-                           ("~/.org/projects.org" :level . 1)
+                           ("~/.org/_personal.org" :level . 1)
+                           ("~/.org/_sideprojects.org" :level . 2)
+                           ("~/.org/_business_velaluqa.org" :maxlevel . 2)
+                           ("~/.org/_business_crowdcat.org" :maxlevel . 2)
+                           ("~/.org/_business_personal.org" :maxlevel . 2)
                            ("~/.org/thoughts.org" :level . 1)
-                           ("~/.org/calendar.org" :level . 1)
-                           ("~/.org/business.org" :level . 1)))
+                           ("~/.org/calendar.org" :level . 1)))
 
 ;; Configure capturing
 (setq org-capture-templates '(("r" "Remember" entry (file+headline "~/.org/refile.org" "Inbox") "* TODO %?\nADDED: %U")
