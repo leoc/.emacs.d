@@ -1,0 +1,8 @@
+(defun org-clock-to-decimal (time)
+  (when (string-match-p "^\\*\\(.*\\)\\*$" time)
+    (setq time (substring time 1 -1)))
+  (let* ((time (s-split ":" time))
+         (hours (string-to-number (nth 0 time)))
+         (minutes (string-to-number (nth 1 time)))
+         (decimal (/ (+ (* hours 60.0) minutes) 60.0)))
+    (format "%0.2f" (/ (ceiling (* decimal 100.0)) 100.0))))
