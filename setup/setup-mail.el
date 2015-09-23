@@ -44,7 +44,7 @@
                             (:subject      . nil))
 
       ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-      mu4e-sent-messages-behavior 'delete
+      mu4e-sent-messages-behavior 'sent
       mu4e-confirm-quit nil
 
       ;; Try to display images in mu4e
