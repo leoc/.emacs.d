@@ -113,13 +113,11 @@
 (global-set-key (kbd "C-c g") 'search-google)
 (global-set-key (kbd "C-c C-g") 'search-dict)
 (global-set-key (kbd "C-c n") 'cleanup-buffer)
-(global-set-key (kbd "C-c f") 'recentf-ido-find-files)
 (global-set-key (kbd "C-c i") 'ido-goto-symbol)
 (global-set-key (kbd "C-M-\\") 'ido-goto-symbol)
 (global-set-key (kbd "C-c u") 'open-url-in-buffer)
 (global-set-key (kbd "C-c C-r") 'eval-and-replace)
 (global-set-key (kbd "C-c C-c") 'eval-region)
-(global-set-key (kbd "C-c s") 'swap-windows)
 (global-set-key (kbd "C-c d") 'duplicate-current-line-or-region)
 (global-set-key (kbd "C-c h") 'helm-projectile)
 
