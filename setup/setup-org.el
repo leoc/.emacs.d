@@ -360,6 +360,17 @@
   (leoc/insert-created-timestamp))
 ;; Make it active
 (ad-activate 'org-insert-todo-heading)
+
+(require 'org-crypt)
+(org-crypt-use-before-save-magic)
+(setq org-tags-exclude-from-inheritance (quote ("crypt")))
+;; GPG key to use for encryption
+;; Either the Key ID or set to nil to use symmetric encryption.
+(setq org-crypt-key "id_rsa")
+
+(require 'epa-file)
+(epa-file-enable)
+
 (provide 'setup-org)
 
 ;;; setup-org.el ends here
