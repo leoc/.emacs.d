@@ -54,6 +54,13 @@
                              "~/.org/_business_personal.org_archive"
                              "~/.org/calendar.org"))
 
+(defun org-clocktable-indent-string (level)
+  (if (= level 1) ""
+    (let ((str " "))
+      (dotimes (k (1- level) str)
+        ;;      (setq str (concat "\\emsp" str))))))
+        (setq str (concat "__" str))))))
+
 ;; Configure basic org-mode
 (setq org-startup-indented t
       org-log-done t
