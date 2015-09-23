@@ -24,14 +24,11 @@
                          (regexp-quote isearch-string)))))))
 
 ;; Expand Region
-(key-chord-define-global "pn" 'er/expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 (global-set-key (kbd "C-M-m") 'er/expand-region)
 
 ;; Multiple Cursors
-(key-chord-define-global "nk" 'mc/mark-next-like-this)
 (global-set-key (kbd "M-n") 'mc/mark-next-like-this)
-(key-chord-define-global "kp" 'mc/mark-previous-like-this)
 (global-set-key (kbd "M-p") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c m m") 'mc/edit-lines)
 (global-set-key (kbd "C-c m e") 'mc/edit-beginnings-of-lines)
