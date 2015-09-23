@@ -15,6 +15,8 @@
 (add-to-list 'load-path defuns-dir)
 (defvar backups-dir (expand-file-name "backups" user-emacs-directory)
   "Specifies the directory to save backups in.")
+(defvar auto-saves-dir (expand-file-name "auto-saves" user-emacs-directory)
+  "Specifies the directory to save auto-saves in.")
 (defvar setup-dir (expand-file-name "setup" user-emacs-directory)
   "Specifies the directory with the configuration files.")
 (add-to-list 'load-path setup-dir)
