@@ -247,6 +247,8 @@
          ((org-agenda-overriding-header "Waiting and Postponed Tasks")
           (org-agenda-skip-function '(oh/agenda-skip :subtree-if '(project habit)))))))
 
+(setq org-habit-show-done-always-green t)
+
 (defun custom-org-mode-defaults ()
   "Executed as org-mode-hook."
   (electric-indent-mode -1)
