@@ -66,7 +66,12 @@
 
       message-kill-buffer-on-exit t
       message-send-mail-function 'smtpmail-send-it
-      mail-user-agent 'mu4e-user-agent)
+      mail-user-agent 'mu4e-user-agent
+
+      ;; Remove signatures
+      message-signature ""
+      mu4e-compose-signature-auto-include t
+      mu4e-compose-signature "")
 
 (setq mu4e-headers-draft-mark     (purecopy '("D" . "D")))
 (setq mu4e-headers-flagged-mark   (purecopy '("F" . "F")))
