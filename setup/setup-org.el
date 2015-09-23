@@ -342,6 +342,24 @@
 (require 'org-contacts)
 (setq org-contacts-files '("/home/arthur/.org/contacts.org"))
 
+(require 'org-expiry)
+
+(setq org-expiry-created-property-name "CREATED"
+      org-expiry-inactive-timestamps t)
+
+(defun leoc/insert-created-timestamp()
+  "Insert a CREATED property using org-expiry.el for TODO entries"
+  (org-expiry-insert-created)
+  (org-back-to-heading)
+  (org-end-of-line))
+
+;; Whenever a TODO entry is created, I want a timestamp
+;; Advice org-insert-todo-heading to insert a created timestamp using org-expiry
+(defadvice org-insert-todo-heading (after leoc/created-timestamp-advice activate)
+  "Insert a CREATED property using org-expiry.el for TODO entries."
+  (leoc/insert-created-timestamp))
+;; Make it active
+(ad-activate 'org-insert-todo-heading)
 (provide 'setup-org)
 
 ;;; setup-org.el ends here
