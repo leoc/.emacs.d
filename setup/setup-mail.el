@@ -2,6 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 
+
+(defvar my-mu4e-account-alist nil
+  "Defines all mu4e accounts.")
+(load "~/.mu4e-accounts.el")
+(load "~/.mu4e-refile-assocs.el")
+
 ;; Require mu4e. Mu4e is installed on my archlinux system from AUR.
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
 (require 'mu4e)
