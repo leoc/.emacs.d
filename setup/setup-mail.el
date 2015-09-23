@@ -15,7 +15,7 @@
 
 (setq send-mail-function 'smtpmail-send-it
 
-      mu4e-get-mail-command (expand-file-name "~/.bin/force_mbsync -a")
+      mu4e-get-mail-command "mbsync -a"
       mu4e-update-interval 60
 
       mu4e-maildir "/home/arthur/.mail/"
