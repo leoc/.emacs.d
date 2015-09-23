@@ -57,7 +57,7 @@
       mu4e-use-fancy-chars t
 
       ;; save attachment to my desktop (this can also be a function)
-      mu4e-attachment-dir "~/Downloads"
+      mu4e-attachment-dir "~/Attachments"
 
       user-full-name "Arthur Leonard Andersen"
       mu4e-headers-date-format "%d.%b %Y %H:%M" ; date format
