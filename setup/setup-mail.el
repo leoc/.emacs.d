@@ -194,5 +194,8 @@ which VARIABLE value is a member of the VALUE sequence."
 
 (add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account-for-composition)
 
+(add-hook 'mu4e-compose-mode-hook 'epa-mail-mode)
+(add-hook 'mu4e-view-mode-hook 'epa-mail-mode)
+
 (provide 'setup-mail)
 ;;; setup-mail.el ends here
