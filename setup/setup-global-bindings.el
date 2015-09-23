@@ -94,14 +94,16 @@
 (global-set-key (kbd "M-s S") 'rgrep-fullscreen)
 
 ;; Jump to my org files easily
-(define-key global-map "\C-coi" '(lambda () (interactive) (find-file "~/.org/inbox.org")))
+(define-key global-map "\C-cor" '(lambda () (interactive) (find-file "~/.org/refile.org")))
 (define-key global-map "\C-cos" '(lambda () (interactive) (find-file "~/.org/someday.org")))
 (define-key global-map "\C-cot" '(lambda () (interactive) (find-file "~/.org/tasks.org")))
-(define-key global-map "\C-cop" '(lambda () (interactive) (find-file "~/.org/projects.org")))
 (define-key global-map "\C-coj" '(lambda () (interactive) (find-file "~/.org/journal.org")))
 (define-key global-map "\C-coc" '(lambda () (interactive) (find-file "~/.org/calendar.org")))
-(define-key global-map "\C-cob" '(lambda () (interactive) (find-file "~/.org/business.org")))
 
+(define-key global-map "\C-cop" '(lambda () (interactive) (find-file "~/.org/_personal.org")))
+(define-key global-map "\C-cbv" '(lambda () (interactive) (find-file "~/.org/_business_velaluqa.org")))
+(define-key global-map "\C-cbc" '(lambda () (interactive) (find-file "~/.org/_business_crowdcat.org")))
+(define-key global-map "\C-cbp" '(lambda () (interactive) (find-file "~/.org/_business_personal.org")))
 
 (global-set-key (kbd "M-l") 'downcase-dwim)
 (global-set-key (kbd "M-u") 'upcase-dwim)
