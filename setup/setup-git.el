@@ -79,4 +79,6 @@
 (ensure-package-and-require 'ibuffer-vc)
 (add-hook 'ibuffer-mode-hook 'ibuffer-vc-set-filter-groups-by-vc-root)
 
+(setq magit-auto-revert-mode nil)
+
 (provide 'setup-git)
