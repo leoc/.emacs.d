@@ -260,6 +260,7 @@
   (org-shifttab 2))
 (add-hook 'org-mode-hook 'custom-org-mode-defaults)
 
+(setq org-ditaa-eps-jar-path (concat vendor-dir "/ditaa0_9.eps.jar"))
 (setq org-ditaa-jar-path (concat vendor-dir "/ditaa0_9.jar"))
 
 (org-babel-do-load-languages
