@@ -73,6 +73,10 @@
       mu4e-compose-signature-auto-include t
       mu4e-compose-signature "")
 
+(setq message-cite-reply-position 'above
+      message-citation-line-function 'message-insert-formatted-citation-line
+      message-citation-line-format "On %a, %b %d %Y, %f wrote:\n")
+
 (setq mu4e-headers-draft-mark     (purecopy '("D" . "D")))
 (setq mu4e-headers-flagged-mark   (purecopy '("F" . "F")))
 (setq mu4e-headers-new-mark       (purecopy '("N" . "N")))
