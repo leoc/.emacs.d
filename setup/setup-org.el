@@ -339,6 +339,9 @@
 ;; Do not link queries. Store links to the message at point!
 (add-hook 'org-store-link-functions 'org-mu4e-store-message-link)
 
+(require 'org-contacts)
+(setq org-contacts-files '("/home/arthur/.org/contacts.org"))
+
 (provide 'setup-org)
 
 ;;; setup-org.el ends here
