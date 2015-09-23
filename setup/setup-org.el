@@ -57,6 +57,7 @@
 ;; Configure basic org-mode
 (setq org-startup-indented t
       org-log-done t
+      org-log-into-drawer "LOGBOOK"
       org-completion-use-ido t
       org-agenda-start-on-weekday nil
       org-agenda-ndays 1
