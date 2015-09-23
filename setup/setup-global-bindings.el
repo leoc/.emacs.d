@@ -30,10 +30,12 @@
 ;; Multiple Cursors
 (global-set-key (kbd "M-n") 'mc/mark-next-like-this)
 (global-set-key (kbd "M-p") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c m m") 'mc/edit-lines)
-(global-set-key (kbd "C-c m e") 'mc/edit-beginnings-of-lines)
-(global-set-key (kbd "C-c m a") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-c m r") 'mc/mark-all-in-region)
+(global-set-key (kbd "C-c b n") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-c b p") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c b m") 'mc/edit-lines)
+(global-set-key (kbd "C-c b e") 'mc/edit-beginnings-of-lines)
+(global-set-key (kbd "C-c b a") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-c b r") 'mc/mark-all-in-region)
 
 ;; iBuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
