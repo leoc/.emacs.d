@@ -309,26 +309,28 @@
 
 (defun org-mu4e-store-message-link ()
   "Store a link to a mu4e message either in headers or message buffer."
-  (let* ((msg  (mu4e-message-at-point))
-         (msgid   (or (plist-get msg :message-id) "<none>"))
-         (from (car (car (mu4e-message-field msg :from))))
-         (to (car (car (mu4e-message-field msg :to))))
-         (subject (mu4e-message-field msg :subject))
-         link)
+  (when (or (eq major-mode 'mu4e-view-mode)
+            (eq major-mode 'mu4e-headers-mode))
+    (let* ((msg  (mu4e-message-at-point))
+           (msgid   (or (plist-get msg :message-id) "<none>"))
+           (from (car (car (mu4e-message-field msg :from))))
+           (to (car (car (mu4e-message-field msg :to))))
+           (subject (mu4e-message-field msg :subject))
+           link)
 
-    (org-store-link-props
-     :type "mu4e"
-     :from from
-     :link link
-     :to to
-     :subject subject
-     :message-id msgid)
-    (setq link (concat "mu4e:msgid:" msgid))
-    (org-add-link-props
-     :link link
-     :description (funcall org-mu4e-link-desc-func msg))
+      (org-store-link-props
+       :type "mu4e"
+       :from from
+       :link link
+       :to to
+       :subject subject
+       :message-id msgid)
+      (setq link (concat "mu4e:msgid:" msgid))
+      (org-add-link-props
+       :link link
+       :description (funcall org-mu4e-link-desc-func msg))
 
-    link))
+      link)))
 
 (org-add-link-type "mu4e" 'org-mu4e-open)
 ;; Do not link queries. Store links to the message at point!
