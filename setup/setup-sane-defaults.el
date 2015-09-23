@@ -5,6 +5,12 @@
 ;; Write backup files to own directory
 (setq backup-directory-alist `((".*" . ,tmp-dir)))
 (setq auto-save-file-name-transforms `((".*" ,tmp-dir t)))
+;; Disable lockfiles
+;; Emacs creates symlink to non existing files to lock files for
+;; editing. Unfortunately we cannot change the place for those lock
+;; files so we have to disable this, because many devtools hiccup on
+;; those.
+(setq create-lockfiles nil)
 
 ;; Write bookmarks to specific file
 (setq bookmark-default-file (concat user-emacs-directory "bookmarks")
