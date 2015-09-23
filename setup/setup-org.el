@@ -155,9 +155,9 @@
 (custom-set-faces
  '(org-mode-line-clock ((t (:foreground "red" :box (:line-width -1 :style released-button)))) t))
 
-(setq org-habit-graph-column 102)
-(setq org-habit-following-days 3)
-(setq org-habit-preceding-days 12)
+(setq org-habit-graph-column 104)
+(setq org-habit-following-days 4)
+(setq org-habit-preceding-days 21)
 
 ;; Some keybindings that should be activated in org-mode
 (defun custom-org-agenda-mode-defaults ()
