@@ -105,8 +105,6 @@
     (shr-insert-document dom)
     (goto-char (point-min))))
 
-(load "~/.mu4e-refile-assocs.el")
-
 ;; Set custom faces
 
 ;; Smart refile locations
@@ -138,10 +136,6 @@
       starttls-use-gnutls t
       message ""
       smtpmail-smtp-service 587)
-
-(defvar my-mu4e-account-alist nil
-  "Defines all mu4e accounts.")
-(load "~/.mu4e-accounts.el")
 
 (defun my-mu4e-find-account (variable value)
   "Find the first account that match VARIABLE with VALUE.
