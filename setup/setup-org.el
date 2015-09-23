@@ -71,6 +71,8 @@
       org-agenda-include-diary t
       org-agenda-window-setup 'current-window
       org-agenda-repeating-timestamp-show-all t
+
+      org-time-clocksum-format '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t)
       ;; Show all agenda dates - even if they are empty
       org-agenda-show-all-dates t
       ;; Sorting order for tasks on the agenda
