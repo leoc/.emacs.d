@@ -177,13 +177,13 @@
 (setq org-agenda-custom-commands
       '(("a" "Agenda"
          ((agenda "" ((org-agenda-sorting-strategy '(habit-down timestamp-up time-up priority-down category-keep user-defined-up))))
-          (tags-todo "-CANCELLED/!-HOLD-WAITING"
+          (tags-todo "-archived-shopping-CANCELLED/!-HOLD-WAITING"
                      ((org-agenda-overriding-header "Stuck Projects")
                       (org-agenda-skip-function
                        '(oh/agenda-skip :headline-if '(non-project)
                                         :subtree-if '(non-stuck-project inactive-project habit scheduled deadline)))
                         (org-tags-match-list-sublevels 'intended)))
-          (tags-todo "-WAITING-CANCELLED/!NEXT"
+          (tags-todo "-archived-shopping-WAITING-CANCELLED/!NEXT"
                      ((org-agenda-overriding-header "Next Tasks")
                       (org-agenda-skip-function
                        '(oh/agenda-skip :headline-if '(project)
@@ -192,7 +192,7 @@
                                         :subtree-if-restricted-and '(single-task)))
                       (org-tags-match-list-sublevels 'indented)
                       (org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
-          (tags-todo "-CANCELLED/!-NEXT-HOLD-WAITING"
+          (tags-todo "-archived-shopping-CANCELLED/!-NEXT-HOLD-WAITING"
                      ((org-agenda-overriding-header "Available Tasks")
                       (org-agenda-skip-function
                        '(oh/agenda-skip :headline-if '(project)
@@ -201,12 +201,12 @@
                                         :subtree-if-restricted-and '(single-task)))
                       (org-agenda-sorting-strategy '(priority-down category-keep))
                       (org-tags-match-list-sublevels nil)))
-          (tags-todo "-CANCELLED/!WAITING|HOLD"
+          (tags-todo "-archived-shopping-CANCELLED/!WAITING|HOLD"
                      ((org-agenda-overriding-header "Waiting and Postponed Tasks")
                       (org-agenda-skip-function
                        '(oh/agenda-skip :subtree-if '(project habit)))
                       (org-tags-match-list-sublevels nil)))
-          (tags-todo "-CANCELLED/!"
+          (tags-todo "-archived-shopping-CANCELLED/!"
                      ((org-agenda-overriding-header "Currently Active Projects")
                       (org-agenda-skip-function
                        '(oh/agenda-skip :subtree-if '(non-project stuck-project inactive-project habit)
@@ -218,18 +218,18 @@
         ("r" "Tasks to Refile" alltodo ""
          ((org-agenda-overriding-header "Tasks to Refile")
           (org-agenda-files '("~/.org/inbox.org"))))
-        ("#" "Stuck Projects" tags-todo "-CANCELLED/!-HOLD-WAITING"
+        ("#" "Stuck Projects" tags-todo "-archived-shopping-CANCELLED/!-HOLD-WAITING"
          ((org-agenda-overriding-header "Stuck Projects")
           (org-agenda-skip-function
            '(oh/agenda-skip :subtree-if '(inactive non-project non-stuck-project
                                           habit scheduled deadline)))))
-        ("n" "Next Tasks" tags-todo "-WAITING-CANCELLED/!NEXT"
+        ("n" "Next Tasks" tags-todo "-archived-shopping-WAITING-CANCELLED/!NEXT"
          ((org-agenda-overriding-header "Next Tasks")
           (org-agenda-skip-function
            '(oh/agenda-skip :subtree-if '(inactive project habit scheduled deadline)))
           (org-tags-match-list-sublevels t)
           (org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
-        ("R" "Tasks" tags-todo "-CANCELLED/!-NEXT-HOLD-WAITING"
+        ("R" "Tasks" tags-todo "-archived-shopping-CANCELLED/!-NEXT-HOLD-WAITING"
          ((org-agenda-overriding-header "Available Tasks")
           (org-agenda-skip-function
            '(oh/agenda-skip :headline-if '(project)
@@ -237,13 +237,13 @@
                             :subtree-if-unrestricted-and '(subtask)
                             :subtree-if-restricted-and '(single-task)))
           (org-agenda-sorting-strategy '(priority-down category-keep))))
-        ("p" "Projects" tags-todo "-CANCELLED/!"
+        ("p" "Projects" tags-todo "-archived-shopping-CANCELLED/!"
          ((org-agenda-overriding-header "Currently Active Projects")
           (org-agenda-skip-function
            '(oh/agenda-skip :subtree-if '(non-project inactive habit)))
           (org-agenda-sorting-strategy '(priority-down category-keep))
           (org-tags-match-list-sublevels 'indented)))
-        ("w" "Waiting Tasks" tags-todo "-CANCELLED/!WAITING|HOLD"
+        ("w" "Waiting Tasks" tags-todo "-archived-shopping-CANCELLED/!WAITING|HOLD"
          ((org-agenda-overriding-header "Waiting and Postponed Tasks")
           (org-agenda-skip-function '(oh/agenda-skip :subtree-if '(project habit)))))))
 
