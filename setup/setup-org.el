@@ -254,6 +254,9 @@
   (electric-indent-mode -1)
   (org-defkey org-mode-map (kbd "M-p") 'org-metaup)
   (org-defkey org-mode-map (kbd "M-n") 'org-metadown)
+  (org-defkey org-mode-map (kbd "M-n") 'org-metadown)
+  (define-key org-mode-map (kbd "C-c o o") 'org-pomodoro)
+  (define-key org-agenda-mode-map (kbd "C-c o o") 'org-pomodoro)
   (org-shifttab 2))
 (add-hook 'org-mode-hook 'custom-org-mode-defaults)
 
