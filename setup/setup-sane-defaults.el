@@ -5,6 +5,11 @@
 ;; Write backup files to own directory
 (setq backup-directory-alist `((".*" . ,tmp-dir)))
 (setq auto-save-file-name-transforms `((".*" ,tmp-dir t)))
+;; Change the temporary file directory
+(unless (file-exists-p tmp-dir)
+  (make-directory tmp-dir t))
+(setq temporary-file-directory tmp-dir)
+
 ;; Disable lockfiles
 ;; Emacs creates symlink to non existing files to lock files for
 ;; editing. Unfortunately we cannot change the place for those lock
