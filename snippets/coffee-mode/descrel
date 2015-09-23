@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: dr
+# key: dr
+# --
+describe '#${1:function}', ->
+  it 'should calculate the correct value', ->
+    expectRounded(@calc.$1(0.00), ${2:2}).toEqual($0)
+    expectRounded(@calc.$1(0.25), ${2:2}).toEqual($0)
+    expectRounded(@calc.$1(0.50), ${2:2}).toEqual($0)
+    expectRounded(@calc.$1(0.75), ${2:2}).toEqual($0)
+    expectRounded(@calc.$1(1.00), ${2:2}).toEqual($0)

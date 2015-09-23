@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: calcspec
+# key: calcspec
+# --
+describe '#${1:function}', ->
+  it 'should calculate the correct value', ->
+    expectRounded(@calc.$1(), ${2:2}).toEqual($0)
