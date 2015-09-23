@@ -12,4 +12,7 @@
 (ensure-package-and-require 'browse-kill-ring)
 (setq browse-kill-ring-quit-action 'save-and-restore)
 
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "chromium")
+
 (provide 'setup-editor)
