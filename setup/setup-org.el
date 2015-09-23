@@ -44,10 +44,14 @@
 ;; The default agenda files. inbox.org is used only in custom agenda
 (setq org-agenda-files (list "~/.org/tasks.org"
                              "~/.org/tasks.org_archive"
-                             "~/.org/projects.org"
-                             "~/.org/projects.org_archive"
-                             "~/.org/business.org"
-                             "~/.org/business.org_archive"
+                             "~/.org/_personal.org"
+                             "~/.org/_personal.org_archive"
+                             "~/.org/_business_velaluqa.org"
+                             "~/.org/_business_velaluqa.org_archive"
+                             "~/.org/_business_crowdcat.org"
+                             "~/.org/_business_crowdcat.org_archive"
+                             "~/.org/_business_personal.org"
+                             "~/.org/_business_personal.org_archive"
                              "~/.org/calendar.org"))
 
 ;; Configure basic org-mode
