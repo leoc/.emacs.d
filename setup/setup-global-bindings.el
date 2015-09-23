@@ -121,6 +121,8 @@
 (global-set-key (kbd "C-c d") 'duplicate-current-line-or-region)
 (global-set-key (kbd "C-c h") 'helm-projectile)
 
+(global-set-key (kbd "C-c C-x C-r") 'eval-and-replace)
+
 ;; Frame zooming
 (global-set-key (kbd "C-M-*") 'zoom-frm-in)
 (global-set-key (kbd "C-M-_") 'zoom-frm-out)
