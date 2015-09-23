@@ -15,16 +15,13 @@
 (add-to-list 'load-path defuns-dir)
 (defvar backups-dir (expand-file-name "backups" user-emacs-directory)
   "Specifies the directory to save backups in.")
-(add-to-list 'load-path backups-dir)
 (defvar setup-dir (expand-file-name "setup" user-emacs-directory)
   "Specifies the directory with the configuration files.")
 (add-to-list 'load-path setup-dir)
 (defvar snippets-dir (expand-file-name "snippets" user-emacs-directory)
   "Specifies the yasnippet snippet directory.")
-(add-to-list 'load-path snippets-dir)
 (defvar tmp-dir (expand-file-name "tmp" user-emacs-directory)
   "Specifies the temp directory.")
-(add-to-list 'load-path tmp-dir)
 
 ;; Keep emacs Custom-settings in separate file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
