@@ -20,3 +20,5 @@ auto-save-list
 /tmp*
 *.elc
 /.cask/
+/init-emacs.el
+/init-emacs.html
