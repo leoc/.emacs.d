@@ -2869,4 +2869,17 @@ which VARIABLE value is a member of the VALUE sequence."
 
   (global-set-key (kbd "C-c C-g") 'leoc/search-dict)
 #+END_SRC
+*** Configure Emacs
+**** Open Emacs File
+
+Sometimes I want to quickly change something in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (defun leoc/open-init-emacs ()
+    (interactive)
+    (find-file-other-window "~/.emacs.d/init-emacs.org"))
+
+  (bind-key "C-c 0" 'leoc/open-init-emacs)
+#+END_SRC
+
 ** Experiments
