@@ -2494,11 +2494,11 @@ uses Pandoc to create org-mode markup.
 *** Contacts
 
 #+BEGIN_SRC emacs-lisp
-(use-package org-contacts
-  :ensure org
-  :defer t
-  :config
-  (setq org-contacts-files '("~/.org/contacts.org")))
+  (use-package org-contacts
+    :ensure org
+    :demand t
+    :config
+    (setq org-contacts-files '("~/.org/contacts.org")))
 #+END_SRC
 
 *** Encryption
