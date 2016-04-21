@@ -125,13 +125,11 @@ provides two variants:
 - light on dark
 - dark on light
 
-#+BEGIN_SRC emacs-lisp
-  (load (expand-file-name "vendor/summered-theme/summered-theme.el" user-emacs-directory))
-  (load-theme 'summered t)
+#+BEGIN_SRC emacs-lisp :results none
+  (add-to-list 'load-path "~/.emacs.d/vendor/summered-theme")
+  (load (expand-file-name "vendor/summered-theme/summered-dark-theme.el" user-emacs-directory))
+  (load-theme 'summered-dark t)
 #+END_SRC
-
-#+RESULTS:
-: t
 
 This color theme should be enabled globally and with maximum decoration.
 
@@ -195,7 +193,6 @@ why not go with it.
     :init
     (powerline-default-theme))
 #+END_SRC
-
 ** Browse Url
 
 I am using ~chromium~ as web browser.
