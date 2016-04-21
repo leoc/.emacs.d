@@ -1253,17 +1253,18 @@ pops up.
 
 *** Handle Projects with Projectile
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results none
   (use-package projectile
     :ensure t
+    :demand t
     :init
     (projectile-global-mode)
     :diminish projectile-mode
     :config
     (setq projectile-remember-window-configs t
-        projectile-switch-project-action 'projectile-dired
-        projectile-indexing-method 'git
-        projectile-completion-system 'ido))
+          projectile-switch-project-action 'projectile-dired
+          projectile-indexing-method 'git
+          projectile-completion-system 'ido))
 #+END_SRC
 
 *** Helm
