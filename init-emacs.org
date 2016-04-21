@@ -1303,11 +1303,15 @@ pops up.
 
 With helm we can find files within our projectile projects.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results none
   (use-package helm-projectile
      :defer t
      :ensure t
-     :bind (("C-c h p" . helm-projectile)))
+     :demand t
+     :init
+     (progn
+       (define-key projectile-command-map (kbd "g") #'helm-projectile-grep)
+       (define-key projectile-command-map (kbd "s") #'helm-projectile-ag)))
 #+END_SRC
 
 *** Improved Completing Read with Ido
