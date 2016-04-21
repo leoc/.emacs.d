@@ -1978,12 +1978,15 @@ indent headings within the clocktable.
 *** Settings
 
 #+BEGIN_SRC emacs-lisp
-(setq org-startup-indented t
-      ;; Deprecated since org 9.0. ~completing-read~ is enough.
-      org-completion-use-ido nil
-      ;; Separate drawers for clocking and logs
-      org-drawers '("PROPERTIES" "LOGBOOK")
-      org-fast-tag-selection-single-key 'expert)
+  (setq org-startup-indented t
+        ;; Deprecated since org 9.0. ~completing-read~ is enough.
+        org-completion-use-ido nil
+        ;; Separate drawers for clocking and logs
+        org-drawers '("PROPERTIES" "LOGBOOK")
+        org-fast-tag-selection-single-key 'expert)
+
+  ;; Other symbols: ▼
+  (setq org-ellipsis " ↴")
 #+END_SRC
 
 **** Markup
