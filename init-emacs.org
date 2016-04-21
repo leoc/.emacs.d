@@ -1991,11 +1991,22 @@ indent headings within the clocktable.
 
 **** Markup
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results none
   (setq org-hide-emphasis-markers t)
-  (setcar org-emphasis-regexp-components " \t('\"{[:alpha:]")
-  (setcar (nthcdr 1 org-emphasis-regexp-components) "[:alpha:]- \t.,:!?;'\")}\\")
+  (setq org-emphasis-regexp-components-original
+        '(" \t('\"{"
+          "- \t.,:!?;'\")}\\["
+          " \t\r\n,\"'"
+          "."
+          1))
+  (setq org-emphasis-regexp-components
+        '(" \t('\"{[:alpha:]"
+          "[:alpha:]- \t.,:!?;'\")}\\["
+          " \t\r\n,\"'"
+          "."
+          0))
   (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
+  org-emph-re
 #+END_SRC
 
 **** Logging & Clocking
