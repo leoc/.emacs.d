@@ -1740,7 +1740,7 @@ inline.
     :ensure t
     :demand t
     :bind (:map litable-mode-map
-           ("M-g a" . litable-accept-as-pure)))
+           ("C-c l a" . litable-accept-as-pure)))
 #+END_SRC
 
 ****** SLIME like Navigation
