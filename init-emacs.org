@@ -202,7 +202,7 @@ I am using ~chromium~ as web browser.
       browse-url-generic-program "chromium")
 #+END_SRC
 
-** TODO Editor
+** Editor
 
 Some of the dependencies need to be installed.
 
