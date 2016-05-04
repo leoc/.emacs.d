@@ -2082,8 +2082,8 @@ helpers to work with pomodoros within the org-mode clocking function.
         org-refile-allow-creating-parent-nodes t
         org-outline-path-complete-in-steps nil
         org-refile-targets '(("~/.org/tasks.org" :maxlevel . 2)
-                             ("~/.org/_personal.org" :maxlevel . 2)
-                             ("~/.org/_personal2.org" :maxlevel . 3)
+                             ("~/.org/_personal.org" :maxlevel . 4)
+                             ("~/.org/_personal2.org" :maxlevel . 4)
                              ("~/.org/_sideprojects.org" :maxlevel . 2)
                              ("~/.org/_business_velaluqa.org" :maxlevel . 2)
                              ("~/.org/_business_crowdcat.org" :maxlevel . 2)
