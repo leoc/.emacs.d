@@ -2247,7 +2247,7 @@ of a certain heading.
             ;; so we can see the marker for the current time
             org-agenda-time-grid '((daily today remove-match)
                                    #("----------------" 0 16 (org-heading t))
-                                   (830 1000 1200 1300 1500 1700))
+                                   (830 1000 1200 1300 1500 1700 2000 2300))
             ;; Do not dim blocked tasks
             org-agenda-dim-blocked-tasks nil
 
