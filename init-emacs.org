@@ -1091,6 +1091,7 @@ remote files and remote directories.
         (setq company-dabbrev-downcase nil))
 
       (use-package company-quickhelp
+        :ensure t
         :init
         (with-eval-after-load 'company
           (company-quickhelp-mode)))))
