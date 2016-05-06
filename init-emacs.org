@@ -203,11 +203,13 @@ Before I used a custom mode-line format, but that is too much work to
 actually maintain. Powerline is a clean enough custom mode-line, so
 why not go with it.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :results none
   (use-package powerline
+    :ensure t
     :init
     (powerline-default-theme))
 #+END_SRC
+
 ** Browse Url
 
 I am using ~chromium~ as web browser.
