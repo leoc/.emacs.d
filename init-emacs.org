@@ -2655,7 +2655,7 @@ from the UNIX command-line with a great Emacs integration.
 | mu4e-headers-unread-mark    | u      |
 
 #+NAME: leoc/headers-marks
-#+BEGIN_SRC emacs-lisp :noweb-ref no-export :var headers-marks=headers-marks[1:-1] :results silent :exports none
+#+BEGIN_SRC emacs-lisp :noweb-ref no-export :var headers-marks=headers-marks[2:-1] :results silent :exports none
   (mapconcat (lambda (mark)
                (let ((variable (nth 0 mark))
                      (symbol (nth 1 mark)))
