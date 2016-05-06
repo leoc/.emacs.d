@@ -72,6 +72,21 @@ To have an enhanced view of all available packages, I like to use ~paradox~.
         paradox-execute-asynchronously nil))
 #+END_SRC
 
+*** General Dependencies
+
+Some of the dependencies need to be installed.
+
+#+BEGIN_SRC emacs-lisp
+(use-package alert :ensure t)
+(use-package markup :ensure t)
+(use-package popup :ensure t)
+(use-package frame-fns :ensure t)
+(use-package s :ensure t)
+(use-package f :ensure t)
+(use-package kv :ensure t)
+(use-package noflet :ensure t)
+#+END_SRC
+
 ** Functions
 *** Hook Into Modes
 
@@ -203,19 +218,6 @@ I am using ~chromium~ as web browser.
 #+END_SRC
 
 ** Editor
-
-Some of the dependencies need to be installed.
-
-#+BEGIN_SRC emacs-lisp
-(use-package alert :ensure t)
-(use-package markup :ensure t)
-(use-package popup :ensure t)
-(use-package frame-fns :ensure t)
-(use-package s :ensure t)
-(use-package f :ensure t)
-(use-package kv :ensure t)
-(use-package noflet :ensure t)
-#+END_SRC
 
 Single character response to /yes/ or /no/ questions is much faster:
 
