@@ -1555,6 +1555,12 @@ Speedbar is a sidebar that shows the file tree.
 *** Languages / Environments
 **** Web
 ***** HTML
+
+#+BEGIN_SRC emacs-lisp :results none
+  (use-package haml-mode
+    :ensure t)
+#+END_SRC
+
 ***** Stylesheets
 
 For stylesheets I use a variety of preprocessors, which have some
