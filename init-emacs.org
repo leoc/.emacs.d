@@ -1319,6 +1319,12 @@ With helm we can find files within our projectile projects.
        (define-key projectile-command-map (kbd "s") #'helm-projectile-ag)))
 #+END_SRC
 
+**** Grep Through Files with ~ag~
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-ag :ensure t)
+#+END_SRC
+
 *** Improved Completing Read with Ido
 
 The package ~ido~ (Interactively Do Things) provides better completing
