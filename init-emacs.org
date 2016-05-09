@@ -1736,7 +1736,6 @@ Paredit is a great mode to work with LISPs parenthesis.
         (message "HEHHE")
         (turn-on-eldoc-mode)
         (leoc/elisp-register-elc-delete-on-save)
-        (elisp-slime-nav-mode +1)
         (rainbow-mode +1)
         (paredit-mode +1))
 
