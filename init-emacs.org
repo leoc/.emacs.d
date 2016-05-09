@@ -1733,7 +1733,6 @@ Paredit is a great mode to work with LISPs parenthesis.
                        (delete-file (concat buffer-file-name "c"))))))
 
       (defun leoc/elisp-defaults ()
-        (message "HEHHE")
         (turn-on-eldoc-mode)
         (leoc/elisp-register-elc-delete-on-save)
         (paredit-mode +1))
