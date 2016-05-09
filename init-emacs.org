@@ -2393,15 +2393,6 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
   :ensure t
   :defer t)
 #+END_SRC
-**** Velaluqa
-
-For [[http://www.velalu.qa][Velaluqa]] I have some custom defaults to generate beautiful
-documents.
-
-#+BEGIN_SRC emacs-lisp
-(load "~/projects/velaluqa/documents/templates/emacs.el")
-#+END_SRC
-
 *** Capture
 **** Templates
 
@@ -2551,6 +2542,15 @@ Do not prompt to confirm evaluation.
    (org . t)
    (plantuml . t)
    (latex . t)))
+#+END_SRC
+
+*** Velaluqa
+
+For [[http://www.velalu.qa][Velaluqa]] I have some custom defaults to generate beautiful
+documents.
+
+#+BEGIN_SRC emacs-lisp :tangle no :exports none
+;; (load "~/projects/velaluqa/documents/templates/emacs.el")
 #+END_SRC
 
 ** Accounting with Ledger
