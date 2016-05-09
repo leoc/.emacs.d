@@ -1912,6 +1912,12 @@ files in the Gerkhin syntax.
 (use-package markdown-mode :ensure t :defer t)
 #+END_SRC
 
+*** Rainbow Mode
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode :ensure t)
+#+END_SRC
+
 ** Org-Mode
 :PROPERTIES:
 :noweb-ref: leoc/org-mode-config
