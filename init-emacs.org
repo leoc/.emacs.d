@@ -2218,15 +2218,15 @@ of a certain heading.
 
 #+CAPTION: leoc/agenda-files
 #+NAME: leoc/agenda-files-table
-| *File Name*                  | *Description* |
-|----------------------------+-------------|
-| ~/.org/tasks.org            |             |
-| ~/.org/_personal.org         |             |
-| ~/.org/_personal2.org        |             |
+| *File Name*                     | *Description* |
+|-------------------------------+-------------|
+| ~/.org/tasks.org              |             |
+| ~/.org/_personal.org          |             |
+| ~/.org/_personal2.org         |             |
 | ~/.org/_business_personal.org |             |
-| ~/.org/_business_crowdcat.org  |             |
+| ~/.org/_business_crowdcat.org |             |
 | ~/.org/_business_velaluqa.org |             |
-| ~/.org/calendar.org         |             |
+| ~/.org/calendar.org           |             |
 
 #+NAME: leoc/agenda-files
 #+BEGIN_SRC emacs-lisp :noweb-ref leoc/agenda-files :var leoc-agenda-files=leoc/agenda-files-table[1:-1,0] :results silent :exports none
