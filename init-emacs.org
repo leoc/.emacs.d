@@ -1743,7 +1743,7 @@ Paredit is a great mode to work with LISPs parenthesis.
       (leoc/hook-into-modes #'leoc/elisp-defaults
         '(emacs-lisp-mode-hook ielm-mode-hook lisp-interaction-mode-hook)))
 
-      (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'leoc/elisp-eval-region)))
+      (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'leoc/elisp-eval-region))
 #+END_SRC
 
 ****** Litable
