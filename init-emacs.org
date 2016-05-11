@@ -925,21 +925,24 @@ Highlight matching parentheses when the point is on them.
 
 *** Multiple Cursors
 
-#+BEGIN_SRC emacs-lisp
-(use-package multiple-cursors
-  :ensure t
-  :bind (("M-n"       . mc/mark-next-like-this)
-         ("M-p"       . mc/mark-previous-like-this)
-         ("C-x C-m"   . mc/mark-all-dwim)
-         ("C-c b i"   . mc/insert-numbers)
-         ("C-c b h"   . mc-hide-unmatched-lines-mode)
-         ("C-c b a"   . mc/mark-all-like-this)
-         ("C-c b d"   . mc/mark-all-symbols-like-this-in-defun)
-         ("C-c b r"   . mc/reverse-regions)
-         ("C-c b s"   . mc/sort-regions)
-         ("C-c b l"   . mc/edit-lines)
-         ("C-c b C-a" . mc/edit-beginnings-of-lines)
-         ("C-c b C-e" . mc/edit-ends-of-lines)))
+#+BEGIN_SRC emacs-lisp :results none
+  (use-package multiple-cursors
+    :ensure t
+    :demand t
+    :config
+    (progn
+      (bind-key "M-n" 'mc/mark-next-like-this)
+      (bind-key "M-p" 'mc/mark-previous-like-this)
+      (bind-key "C-x C-m" 'mc/mark-all-dwim)
+      (bind-key "C-c b i" 'mc/insert-numbers)
+      (bind-key "C-c b h" mc-hide-unmatched-lines-mode)
+      (bind-key "C-c b a" 'mc/mark-all-like-this)
+      (bind-key "C-c b d" 'mc/mark-all-symbols-like-this-in-defun)
+      (bind-key "C-c b r" 'mc/reverse-regions)
+      (bind-key "C-c b s" 'mc/sort-regions)
+      (bind-key "C-c b l" 'mc/edit-lines)
+      (bind-key "C-c b C-a" 'mc/edit-beginnings-of-lines)
+      (bind-key "C-c b C-e" 'mc/edit-ends-of-lines)))
 #+END_SRC
 
 *** Expand Region
