@@ -1,0 +1,7 @@
+#name: Promise .then block with error callback
+# --
+.then(function (${1:success}) {
+  $0
+}, function (error) {
+
+})
