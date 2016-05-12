@@ -22,3 +22,4 @@ auto-save-list
 /.cask/
 /init-emacs.el
 /init-emacs.html
+/.edbi-ds-history
