@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: rfun
+# key: rfun
+# --
+${1:name}: @reactive '$1', ${2:(${3:x}) }->
+  $0

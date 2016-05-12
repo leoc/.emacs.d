@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: mfun
+# key: mfun
+# --
+${1:name}: @memoize '$1', ${2:(${3:x}) }->
+  $0
