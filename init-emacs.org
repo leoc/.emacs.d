@@ -721,55 +721,55 @@ When switching windows, file buffers should be saved automatically.
 *** Yank Indent Mode
 
 #+BEGIN_SRC emacs-lisp
-(defvar yank-indent-modes '(LaTeX-mode
-                            TeX-mode
-                            c++-mode
-                            c-mode
-                            cperl-mode
-                            css-mode
-                            emacs-lisp-mode
-                            java-mode
-                            jde-mode
-                            js2-mode
-                            lisp-interaction-mode
-                            perl-mode
-                            prog-mode
+  (defvar yank-indent-modes '(LaTeX-mode
+                              TeX-mode
+                              c++-mode
+                              c-mode
+                              cperl-mode
+                              css-mode
+                              emacs-lisp-mode
+                              java-mode
+                              jde-mode
+                              js2-mode
+                              ruby-mode
+                              lisp-interaction-mode
+                              perl-mode
+                              prog-mode
+                              sql-mode
+                              stylus-mode
+                              tcl-mode)
+    "Modes in which to indent regions that are yanked (or yank-popped)")
 
-                            sql-mode
-                            stylus-mode
-                            tcl-mode)
-  "Modes in which to indent regions that are yanked (or yank-popped)")
+  (defvar yank-indent-ignore-modes '(coffee-mode)
+    "Modes in which not to indent regions that are yanked (or yank-popped)")
 
-(defvar yank-indent-ignore-modes '(coffee-mode)
-  "Modes in which not to indent regions that are yanked (or yank-popped)")
+  (defvar yank-advised-indent-threshold 1000
+    "Threshold (# chars) over which indentation does not automatically occur.")
 
-(defvar yank-advised-indent-threshold 1000
-  "Threshold (# chars) over which indentation does not automatically occur.")
+  (defun yank-advised-indent-function (beg end)
+    "Do indentation, as long as the region isn't too large."
+    (if (<= (- end beg) yank-advised-indent-threshold)
+        (indent-region beg end nil)))
 
-(defun yank-advised-indent-function (beg end)
-  "Do indentation, as long as the region isn't too large."
-  (if (<= (- end beg) yank-advised-indent-threshold)
-      (indent-region beg end nil)))
+  (defadvice yank (after yank-indent activate)
+    "If current mode is one of 'yank-indent-modes, indent yanked text (with prefix arg don't indent)."
+    (if (and (not (ad-get-arg 0))
+             (member major-mode yank-indent-modes)
+             (not (member major-mode yank-indent-ignore-modes)))
+        (let ((transient-mark-mode nil))
+          (yank-advised-indent-function (region-beginning) (region-end)))))
 
-(defadvice yank (after yank-indent activate)
-  "If current mode is one of 'yank-indent-modes, indent yanked text (with prefix arg don't indent)."
-  (if (and (not (ad-get-arg 0))
-           (member major-mode yank-indent-modes)
-           (not (member major-mode yank-indent-ignore-modes)))
-      (let ((transient-mark-mode nil))
-        (yank-advised-indent-function (region-beginning) (region-end)))))
+  (defadvice yank-pop (after yank-pop-indent activate)
+    "If current mode is one of 'yank-indent-modes, indent yanked text (with prefix arg don't indent)."
+    (if (and (not (ad-get-arg 0))
+             (member major-mode yank-indent-modes)
+             (not (member major-mode yank-indent-ignore-modes)))
+        (let ((transient-mark-mode nil))
+          (yank-advised-indent-function (region-beginning) (region-end)))))
 
-(defadvice yank-pop (after yank-pop-indent activate)
-  "If current mode is one of 'yank-indent-modes, indent yanked text (with prefix arg don't indent)."
-  (if (and (not (ad-get-arg 0))
-           (member major-mode yank-indent-modes)
-           (not (member major-mode yank-indent-ignore-modes)))
-      (let ((transient-mark-mode nil))
-        (yank-advised-indent-function (region-beginning) (region-end)))))
-
-(defun yank-unindented ()
-  (interactive)
-  (yank t))
+  (defun yank-unindented ()
+    (interactive)
+    (yank t))
 #+END_SRC
 
 ** Packages
@@ -2562,7 +2562,6 @@ Do not prompt to confirm evaluation.
  '((emacs-lisp . t)
    (dot . t)
    (ditaa . t)
-   (R . t)
    (python . t)
    (ruby . t)
    (gnuplot . t)
