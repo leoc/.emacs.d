@@ -649,6 +649,7 @@ was initially clean.
 #+BEGIN_SRC emacs-lisp
   (use-package whitespace-cleanup-mode
     :ensure t
+    :diminish whitespace-cleanup-mode
     :bind (("C-c T W" . whitespace-cleanup-mode)
            ("C-c e w" . whitespace-cleanup))
     :init (leoc/hook-into-modes #'whitespace-cleanup-mode
