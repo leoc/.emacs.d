@@ -87,6 +87,13 @@ Some of the dependencies need to be installed.
 (use-package noflet :ensure t)
 #+END_SRC
 
+*** Diminish modes
+
+#+BEGIN_SRC emacs-lisp :results none
+(diminish 'auto-fill-function)
+(diminish 'auto-revert-mode)
+#+END_SRC
+
 ** Functions
 *** Hook Into Modes
 
@@ -1548,7 +1555,6 @@ Speedbar is a sidebar that shows the file tree.
 #+BEGIN_SRC emacs-lisp
   (defun leoc/prog-mode-defaults ()
     "Sets custom programming defaults."
-    (diminish 'auto-fill-mode)
     (set (make-local-variable 'comment-auto-fill-only-comments) t)
     (auto-fill-mode t)
     (font-lock-add-keywords
