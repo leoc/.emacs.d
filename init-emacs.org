@@ -1107,6 +1107,14 @@ remote files and remote directories.
         (with-eval-after-load 'company
           (company-quickhelp-mode)))))
 #+END_SRC
+*** Be Smart About Parenthesis Pairs
+
+#+BEGIN_SRC emacs-lisp :results none
+  (use-package smartparens
+    :ensure t
+    :config
+    (smartparens-global-mode))
+#+END_SRC
 
 ** Navigation
 *** Switching Buffers Back And Forth
