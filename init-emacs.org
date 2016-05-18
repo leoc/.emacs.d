@@ -1649,7 +1649,10 @@ for writing complex stylesheets.
 #+BEGIN_SRC emacs-lisp :results none
   (use-package rinari :ensure t :defer t)
   (use-package bundler :ensure t :defer t)
-  (use-package ruby-end :ensure t :defer t)
+  (use-package ruby-end
+    :ensure t
+    :defer t
+    :diminish ruby-end-mode)
   (use-package inf-ruby :ensure t :defer t)
   (use-package rvm :ensure t :defer t)
   (use-package robe
