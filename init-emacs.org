@@ -628,6 +628,7 @@ displaying whitespace.
 
 #+BEGIN_SRC emacs-lisp :results none
   (use-package whitespace
+    :diminish whitespace-mode
     :bind ("C-c T w" . whitespace-mode)
     :init (leoc/hook-into-modes #'whitespace-mode '(prog-mode-hook))
     :config
@@ -637,8 +638,7 @@ displaying whitespace.
                              tab-mark
                              empty
                              trailing)
-          whitespace-global-modes '(not go-mode))
-    :diminish whitespace-mode)
+          whitespace-global-modes '(not go-mode)))
 #+END_SRC
 
 Also whitespace should be cleaned up automatically. To make sure, we
