@@ -1657,9 +1657,7 @@ for writing complex stylesheets.
     :defer t
     :init
     (progn
-      (add-hook 'ruby-mode-hook #'(lambda ()
-                                    (robe-mode)
-                                    (push 'company-robe company-backends)))
+      (add-hook 'ruby-mode-hook 'robe-mode)
       (eval-after-load 'company
         '(push 'company-robe company-backends))
 
