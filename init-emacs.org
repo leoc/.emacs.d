@@ -2650,7 +2650,11 @@ from the UNIX command-line with a great Emacs integration.
             ;; Remove signatures
             message-signature ""
             mu4e-compose-signature-auto-include nil
-            mu4e-compose-signature "")
+            mu4e-compose-signature ""
+
+            ;; Make sure UIDs are not duplicated.
+            ;; Otherwise mbsync would lament and stop syncing.
+            mu4e-change-filenames-when-moving t)
 
       <<leoc/mu4e-config>>
       ))
