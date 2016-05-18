@@ -1668,6 +1668,7 @@ for writing complex stylesheets.
   (use-package rubocop
     :ensure t
     :defer t
+    :diminish rubocop-mode
     :init
     (add-hook 'ruby-mode-hook 'rubocop-mode))
 #+END_SRC
