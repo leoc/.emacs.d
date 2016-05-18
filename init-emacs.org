@@ -397,8 +397,8 @@ aligned et voila!
     (forward-line -1)
     (indent-for-tab-command))
 
-  (bind-key "M-m" 'leoc/open-line-below)
-  (bind-key "M-ü" 'leoc/open-line-above)
+  (bind-key "C-o" 'leoc/open-line-below)
+  (bind-key "M-o" 'leoc/open-line-above)
 #+END_SRC
 
 *** Toggle Quotes
