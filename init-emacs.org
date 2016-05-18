@@ -1949,6 +1949,7 @@ files in the Gerkhin syntax.
 #+BEGIN_SRC emacs-lisp :noweb-ref leoc/use-package-org-mode :noweb tangle :tangle yes
   (use-package org
     :ensure t
+    :diminish (org-indent-mode)
     :bind (("C-c a" . org-agenda)
            :map org-mode-map
            ("M-p" . org-metaup)
