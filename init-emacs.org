@@ -1926,7 +1926,7 @@ files in the Gerkhin syntax.
         :ensure t
         :config
         (eval-after-load 'company
-          (add-to-list 'company-backends 'company-edbi)))
+          '(push 'company-edbi company-backends)))
 
       (use-package edbi-minor-mode
         :ensure t
