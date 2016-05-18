@@ -672,10 +672,10 @@ was initially clean.
 When switching windows, file buffers should be saved automatically.
 
 #+BEGIN_SRC emacs-lisp
-(defadvice switch-to-buffer (before save-buffer-now activate)
-  (when buffer-file-name (save-buffer)))
-(defadvice other-window (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))
+  (defadvice switch-to-buffer (before save-buffer-now activate)
+    (when buffer-file-name (save-buffer)))
+  (defadvice other-window (before other-window-now activate)
+    (when buffer-file-name (save-buffer)))
 #+END_SRC
 
 *** Browse Kill Ring
