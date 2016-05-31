@@ -1585,7 +1585,8 @@ Speedbar is a sidebar that shows the file tree.
 
 #+BEGIN_SRC emacs-lisp :results none
   (use-package haml-mode
-    :ensure t)
+    :ensure t
+    :mode "\\.hamlc?\\'")
 #+END_SRC
 
 ***** Stylesheets
