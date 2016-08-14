@@ -1,0 +1,4 @@
+# -*- mode: yasnippet -*-
+#name : %x{}
+# --
+%x{$1}$0
