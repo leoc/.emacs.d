@@ -2189,7 +2189,7 @@ Disable ~S-arrow~ bindings for org-mode, so we can use those bindings
 for navigating through windows.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-replace-disputed-keys t)
+  (setq org-replace-disputed-keys t)
 #+END_SRC
 
 **** Code Blocks
