@@ -2528,7 +2528,7 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
 
 **** Protocol
 
-Org-protocol allow capturing from outside Emacs. I use it to capture
+Org-protocol allows capturing from outside Emacs. I use it to capture
 things via /Chromium User Scripts/ which makes it easy to capture
 web bookmarks, todos (e.g. read book/article, check out this library,
 etc.).
