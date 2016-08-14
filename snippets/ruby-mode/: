@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
-#name : :key => "value"
+#name : key: "value"
 # --
-:${key} => ${"value"}$0
+${key}: ${"value"}$0
