@@ -2218,7 +2218,7 @@ I like this little template addition:
           (sequence "WAITING(w@/!)" "HOLD(h@/!)" "SOMEDAY(o)" "|" "CANCELLED(c@/!)")))
 #+END_SRC
 
-For visual feedback I have a custom color for each ~TODO~ keyword.
+For visual feedback I have a custom color for each todo keyword.
 
 #+BEGIN_SRC emacs-lisp
   (setq org-todo-keyword-faces
