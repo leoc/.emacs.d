@@ -2261,7 +2261,8 @@ The common tags are defined as follows:
                         ("music" . ?m)
                         ("exercise" . ?e)
                         ("read" . ?r)
-                        ("chores" . ?c)))
+                        ("chores" . ?c)
+                        ("sideproject" . ?s)))
 #+END_SRC
 
 **** Expiry
