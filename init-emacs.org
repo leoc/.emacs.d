@@ -1599,6 +1599,19 @@ help to embed Ruby code while developing a web application.
     :mode "\\.hamlc?\\'")
 #+END_SRC
 
+****** Emmet-mode
+
+Emmet-mode provides [[https://www.emacswiki.org/emacs/ZenCoding][ZenCoding]]-features for Emacs.
+
+#+BEGIN_SRC emacs-lisp :results none
+  (use-package emmet-mode
+    :ensure t
+    :config
+    (add-hook 'sgml-mode-hook 'emmet-mode)
+    (add-hook 'css-mode-hook  'emmet-mode)
+    (setq emmet-self-closing-tag-style " /"))
+#+END_SRC
+
 ***** Stylesheets
 
 For stylesheets I use a variety of preprocessors, which have some
