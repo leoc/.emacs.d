@@ -744,7 +744,6 @@ When switching windows, file buffers should be saved automatically.
                               perl-mode
                               prog-mode
                               sql-mode
-                              stylus-mode
                               tcl-mode)
     "Modes in which to indent regions that are yanked (or yank-popped)")
 
