@@ -2067,8 +2067,7 @@ indent headings within the clocktable.
         ;; Deprecated since org 9.0. ~completing-read~ is enough.
         org-completion-use-ido nil
         ;; Separate drawers for clocking and logs
-        org-drawers '("PROPERTIES" "LOGBOOK")
-        org-fast-tag-selection-single-key 'expert)
+        org-drawers '("PROPERTIES" "LOGBOOK"))
 
   ;; Other symbols: ▼
   (setq org-ellipsis " ↴")
