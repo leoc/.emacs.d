@@ -1581,6 +1581,17 @@ Speedbar is a sidebar that shows the file tree.
 *** Languages / Environments
 **** Web
 ***** HTML
+****** Haml-mode
+
+Haml (HTML Abstraction Markup Language) is a templating system to
+avoid writing the inline code in a web document and make HTML easy and
+clean. Haml gives the flexibility to have some dynamic content in
+HTML. Similar to other web languages like PHP, ASP, JSP and template
+systems like eRuby, Haml also embeds some code that gets executed
+during runtime and generates HTML code in order to provide some
+dynamic content. In order to run Haml code, files need to have .haml
+extension. These files are similar to .erb or eRuby files which also
+help to embed Ruby code while developing a web application.
 
 #+BEGIN_SRC emacs-lisp :results none
   (use-package haml-mode
