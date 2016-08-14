@@ -2213,9 +2213,11 @@ I like this little template addition:
 **** Todo Keywords
 
 #+BEGIN_SRC emacs-lisp
+  (setq org-use-fast-todo-selection t)
   (setq org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!/!)")
-          (sequence "WAITING(w@/!)" "HOLD(h@/!)" "SOMEDAY(o)" "|" "CANCELLED(c@/!)")))
+          (sequence "WAITING(w@/!)" "HOLD(h@/!)" "SOMEDAY(o)" "|" "CANCELLED(c@/!)")
+          (sequence "READ(r)" "|" "FINISHED(f!/!)" "REJECTED(r@/!)")))
 #+END_SRC
 
 For visual feedback I have a custom color for each todo keyword.
