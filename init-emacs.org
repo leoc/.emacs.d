@@ -2243,11 +2243,24 @@ Similar to the ~TODO~ keywords I color each priority level differently.
 
 **** Tags
 
+Use ~fast-tag-selection~ for selecting tags. This shows a window listing
+common tags, from which I can choose with one key press.
+
 #+BEGIN_SRC emacs-lisp
-(setq org-tag-alist '((:startgroup . nil)
-                      ("business" . ?b)
-                      ("personal" . ?p)
-                      (:endgroup . nil)))
+  (setq org-fast-tag-selection-single-key t)
+#+END_SRC
+
+The common tags are defined as follows:
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-tag-alist '((:startgroup . nil)
+                        ("business" . ?b)
+                        ("personal" . ?p)
+                        (:endgroup . nil)
+                        ("music" . ?m)
+                        ("exercise" . ?e)
+                        ("read" . ?r)
+                        ("chores" . ?c)))
 #+END_SRC
 
 **** Expiry
@@ -2473,6 +2486,7 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
   :ensure t
   :defer t)
 #+END_SRC
+
 *** Capture
 **** Templates
 
