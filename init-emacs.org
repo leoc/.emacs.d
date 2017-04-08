@@ -2520,8 +2520,10 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
     :bind
     (("C-c c" . leoc/org-capture-clockable-interruption)
      ("C-c j" . leoc/org-capture-journal)
+     ("C-c r" . leoc/org-capture-reading)
      ("C-c m" . leoc/org-capture-mail)
-     ("C-c r" . leoc/org-capture-task))
+     ("C-c n" . leoc/org-capture-note)
+     ("C-c t" . leoc/org-capture-task))
     :config
     (progn
       (defun leoc/org-capture-clockable-interruption ()
@@ -2534,15 +2536,25 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
 
       (defun leoc/org-capture-task ()
         (interactive)
+        (org-capture nil "t"))
+
+      (defun leoc/org-capture-reading ()
+        (interactive)
         (org-capture nil "r"))
 
       (defun leoc/org-capture-mail ()
         (interactive)
         (org-capture nil "m"))
 
+      (defun leoc/org-capture-note ()
+        (interactive)
+        (org-capture nil "n"))
+
       (setq org-capture-templates
             '(("b" "Web Bookmark" entry (file+headline "~/.org/refile.org" "Bookmarks") "* %c\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i")
-              ("r" "Remember" entry (file+headline "~/.org/refile.org" "Inbox") "* TODO %?%c\n:PROPERTIES:\n:CREATED: %U\n:END:")
+              ("t" "Remember" entry (file+headline "~/.org/refile.org" "Inbox") "* TODO %?%c\n:PROPERTIES:\n:CREATED: %U\n:END:")
+              ("r" "Reading" entry (file+headline "~/.org/refile.org" "Readings") "* READ %?%c :read:\n:PROPERTIES:\n:CREATED: %U\n:END:")
+              ("n" "Note" entry (file+headline "~/.org/refile.org" "Notes") "* %?%c\n:PROPERTIES:\n:CREATED: %U\n:END:")
               ("c" "Clockable Interruption" entry (file+headline "~/.org/refile.org" "Inbox") "* %u %?\nADDED: %U" :clock-in t :clock-resume t)
               ("f" "Food" entry (file+headline "~/.org/track_food.org" "Food") "* %u %?")
               ("j" "Journal Entry" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))
@@ -2562,7 +2574,6 @@ etc.).
     (defun leoc/org-protocol-capture-p ()
       "Return true if this capture was initiated via org-protocol."
       (equal "emacs-capture" (frame-parameter nil 'name)))
-
     (defun leoc/org-capture-delete-frame ()
       "Delete frame if capture was initiated via org-protocol."
       (when (leoc/org-protocol-capture-p)
@@ -2597,6 +2608,7 @@ uses Pandoc to create org-mode markup.
   :ensure org
   :load-path "vendor/org-protocol-capture-html")
 #+END_SRC
+
 *** Habits
 
 #+BEGIN_SRC emacs-lisp
