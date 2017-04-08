@@ -2358,6 +2358,7 @@ of a certain heading.
             org-agenda-skip-timestamp-if-done t
             ;; Display tags farther right
             org-agenda-tags-column -102
+            org-agenda-hide-tags-regexp "personal\\|habit\\|business\\|practice\\|music\\|ATTACH\\|hacking\\|code\\|project\\|pd\\|read"
             org-agenda-persistent-filter t
             ;; Enable display of the time grid
             ;; so we can see the marker for the current time
