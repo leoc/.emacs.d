@@ -2247,6 +2247,9 @@ For visual feedback I have a custom color for each todo keyword.
           ("STARTED"   :foreground "#ffff63" :weight bold)
           ("WAITING"   :foreground "#fd9b3b" :weight bold)
           ("HOLD"      :foreground "#9b859d" :weight bold)
+          ("READ"      :foreground "#9aaaff" :weight bold)
+          ("FINISHED"  :foreground "#9eb9a7" :weight bold)
+          ("REJECTED"  :foreground "#9eb9a7" :weight bold)
           ("CANCELLED" :foreground "#9eb9a7" :weight bold)))
 #+END_SRC
 
