@@ -1,5 +1,8 @@
 #+TITLE: Emacs Configuration
 * Emacs
+:PROPERTIES:
+:header-args: :results none
+:END:
 
 This document describes my personal emacs configuration.
 
@@ -89,7 +92,7 @@ Some of the dependencies need to be installed.
 
 *** Diminish modes
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
 (diminish 'auto-fill-function)
 (diminish 'auto-revert-mode)
 #+END_SRC
@@ -127,13 +130,13 @@ Some systems behave differently than others...
 
 Make sure that we do not see a splash screen each time we start Emacs.
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
 #+END_SRC
 
 Remove the menubar, toolbar and the scrollbar.
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
   (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
@@ -147,7 +150,7 @@ provides two variants:
 - light on dark
 - dark on light
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path "~/.emacs.d/vendor/summered-theme")
   (load (expand-file-name "vendor/summered-theme/summered-dark-theme.el" user-emacs-directory))
   (load-theme 'summered-dark t)
@@ -210,7 +213,7 @@ Before I used a custom mode-line format, but that is too much work to
 actually maintain. Powerline is a clean enough custom mode-line, so
 why not go with it.
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package powerline
     :ensure t
     :init
@@ -390,7 +393,7 @@ aligned et voila!
 
 *** New Line Above, Below and Beyond
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (defun leoc/open-line-below ()
     (interactive)
     (end-of-line)
@@ -410,11 +413,11 @@ aligned et voila!
 
 *** Toggle Quotes
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-z") 'toggle-quotes)
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (defun current-quotes-char ()
     (nth 3 (syntax-ppss)))
 
@@ -633,7 +636,7 @@ Write bookmarks to specific file.
 Whitespace should be visible immediately. The ~whitespace~ package helps
 displaying whitespace.
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package whitespace
     :diminish whitespace-mode
     :bind ("C-c T w" . whitespace-mode)
@@ -932,7 +935,7 @@ Highlight matching parentheses when the point is on them.
 
 *** Multiple Cursors
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package multiple-cursors
     :ensure t
     :demand t
@@ -995,7 +998,7 @@ remote files and remote directories.
 
 *** Isearch with Regular Expressiond by Default
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
 (bind-key "C-s" 'isearch-forward-regexp)
 (bind-key "C-r" 'isearch-backward-regexp)
 (bind-key "C-M-s" 'isearch-forward)
@@ -1075,7 +1078,7 @@ remote files and remote directories.
 #+END_SRC
 *** Auto Completion
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
     :demand t
@@ -1108,7 +1111,7 @@ remote files and remote directories.
 #+END_SRC
 *** Be Smart About Parenthesis Pairs
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package smartparens
     :ensure t
     :config
@@ -1134,7 +1137,7 @@ remote files and remote directories.
 
 Dired helps me using this beautiful files I love so dearly.
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package dired
     :bind (("C-x C-j" . dired-jump)
            ("C-x 4 C-j" . dired-jump-other-window)
@@ -1279,7 +1282,7 @@ pops up.
 
 *** Handle Projects with Projectile
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
     :demand t
@@ -1329,7 +1332,7 @@ pops up.
 
 With helm we can find files within our projectile projects.
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package helm-projectile
      :defer t
      :ensure t
@@ -1446,7 +1449,7 @@ word, line and much more.
 | ~M-g l~   | ~avy-goto-line~   |
 | ~M-g u~   | ~avy-goto-word-0~ |
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
 (use-package avy
   :ensure t
   :bind (("M-g j" . avy-goto-char)
@@ -1598,7 +1601,7 @@ dynamic content. In order to run Haml code, files need to have .haml
 extension. These files are similar to .erb or eRuby files which also
 help to embed Ruby code while developing a web application.
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package haml-mode
     :ensure t
     :mode "\\.hamlc?\\'")
@@ -1608,7 +1611,7 @@ help to embed Ruby code while developing a web application.
 
 Emmet-mode provides [[https://www.emacswiki.org/emacs/ZenCoding][ZenCoding]]-features for Emacs.
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package emmet-mode
     :ensure t
     :config
@@ -1677,7 +1680,7 @@ for writing complex stylesheets.
 
 ***** CoffeeScript
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package coffee-mode
     :ensure t
     :init
@@ -1692,7 +1695,7 @@ for writing complex stylesheets.
 
 **** Ruby
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package rinari :ensure t :defer t)
   (use-package bundler :ensure t :defer t)
   (use-package ruby-end
@@ -1749,7 +1752,7 @@ Paredit is a great mode to work with LISPs parenthesis.
 
 ***** Clojure
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package cider :ensure t)
   (use-package clojure-mode :ensure t)
 #+END_SRC
@@ -1801,7 +1804,7 @@ Paredit is a great mode to work with LISPs parenthesis.
 Litable evaluates lisp code on the fly and shows evaluation results
 inline.
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package litable
     :ensure t
     :demand t
@@ -1832,7 +1835,7 @@ Among other things this gets handy when:
 - executing keyboard macros counting up
 - concatenating strings within multiple-cursors mode
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
 (defun leoc/eval-and-replace ()
   "Replace the preceding sexp with its value."
   (interactive)
@@ -1970,7 +1973,7 @@ files in the Gerkhin syntax.
 
 **** SQL Interaction
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (use-package edbi
     :ensure t
     :config
@@ -1995,7 +1998,7 @@ files in the Gerkhin syntax.
 
 ** Org-Mode
 :PROPERTIES:
-:header-args: :noweb-ref leoc/org-mode-config :results none :export code :tangle no
+:header-args: :noweb-ref leoc/org-mode-config :export code :tangle no
 :END:
 
 #+BEGIN_SRC emacs-lisp :noweb-ref leoc/use-package-org-mode :noweb yes :tangle yes
@@ -2033,7 +2036,7 @@ files in the Gerkhin syntax.
 
 *** Default Hook
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook #'(lambda ()
                                (auto-fill-mode +1)
                                (rainbow-delimiters-mode -1)))
@@ -2082,7 +2085,7 @@ indent headings within the clocktable.
 
 **** Markup
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (setq org-hide-emphasis-markers t)
   (setq org-emphasis-regexp-components-original
         '(" \t('\"{"
@@ -2956,7 +2959,7 @@ which VARIABLE value is a member of the VALUE sequence."
 ** Miscellaneous
 *** Searching the Web with Google
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (defun leoc/search-google ()
     "Googles a query or region if any."
     (interactive)
@@ -2972,7 +2975,7 @@ which VARIABLE value is a member of the VALUE sequence."
 
 *** Searching the =dict.leo.org=
 
-#+BEGIN_SRC emacs-lisp :results none
+#+BEGIN_SRC emacs-lisp
   (defun leoc/search-dict ()
     "Looks up in a dictionary. Query or region if any."
     (interactive)
