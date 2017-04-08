@@ -1,7 +1,7 @@
 #+TITLE: Emacs Configuration
 * Emacs
 :PROPERTIES:
-:header-args: :results none
+:header-args: :results none :tangle yes
 :END:
 
 This document describes my personal emacs configuration.
@@ -3005,3 +3005,14 @@ Sometimes I want to quickly change something in Emacs.
 #+END_SRC
 
 ** Experiments
+*** DONE Evil Mode
+CLOSED: [2017-02-21 Tue 16:20]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2017-02-21 Tue 16:20]
+:END:
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-org :ensure t)
+  (use-package evil :ensure t)
+  (use-package evil-leader)
+#+END_SRC
