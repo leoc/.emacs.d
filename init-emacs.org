@@ -2000,7 +2000,7 @@ files in the Gerkhin syntax.
 
 #+BEGIN_SRC emacs-lisp :noweb-ref leoc/use-package-org-mode :noweb yes :tangle yes
   (use-package org
-    :ensure t
+    :ensure org-plus-contrib
     :diminish (org-indent-mode)
     :bind (("C-c a" . org-agenda)
            :map org-mode-map
@@ -2023,8 +2023,6 @@ files in the Gerkhin syntax.
     (progn
       <<leoc/org-mode-config>>
       ))
-
-  (use-package org-plus-contrib :ensure t)
 #+END_SRC
 
 *** Org Files
