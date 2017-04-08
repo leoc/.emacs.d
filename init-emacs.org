@@ -1146,6 +1146,8 @@ Dired helps me using this beautiful files I love so dearly.
     (progn
       (require 'dired-x)
 
+      (setq dired-omit-verbose nil)
+
       (defun leoc/dired-open-externally ()
         (interactive)
         (let* ((file-list (dired-get-marked-files))
