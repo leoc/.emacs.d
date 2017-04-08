@@ -1724,6 +1724,7 @@ for writing complex stylesheets.
 
 #+BEGIN_SRC emacs-lisp
 (use-package python-mode
+  :ensure t
   :config
   (flycheck-add-next-checker 'python-flake8 'python-pylint))
 #+END_SRC
