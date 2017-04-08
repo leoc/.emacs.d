@@ -1188,6 +1188,7 @@ Dired Details hides some information in the dired buffer.
 
 #+BEGIN_SRC emacs-lisp
   (use-package dired-details
+    :ensure t
     :config
     (progn
       (setq-default dired-details-hidden-string "--- ")
