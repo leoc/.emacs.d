@@ -2686,8 +2686,9 @@ Do not prompt to confirm evaluation.
 For [[http://www.velalu.qa][Velaluqa]] I have some custom defaults to generate beautiful
 documents.
 
-#+BEGIN_SRC emacs-lisp :tangle no :exports none
-;; (load "~/projects/velaluqa/documents/templates/emacs.el")
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(load "~/projects/velaluqa/documents/templates/emacs.el")
 #+END_SRC
 
 ** Accounting with Ledger
