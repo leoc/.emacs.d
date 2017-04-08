@@ -318,9 +318,9 @@ Make sure there is a newline in the end of each file.
         (save-excursion (downcase-region (region-beginning) (region-end)))
       (downcase-word 1)))
 
-  (bind-key "M-l" 'leoc/downcase-dwim)
-  (bind-key "M-u" 'leoc/upcase-dwim)
-  (bind-key "M-c" 'leoc/capitalize-dwim)
+  (bind-key "M-S-l" 'leoc/downcase-dwim)
+  (bind-key "M-S-u" 'leoc/upcase-dwim)
+  (bind-key "M-S-c" 'leoc/capitalize-dwim)
 #+END_SRC
 
 *** Align by Regular Expression
