@@ -2284,6 +2284,7 @@ The common tags are defined as follows:
                         ("exercise" . ?e)
                         ("read" . ?r)
                         ("chores" . ?c)
+                        ("lang" . ?l)
                         ("sideproject" . ?s)))
 #+END_SRC
 
