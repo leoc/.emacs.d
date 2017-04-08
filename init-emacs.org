@@ -2110,7 +2110,10 @@ indent headings within the clocktable.
 **** Logging & Clocking
 
 #+BEGIN_SRC emacs-lisp
-(setq org-log-done t
+(setq org-log-done 'time
+      org-log-repeat 'time
+      org-log-reschedule 'time
+      org-log-redeadline 'time
       org-log-into-drawer "LOGBOOK"
       ;; Show lot sof clocking history so it's easy to pick items off the C-F11 list
       org-clock-history-length 36
