@@ -2385,7 +2385,7 @@ of a certain heading.
 
 For my agenda I use
 
-#+BEGIN_SRC emacs-lisp :noweb tangle :exports code :results none
+#+BEGIN_SRC emacs-lisp :noweb tangle :exports code
   (use-package org-query
     :load-path "vendor/org-query"
     :config
