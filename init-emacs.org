@@ -2673,6 +2673,14 @@ Do not prompt to confirm evaluation.
         (latex . t))))
 #+END_SRC
 
+*** org-passwords
+
+#+BEGIN_SRC emacs-lisp
+  (require 'org-passwords)
+  (setq org-passwords-file "/home/arthur/.org/passwords.org.gpg")
+  (setq org-passwords-random-words-dictionary "/etc/dictionaries-common/words")
+#+END_SRC
+
 *** Velaluqa
 
 For [[http://www.velalu.qa][Velaluqa]] I have some custom defaults to generate beautiful
