@@ -2313,7 +2313,7 @@ of a certain heading.
  | ~/.org/calendar.org                 |             |
 
 #+NAME: leoc/agenda-files
-#+BEGIN_SRC emacs-lisp :noweb-ref leoc/agenda-files :var leoc-agenda-files=leoc/agenda-files-table[1:-1,0] :results silent :exports none
+#+BEGIN_SRC emacs-lisp :noweb-ref leoc/agenda-files :var leoc-agenda-files=leoc/agenda-files-table[2:-1,0]
   ;; Because the org-agenda `:config` block is deferred it does not have
   ;; access to the `leoc-agenda-files` variable that would be tangled
   ;; via a `let` statement. So I define a global variable instead.
