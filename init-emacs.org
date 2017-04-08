@@ -1896,8 +1896,11 @@ navigation features:
       (require 'eclim)
       (require 'eclimd)
 
-      (with-eval-after-load 'company
-        (require 'company-emacs-eclim))
+      (use-package company-emacs-eclim
+        :ensure t
+        :config
+	(with-eval-after-load 'company
+          (require 'company-emacs-eclim)))
 
       (setq eclim-eclipse-dirs '("~/.eclipse")
             eclim-executable (expand-file-name "~/.eclipse/eclim")
