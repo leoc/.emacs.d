@@ -2619,7 +2619,7 @@ uses Pandoc to create org-mode markup.
     (setq org-habit-graph-column 104
           org-habit-following-days 4
           org-habit-preceding-days 21
-          org-habit-show-done-always-green t))
+          org-habit-show-done-always-green nil))
 #+END_SRC
 
 *** Contacts
