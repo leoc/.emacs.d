@@ -2185,6 +2185,7 @@ helpers to work with pomodoros within the org-mode clocking function.
           (not (string-match "\\(\\[\\[.*\\]\\[.*\\]\\]\\|\\[\\[.*\\]\\]\\)" title)))))
 
   (setq org-refile-use-outline-path 'file
+        org-log-refile 'time
         org-refile-allow-creating-parent-nodes t
         org-outline-path-complete-in-steps nil
         org-refile-target-verify-function 'leoc/verify-refile-target
