@@ -1415,6 +1415,7 @@ Fuzzy Matching à la Sublime Text makes some things easier too.
 
 #+BEGIN_SRC emacs-lisp
   (use-package flx-ido
+    :ensure t
     :init
     (flx-ido-mode 1)
     :config
