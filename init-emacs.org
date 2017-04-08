@@ -2656,20 +2656,21 @@ Do not prompt to confirm evaluation.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(org-babel-do-load-languages
- (quote org-babel-load-languages)
- '((emacs-lisp . t)
-   (dot . t)
-   (ditaa . t)
-   (python . t)
-   (ruby . t)
-   (gnuplot . t)
-   (clojure . t)
-   (sh . t)
-   (ledger . t)
-   (org . t)
-   (plantuml . t)
-   (latex . t)))
+  (with-eval-after-load 'org
+    (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((emacs-lisp . t)
+        (dot . t)
+        (ditaa . t)
+        (python . t)
+        (ruby . t)
+        (gnuplot . t)
+        (clojure . t)
+        (sh . t)
+        (ledger . t)
+        (org . t)
+        (plantuml . t)
+        (latex . t))))
 #+END_SRC
 
 *** Velaluqa
