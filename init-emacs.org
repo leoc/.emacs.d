@@ -1406,6 +1406,7 @@ manner. Vertical mode is much more friendly to the eye...
 
 #+BEGIN_SRC emacs-lisp
 (use-package ido-vertical-mode
+  :ensure t
   :init
   (ido-vertical-mode 1))
 #+END_SRC
