@@ -2101,6 +2101,12 @@ indent headings within the clocktable.
   org-emph-re
 #+END_SRC
 
+**** Movement
+
+#+BEGIN_SRC emacs-lisp
+(setq org-use-speed-commands t)
+#+END_SRC
+
 **** Logging & Clocking
 
 #+BEGIN_SRC emacs-lisp
