@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : @variable = options[:variable]
+# --
+@${1:variable_name} = options[:$1]$0
