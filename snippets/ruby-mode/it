@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
 #name : it '...'
 # --
-it 'should ${1:do something}'$0
+it '${1:does something}'$0

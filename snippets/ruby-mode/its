@@ -2,4 +2,4 @@
 # name: its
 # key: its
 # --
-its(:${member}) { should ${2: == ${3:'something'}} }$0
+it { should $1 }$0
