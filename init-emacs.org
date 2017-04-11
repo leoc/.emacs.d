@@ -2741,7 +2741,7 @@ from the UNIX command-line with a great Emacs integration.
 
             mu4e-compose-dont-reply-to-self t
             ;; use 'fancy' non-ascii characters in various places in mu4e
-            mu4e-use-fancy-chars t
+            mu4e-use-fancy-chars nil
 
             ;; save attachment to my desktop (this can also be a function)
             mu4e-attachment-dir "~/Attachments"
@@ -2784,32 +2784,28 @@ from the UNIX command-line with a great Emacs integration.
 **** Header Tag Marks
 
 #+NAME: headers-marks
-| *Mark Name*                   | *Symbol* |
-|-----------------------------+--------|
-| mu4e-headers-draft-mark     | D      |
-| mu4e-headers-flagged-mark   | F      |
-| mu4e-headers-new-mark       | N      |
-| mu4e-headers-passed-mark    | P      |
-| mu4e-headers-replied-mark   | R      |
-| mu4e-headers-seen-mark      | S      |
-| mu4e-headers-trashed-mark   | T      |
-| mu4e-headers-attach-mark    | a      |
-| mu4e-headers-encrypted-mark | x      |
-| mu4e-headers-signed-mark    | s      |
-| mu4e-headers-unread-mark    | u      |
+| *Mark Name*                   | *Text* | *Symbol* |
+|-----------------------------+------+--------|
+| mu4e-headers-draft-mark     | D    | D      |
+| mu4e-headers-flagged-mark   | F    | F      |
+| mu4e-headers-new-mark       | N    | N      |
+| mu4e-headers-passed-mark    | P    | P      |
+| mu4e-headers-replied-mark   | R    | R      |
+| mu4e-headers-seen-mark      | S    | S      |
+| mu4e-headers-trashed-mark   | T    | T      |
+| mu4e-headers-attach-mark    | a    | a      |
+| mu4e-headers-encrypted-mark | x    | x      |
+| mu4e-headers-signed-mark    | s    | s      |
+| mu4e-headers-unread-mark    | u    | u      |
 
-#+NAME: leoc/headers-marks
-#+BEGIN_SRC emacs-lisp :noweb-ref no-export :var headers-marks=headers-marks[2:-1] :results silent :exports none
-  (mapconcat (lambda (mark)
-               (let ((variable (nth 0 mark))
-                     (symbol (nth 1 mark)))
-                 (format "(setq %s (purecopy '(%S . %S)))"
-                         variable symbol symbol)))
-             headers-marks "\n")
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :noweb yes :export code
-<<leoc/headers-marks()>>
+#+NAME: configure-headers-marks :exports none
+#+BEGIN_SRC emacs-lisp
+  (mapcar '(lambda (mark)
+	    (let ((variable (nth 0 mark))
+		  (text (nth 1 mark))
+		  (symbol (nth 2 mark)))
+	      `(setq ,(intern variable) '(,text . ,symbol))))
+	  headers-marks)
 #+END_SRC
 
 **** Thread Prefix Markers
