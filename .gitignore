@@ -23,3 +23,4 @@ auto-save-list
 /init-emacs.el
 /init-emacs.html
 /.edbi-ds-history
+/var
