@@ -2855,7 +2855,7 @@ from the UNIX command-line with a great Emacs integration.
 #+BEGIN_SRC emacs-lisp
 (setq message-cite-reply-position 'above
       message-citation-line-function 'message-insert-formatted-citation-line
-      message-citation-line-format "On %a, %b %d %Y, %f wrote:\n")
+      message-citation-line-format "----- original message -----\nOn %a, %b %d %Y, %f wrote:\n")
 #+END_SRC
 
 **** Smart Refiling
