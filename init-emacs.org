@@ -2984,6 +2984,16 @@ which VARIABLE value is a member of the VALUE sequence."
 
 (add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account-for-composition)
 #+END_SRC
+
+*** Contacts
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'mu4e-headers-actions
+               '("org-contact-add" . mu4e-action-add-org-contact) t)
+  (add-to-list 'mu4e-view-actions
+               '("org-contact-add" . mu4e-action-add-org-contact) t)
+#+END_SRC
+
 ** Miscellaneous
 *** Searching the Web with Google
 
