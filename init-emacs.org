@@ -2704,11 +2704,10 @@ from the UNIX command-line with a great Emacs integration.
 
 ** e-Mail
 :PROPERTIES:
-:noweb-ref: leoc/mu4e-config
-:header-args: :results none :export code :tangle no
+:header-args: :noweb-ref leoc/mu4e-config :results none :export code :tangle no
 :END:
 
-#+BEGIN_SRC emacs-lisp :noweb-ref leoc/use-package-mu4e :noweb tangle :tangle yes
+#+BEGIN_SRC emacs-lisp :noweb-ref leoc/use-package-mu4e :noweb yes :tangle yes :var headers-marks=headers-marks
   (use-package mu4e
     :load-path "/usr/local/share/emacs/site-lisp/mu4e"
     :config
