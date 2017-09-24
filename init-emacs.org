@@ -2058,6 +2058,7 @@ files in the Gerkhin syntax.
       (bind-key "C-c o j" (lambda () (interactive) (find-file "~/.org/journal.org")))
       (bind-key "C-c o c" (lambda () (interactive) (find-file "~/.org/calendar.org")))
       (bind-key "C-c o p" (lambda () (interactive) (find-file "~/.org/_personal.org")))
+      (bind-key "C-c o b" (lambda () (interactive) (find-file "~/.org/bookmarks.org")))
       (bind-key "C-c b v" (lambda () (interactive) (find-file "~/.org/_business_velaluqa.org")))
       (bind-key "C-c b c" (lambda () (interactive) (find-file "~/.org/_business_crowdcat.org")))
       (bind-key "C-c b p" (lambda () (interactive) (find-file "~/.org/_business_personal.org"))))
