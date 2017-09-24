@@ -7,3 +7,6 @@
 [submodule "vendor/org-super-agenda"]
 	path = vendor/org-super-agenda
 	url = https://github.com/alphapapa/org-super-agenda.git
+[submodule "vendor/org-protocol-capture-html"]
+	path = vendor/org-protocol-capture-html
+	url = https://github.com/alphapapa/org-protocol-capture-html.git
