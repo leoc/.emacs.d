@@ -2451,77 +2451,100 @@ For my agenda I use
     :config
     (progn
       (setq org-agenda-custom-commands
-            '(("a" "Agenda"
-               ((agenda "" ((org-agenda-sorting-strategy '(habit-down timestamp-up time-up priority-down category-keep user-defined-up))))
-                (tags-todo "+project-archived-shopping-CANCELLED/!-HOLD-WAITING"
-                           ((org-agenda-overriding-header "Stuck Projects")
-                            (org-agenda-skip-function
-                             '(oh/agenda-skip :headline-if '(non-project)
-                                              :subtree-if '(non-stuck-project inactive-project habit scheduled deadline)))
-                            (org-tags-match-list-sublevels 'intended)))
-                (tags-todo "-archived-shopping-CANCELLED/!WAITING|HOLD"
-                           ((org-agenda-overriding-header "Waiting and Postponed Tasks")
-                            (org-agenda-skip-function
-                             '(oh/agenda-skip :subtree-if '(project habit)))
-                            (org-tags-match-list-sublevels nil)))
-                (tags-todo "-archived-shopping-WAITING-CANCELLED/!NEXT"
-                           ((org-agenda-overriding-header "Next Tasks")
-                            (org-agenda-skip-function
-                             '(oh/agenda-skip :headline-if '(project)
-                                              :subtree-if '(inactive habit scheduled deadline)
-                                              :subtree-if-unrestricted-and '(subtask)
-                                              :subtree-if-restricted-and '(single-task)))
-                            (org-tags-match-list-sublevels 'indented)
-                            (org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
-                ;; (tags-todo "-archived-shopping-CANCELLED/!-NEXT-HOLD-WAITING"
-                ;;            ((org-agenda-overriding-header "Available Tasks")
-                ;;             (org-agenda-skip-function
-                ;;              '(oh/agenda-skip :headline-if '(project)
-                ;;                               :subtree-if '(inactive habit scheduled deadline)
-                ;;                               :subtree-if-unrestricted-and '(subtask)
-                ;;                               :subtree-if-restricted-and '(single-task)))
-                ;;             (org-agenda-sorting-strategy '(priority-down category-keep))
-                ;;             (org-tags-match-list-sublevels nil)))
-                (tags-todo "+project-archived-CANCELLED/!"
-                           ((org-agenda-overriding-header "Currently Active Projects")
-                            (org-agenda-skip-function
-                             '(oh/agenda-skip :subtree-if '(non-project stuck-project inactive-project habit)
-                                              :headline-if-unrestricted-and '(subproject)
-                                              :headline-if-restricted-and '(top-project)))
-                            (org-tags-match-list-sublevels 'indented)
-                            (org-agenda-sorting-strategy '(priority-down category-keep)))))
-               nil)
-              ("r" "Tasks to Refile" alltodo ""
-               ((org-agenda-overriding-header "Tasks to Refile")
-                (org-agenda-files '("~/.org/inbox.org"))))
-              ("#" "Stuck Projects" tags-todo "-archived-shopping-CANCELLED/!-HOLD-WAITING"
-               ((org-agenda-overriding-header "Stuck Projects")
-                (org-agenda-skip-function
-                 '(oh/agenda-skip :subtree-if '(inactive non-project non-stuck-project
-                                                         habit scheduled deadline)))))
-              ("n" "Next Tasks" tags-todo "-archived-shopping-WAITING-CANCELLED/!NEXT"
-               ((org-agenda-overriding-header "Next Tasks")
-                (org-agenda-skip-function
-                 '(oh/agenda-skip :subtree-if '(inactive project habit scheduled deadline)))
-                (org-tags-match-list-sublevels t)
-                (org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
-              ("R" "Tasks" tags-todo "-archived-shopping-CANCELLED/!-NEXT-HOLD-WAITING"
-               ((org-agenda-overriding-header "Available Tasks")
-                (org-agenda-skip-function
-                 '(oh/agenda-skip :headline-if '(project)
-                                  :subtree-if '(inactive habit scheduled deadline)
-                                  :subtree-if-unrestricted-and '(subtask)
-                                  :subtree-if-restricted-and '(single-task)))
-                (org-agenda-sorting-strategy '(priority-down category-keep))))
-              ("p" "Projects" tags-todo "-archived-shopping-CANCELLED/!"
-               ((org-agenda-overriding-header "Currently Active Projects")
-                (org-agenda-skip-function
-                 '(oh/agenda-skip :subtree-if '(non-project inactive habit)))
-                (org-agenda-sorting-strategy '(priority-down category-keep))
-                (org-tags-match-list-sublevels 'indented)))
-              ("w" "Waiting Tasks" tags-todo "-archived-shopping-CANCELLED/!WAITING|HOLD"
-               ((org-agenda-overriding-header "Waiting and Postponed Tasks")
-                (org-agenda-skip-function '(oh/agenda-skip :subtree-if '(project habit)))))))))
+            '(
+	      ("a" "Agenda" org-super-agenda ""
+	       ((org-agenda-span 'day)
+		(org-super-agenda-groups
+		 '((:todo ("SOMEDAY" "TO-READ" "CHECK" "TO-WATCH" "WATCHING") :last t)
+		   (:name "Today" :time t :todo "TODAY")
+		   (:name "Reading" :todo "READ")
+		   (:name "Mindful Living" :tags ("mindfulness"))
+		   (:name "Important" :priority "A")
+		   (:name "Chores" :tags ("household" "chores"))
+		   (:name "Current Projects" :tags "project")
+		   (:name "Ergonomics" :tags "ergonomics")
+		   (:name "Find Rehearsal Room" :tags "rehearsal")
+		   (:name "Communication, Socializing & Networking" :tags ("networking" "socialize" "mail"))
+		   (:name "Velaluqa Billing" :tags ("billing" "#billing"))
+		   (:name "Velaluqa Marketing" :tags "marketing")
+		   (:name "Velaluqa Customers" :tags "customer")
+		   (:name "Velaluqa Customers" :tags "velaluqa")
+		   (:name "Music" :tags "music")
+		   (:name "Hacking" :tags "hacking")
+		   (:name "Food-related" :tags ("food" "dinner"))
+		   (:todo "WAITING")
+		   (:priority ("B" "C"))))))
+	      ("o" "Agenda"
+	       ((agenda "" ((org-agenda-sorting-strategy '(habit-down timestamp-up time-up priority-down category-keep user-defined-up))))
+		(tags-todo "+project-archived-shopping-CANCELLED/!-HOLD-WAITING"
+			   ((org-agenda-overriding-header "Stuck Projects")
+			    (org-agenda-skip-function
+			     '(oh/agenda-skip :headline-if '(non-project)
+					      :subtree-if '(non-stuck-project inactive-project habit scheduled deadline)))
+			    (org-tags-match-list-sublevels 'intended)))
+		(tags-todo "-archived-shopping-CANCELLED/!WAITING|HOLD"
+			   ((org-agenda-overriding-header "Waiting and Postponed Tasks")
+			    (org-agenda-skip-function
+			     '(oh/agenda-skip :subtree-if '(project habit)))
+			    (org-tags-match-list-sublevels nil)))
+		(tags-todo "-archived-shopping-WAITING-CANCELLED/!NEXT"
+			   ((org-agenda-overriding-header "Next Tasks")
+			    (org-agenda-skip-function
+			     '(oh/agenda-skip :headline-if '(project)
+					      :subtree-if '(inactive habit scheduled deadline)
+					      :subtree-if-unrestricted-and '(subtask)
+					      :subtree-if-restricted-and '(single-task)))
+			    (org-tags-match-list-sublevels 'indented)
+			    (org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
+		;; (tags-todo "-archived-shopping-CANCELLED/!-NEXT-HOLD-WAITING"
+		;;            ((org-agenda-overriding-header "Available Tasks")
+		;;             (org-agenda-skip-function
+		;;              '(oh/agenda-skip :headline-if '(project)
+		;;                               :subtree-if '(inactive habit scheduled deadline)
+		;;                               :subtree-if-unrestricted-and '(subtask)
+		;;                               :subtree-if-restricted-and '(single-task)))
+		;;             (org-agenda-sorting-strategy '(priority-down category-keep))
+		;;             (org-tags-match-list-sublevels nil)))
+		(tags-todo "+project-archived-CANCELLED/!"
+			   ((org-agenda-overriding-header "Currently Active Projects")
+			    (org-agenda-skip-function
+			     '(oh/agenda-skip :subtree-if '(non-project stuck-project inactive-project habit)
+					      :headline-if-unrestricted-and '(subproject)
+					      :headline-if-restricted-and '(top-project)))
+			    (org-tags-match-list-sublevels 'indented)
+			    (org-agenda-sorting-strategy '(priority-down category-keep)))))
+	       nil)
+	      ("r" "Tasks to Refile" alltodo ""
+	       ((org-agenda-overriding-header "Tasks to Refile")
+		(org-agenda-files '("~/.org/inbox.org"))))
+	      ("#" "Stuck Projects" tags-todo "-archived-shopping-CANCELLED/!-HOLD-WAITING"
+	       ((org-agenda-overriding-header "Stuck Projects")
+		(org-agenda-skip-function
+		 '(oh/agenda-skip :subtree-if '(inactive non-project non-stuck-project
+							 habit scheduled deadline)))))
+	      ("n" "Next Tasks" tags-todo "-archived-shopping-WAITING-CANCELLED/!NEXT"
+	       ((org-agenda-overriding-header "Next Tasks")
+		(org-agenda-skip-function
+		 '(oh/agenda-skip :subtree-if '(inactive project habit scheduled deadline)))
+		(org-tags-match-list-sublevels t)
+		(org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
+	      ("R" "Tasks" tags-todo "-archived-shopping-CANCELLED/!-NEXT-HOLD-WAITING"
+	       ((org-agenda-overriding-header "Available Tasks")
+		(org-agenda-skip-function
+		 '(oh/agenda-skip :headline-if '(project)
+				  :subtree-if '(inactive habit scheduled deadline)
+				  :subtree-if-unrestricted-and '(subtask)
+				  :subtree-if-restricted-and '(single-task)))
+		(org-agenda-sorting-strategy '(priority-down category-keep))))
+	      ("p" "Projects" tags-todo "-archived-shopping-CANCELLED/!"
+	       ((org-agenda-overriding-header "Currently Active Projects")
+		(org-agenda-skip-function
+		 '(oh/agenda-skip :subtree-if '(non-project inactive habit)))
+		(org-agenda-sorting-strategy '(priority-down category-keep))
+		(org-tags-match-list-sublevels 'indented)))
+	      ("w" "Waiting Tasks" tags-todo "-archived-shopping-CANCELLED/!WAITING|HOLD"
+	       ((org-agenda-overriding-header "Waiting and Postponed Tasks")
+		(org-agenda-skip-function '(oh/agenda-skip :subtree-if '(project habit)))))))))
 #+END_SRC
 
 **** Time Budgets
@@ -2541,66 +2564,6 @@ helps me visualizing my clocked time in a simple table.
                            (:title "Exercise" :tags "+exercise|+health" :budget "5:15" :block week)
                            (:title "Language" :tags "+lang" :budget "5:15" :block week))))
 #+END_SRC
-*** Super Agenda
-
-    #+BEGIN_SRC elisp
-      (use-package org-super-agenda
-        :load-path "vendor/org-super-agenda")
-    #+END_SRC
-
-    #+BEGIN_SRC elisp
-      (let ((org-agenda-custom-commands
-    	 '(("u" "SUPER Agenda"
-    	    org-super-agenda ""
-    	    ((org-agenda-span 'day)
-    	     (org-super-agenda-groups
-                  '(;; Each group has an implicit boolean OR operator between its selectors.
-    		(:name "Today"  ; Optionally specify section name
-    		       :time t  ; Items that have a time associated
-    		       :todo "TODAY")  ; Items that have this TODO
-    				       ; keyword
-    		(:name "Reading" :todo "READ")
-    		(:name "Mindful Living" :tags ("mindfulness"))
-    		(:name "Important"
-    		       ;; Single arguments given alone
-    		       :priority "A")
-    		(:name "Chores"
-    		       :tags ("household" "chores"))
-    		(:name "Current Projects"
-    		       :tags "project")
-    		(:name "Ergonomics"
-    		       :tags "ergonomics")
-    		(:name "Find Rehearsal Room"
-    		       :tags "rehearsal")
-    		(:name "Communication, Socializing & Networking"
-    		       :tags ("networking" "socialize" "mail"))
-    		(:name "Velaluqa Billing"
-    		       :tags ("billing" "#billing"))
-    		(:name "Velaluqa Marketing"
-    		       :tags "marketing")
-    		(:name "Velaluqa Customers"
-    		       :tags "customer")
-    		(:name "Velaluqa Customers"
-    		       :tags "velaluqa")
-    		(:name "Music"
-    		       :tags "music")
-    		(:name "Hacking"
-    		       :tags "hacking")
-    		(:name "Food-related"
-    		       ;; Multiple args given in list with implicit OR
-    		       :tags ("food" "dinner"))
-    		;; Filter functions supply their own section names when none are given
-    		(:todo "WAITING")
-    		(:todo ("SOMEDAY" "TO-READ" "CHECK" "TO-WATCH" "WATCHING")
-    		       ;; Show this section at the end of the agenda. If you specified
-    		       ;; this filter last, items with these todo keywords that have
-    		       ;; priority A, B, or C would be displayed in those sections
-    		       ;; instead, because items are filtered out in the order the
-    		       ;; filters are listed.
-    		       :last t)
-    		(:priority ("B" "C")))))))))
-        (org-agenda nil "u"))
-    #+END_SRC
 *** Archive
 
 #+BEGIN_SRC emacs-lisp
