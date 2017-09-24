@@ -1555,6 +1555,15 @@ Speedbar is a sidebar that shows the file tree.
         ))
 #+END_SRC
 
+*** Custom Keymap
+
+#+BEGIN_SRC elisp
+(define-prefix-command 'leoc-map)
+(global-set-key (kbd "C-ß") 'leoc-map)
+
+(define-key leoc-map (kbd "m") 'mu4e)
+(define-key leoc-map (kbd "c") 'mu4e-compose-new)
+#+END_SRC
 ** Programming
 
 #+BEGIN_SRC emacs-lisp
