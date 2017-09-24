@@ -4,3 +4,6 @@
 [submodule "vendor/summered-theme"]
 	path = vendor/summered-theme
 	url = https://github.com/leoc/summered-emacs.git
+[submodule "vendor/org-super-agenda"]
+	path = vendor/org-super-agenda
+	url = https://github.com/alphapapa/org-super-agenda.git

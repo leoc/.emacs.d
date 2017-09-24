@@ -1991,7 +1991,48 @@ files in the Gerkhin syntax.
 *** Rainbow Mode
 
 #+BEGIN_SRC emacs-lisp
-  (use-package rainbow-mode :ensure t)
+  (use-package rainbow-mode
+    :ensure t
+    :config
+    (defun lighten-color-at-point (&optional pct)
+      (interactive "p")
+      (unless (looking-at-p "#")
+	(re-search-backward "#"))
+      (save-excursion
+	(push-mark nil t t)
+	(let ((dist (skip-chars-forward "#A-Za-z0-9" (+ (point) 7)))
+	      (percent (or pct 5)))
+	  (insert (apply 'color-rgb-to-hex
+			 (apply 'color-hsl-to-rgb
+				(apply 'color-lighten-hsl
+				       (append (apply 'color-rgb-to-hsl
+						      (color-name-to-rgb (buffer-substring-no-properties (mark) (point))))
+					       (list percent))))))
+	  (delete-region (region-beginning) (+ (region-beginning) dist)))))
+
+    (defun darken-color-at-point (&optional pct)
+      (interactive "p")
+      (lighten-color-at-point (if (numberp pct) (* pct -1) -5)))
+
+    (defun convert-color-at-point (&optional pct)
+      (interactive "p")
+      (unless (looking-at-p "#")
+	(re-search-backward "#"))
+      (save-excursion
+	(push-mark nil t t)
+	(let ((dist (skip-chars-forward "#A-Za-z0-9" (+ (point) 7)))
+	      (percent (or pct 5)))
+	  (insert (s-join ", " (mapcar #'(lambda (a)
+					   (format "%s" (truncate (* 255 a))))
+				       (color-name-to-rgb (buffer-substring-no-properties (mark) (point))))))
+	  (delete-region (region-beginning) (+ (region-beginning) dist)))))
+
+    (defun leoc-rainbow-mode-hook ()
+      (local-set-key (kbd "C-c l l") 'convert-color-at-point)
+      (local-set-key (kbd "C-+") 'lighten-color-at-point)
+      (local-set-key (kbd "C--") 'darken-color-at-point))
+
+    (add-hook 'rainbow-mode-hook 'leoc-rainbow-mode-hook))
 #+END_SRC
 
 ** Org-Mode
