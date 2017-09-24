@@ -2901,6 +2901,21 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
               ("m" "Respond to mail" entry (file "~/.org/refile.org") "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n\n" :clock-in t :clock-resume t :immediate-finish t)))))
 #+END_SRC
 
+
+***** Refile after capture
+
+Some capturing templates should initiate a refile upon finalizing the
+capturing process.
+
+#+BEGIN_SRC elisp
+  (defun leoc/refile-maybe ()
+    (let ((key (org-capture-get :key)))
+      (when (member key '("b" "t" "c" "m"))
+	(org-refile))))
+
+  (add-hook 'org-capture-before-finalize-hook 'leoc/refile-maybe)
+#+END_SRC
+
 **** Protocol
 
 Org-protocol allows capturing from outside Emacs. I use it to capture
