@@ -2507,8 +2507,8 @@ of a certain heading.
 For my agenda I use
 
 #+BEGIN_SRC emacs-lisp :noweb tangle :exports code
-  (use-package org-query
-    :load-path "vendor/org-query"
+  (use-package org-super-agenda
+    :load-path "vendor/org-super-agenda"
     :config
     (progn
       (setq org-agenda-custom-commands
