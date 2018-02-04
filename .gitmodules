@@ -10,3 +10,6 @@
 [submodule "vendor/org-protocol-capture-html"]
 	path = vendor/org-protocol-capture-html
 	url = https://github.com/alphapapa/org-protocol-capture-html.git
+[submodule "vendor/mailaprop"]
+	path = vendor/mailaprop
+	url = git@github.com:leoc/mailaprop.git
