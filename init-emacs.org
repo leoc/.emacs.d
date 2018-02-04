@@ -3389,6 +3389,25 @@ which VARIABLE value is a member of the VALUE sequence."
                '("org-contact-add" . mu4e-action-add-org-contact) t)
 #+END_SRC
 
+**** Completion via Mailaprop
+
+Mailaprop extracts all mail addresses from the mail folder and creates
+an ~.eld~ file with an index.
+
+#+BEGIN_SRC emacs-lisp
+  (setq mailaprop-address-file (expand-file-name "~/private/mailaprop/mailaprop-addresses.eld"))
+  (load-file (expand-file-name "~/.emacs.d/vendor/mailaprop/mailaprop.el"))
+
+  (setq mailaprop-drop-address-regexps
+	(list
+	 "member@paypal.com"
+	 "member@paypal.de"
+	 "=\?.*\?=" ; never want to email Uncle Fester
+	 ))
+
+  (when (featurep 'mailaprop)
+    (mailaprop-load-addresses))
+#+END_SRC
 ** Miscellaneous
 *** Searching the Web with Google
 
