@@ -3085,6 +3085,36 @@ documents.
                (list "p" ":PROPERTIES:\n?\n:END:"))
 #+END_SRC
 
+*** Redmine Sync Binding
+
+I use org-mode to track all my issues. Currently I use [[https://github.com/leoc/org-redmine.rb][org-redmine.rb]]
+to synchronize clocks and new issues to Redmine.
+
+There is a bi-directional sync in the works, but it still does not
+work as it should. So right now only:
+
+- sync of clocks to time entries in the respective project
+- creation of new issues from headlines the format of:
+
+#+BEGIN_SRC text
+\* TODO # - Title of the issue                                 :@bug:
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(defun leoc/org-redmine-sync (&optional prefix)
+  "Run org-redmine sync command for the last X days given by PREFIX."
+  (interactive)
+  (save-some-buffers)
+  (if prefix
+      (let ((from-timestamp (format-time-string "%Y-%m-%d" (time-subtract (current-time) (seconds-to-time (* 2 24 60 60)))))
+	    (to-timestamp (format-time-string "%Y-%m-%d" (current-time))))
+	(shell-command (concat "urxvt -e bash --login -c \"cd /home/arthur/projects/org-redmine-time-transfer; ./org-redmine sync" from-timestamp "--" to-timestamp ";\"") nil nil))
+    (shell-command (concat "urxvt -e bash --login -c \"cd /home/arthur/projects/org-redmine-time-transfer; ./org-redmine sync;\"") nil nil))
+  (kill-buffer "*Shell Command Output*"))
+
+(bind-key "C-c o s" 'leoc/org-redmine-sync)
+#+END_SRC
+
 ** Accounting with Ledger
 
 Ledger is a powerful, double-entry accounting system that is accessed
