@@ -3110,11 +3110,7 @@ There is a bi-directional sync in the works, but it still does not
 work as it should. So right now only:
 
 - sync of clocks to time entries in the respective project
-- creation of new issues from headlines the format of:
-
-#+BEGIN_SRC text
-\* TODO # - Title of the issue                                 :@bug:
-#+END_SRC
+- creation of new issues from headlines the format of: ~\* TODO # - Title of the issue  :@bug:~
 
 #+BEGIN_SRC emacs-lisp
 (defun leoc/org-redmine-sync (&optional prefix)
