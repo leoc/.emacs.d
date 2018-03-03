@@ -2945,10 +2945,9 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
 	      ("jr" "Review" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))
 	      ("ja" "Accomplishment" entry (file+datetree "~/.org/journal.org") "* %u Accomplished: %?")
 	      ("jj" "Simple Entry" entry (file+datetree "~/.org/journal.org") "* %u %?")
-	      ("w" "Today I Learned Post" plain (file (leoc/web-blog-post-file "/home/arthur/projects/andersen.berlin/blog/_posts")) "---\ntitle: %(leoc/get-last-web-post-title)\ntags:\n  - til\n---\n\n%?")
+	      ("w" "Today I Learned Post" plain (file (leoc/web-blog-post-file "/home/arthur/projects/andersen.berlin/blog/_posts")) "---\nlayout: post\ntitle: %(leoc/get-last-web-post-title)\ntags:\n  - til\n---\n\n%?" :unnarrowed t)
 	      ("m" "Respond to mail" entry (file "~/.org/refile.org") "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n\n" :clock-in t :clock-resume t :immediate-finish t)))))
 #+END_SRC
-
 
 ***** Refile after capture
 
