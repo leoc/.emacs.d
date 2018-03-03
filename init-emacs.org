@@ -2941,6 +2941,7 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
 	      ("n" "Note" entry (file+headline "~/.org/refile.org" "Notes") "* %?%c\n:PROPERTIES:\n:CREATED: %U\n:END:")
 	      ("c" "Clockable Interruption" entry (file+headline "~/.org/refile.org" "Inbox") "* %u %?\nADDED: %U" :clock-in t :clock-resume t)
 	      ("f" "Food" entry (file+headline "~/.org/track_food.org" "Food") "* %u %?")
+	      ("j" "Journal")
 	      ("jr" "Review" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))
 	      ("ja" "Accomplishment" entry (file+datetree "~/.org/journal.org") "* %u Accomplished: %?")
 	      ("jj" "Simple Entry" entry (file+datetree "~/.org/journal.org") "* %u %?")
