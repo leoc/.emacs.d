@@ -3112,18 +3112,18 @@ work as it should. So right now only:
 - creation of new issues from headlines the format of: ~\* TODO # - Title of the issue  :@bug:~
 
 #+BEGIN_SRC emacs-lisp
-(defun leoc/org-redmine-sync (&optional prefix)
-  "Run org-redmine sync command for the last X days given by PREFIX."
-  (interactive)
-  (save-some-buffers)
-  (if prefix
-      (let ((from-timestamp (format-time-string "%Y-%m-%d" (time-subtract (current-time) (seconds-to-time (* 2 24 60 60)))))
-	    (to-timestamp (format-time-string "%Y-%m-%d" (current-time))))
-	(shell-command (concat "urxvt -e bash --login -c \"cd /home/arthur/projects/org-redmine-time-transfer; ./org-redmine sync" from-timestamp "--" to-timestamp ";\"") nil nil))
-    (shell-command (concat "urxvt -e bash --login -c \"cd /home/arthur/projects/org-redmine-time-transfer; ./org-redmine sync;\"") nil nil))
-  (kill-buffer "*Shell Command Output*"))
+  (defun leoc/org-redmine-sync (&optional prefix)
+    "Run org-redmine sync command for the last X days given by PREFIX."
+    (interactive "P")
+    (save-some-buffers)
+    (if prefix
+	(let ((from-timestamp (format-time-string "%Y-%m-%d" (time-subtract (current-time) (seconds-to-time (* prefix 24 60 60)))))
+	      (to-timestamp (format-time-string "%Y-%m-%d" (current-time))))
+	  (shell-command (concat "urxvt -e bash --login -c \"cd /home/arthur/projects/org-redmine-time-transfer; ./org-redmine sync --date " from-timestamp "--" to-timestamp ";\"")) nil nil)
+      (shell-command (concat "urxvt -e bash --login -c \"cd /home/arthur/projects/org-redmine-time-transfer; ./org-redmine sync;\"") nil nil))
+    (kill-buffer "*Shell Command Output*"))
 
-(bind-key "C-c o s" 'leoc/org-redmine-sync)
+  (bind-key "C-c o s" 'leoc/org-redmine-sync)
 #+END_SRC
 
 ** Accounting with Ledger
