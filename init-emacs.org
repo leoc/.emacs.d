@@ -2920,17 +2920,32 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
 	(interactive)
 	(org-capture nil "n"))
 
+      (defvar leoc/web-last-blog-post-title nil
+	"This variable contains the last blog post title captured to be added to a blog post template.")
+
+      (defun leoc/web-blog-post-file (path)
+	(setq leoc/web-last-blog-post-title (read-string "Title: "))
+	(expand-file-name (format "%s-%s.org"
+				  (format-time-string "%Y-%m-%d")
+				  (downcase (s-replace " " "-" leoc/web-last-blog-post-title)))
+			  path))
+
+      (defun leoc/get-last-web-post-title ()
+	leoc/web-last-blog-post-title)
+
       (setq org-capture-templates
-            '(("b" "Web Bookmark" entry (file+headline "~/.org/refile.org" "Bookmarks") "* %c\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i")
-              ("t" "Remember" entry (file+headline "~/.org/refile.org" "Inbox") "* TODO %?%c\n:PROPERTIES:\n:CREATED: %U\n:END:")
-              ("r" "Reading" entry (file+headline "~/.org/refile.org" "Readings") "* READ %?%c :read:\n:PROPERTIES:\n:CREATED: %U\n:END:")
-              ("n" "Note" entry (file+headline "~/.org/refile.org" "Notes") "* %?%c\n:PROPERTIES:\n:CREATED: %U\n:END:")
-              ("c" "Clockable Interruption" entry (file+headline "~/.org/refile.org" "Inbox") "* %u %?\nADDED: %U" :clock-in t :clock-resume t)
-              ("f" "Food" entry (file+headline "~/.org/track_food.org" "Food") "* %u %?")
-              ("jj" "Journal Entry" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))
-              ("ja" "Journal Entry" entry (file+datetree "~/.org/journal.org") "* %u Accomplished: %?")
-              ("jn" "Journal Entry" entry (file+datetree "~/.org/journal.org") "* %u %?")
-              ("m" "Respond to mail" entry (file "~/.org/refile.org") "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n\n" :clock-in t :clock-resume t :immediate-finish t)))))
+	    '(
+	      ("b" "Web Bookmark" entry (file+headline "~/.org/refile.org" "Bookmarks") "* %c\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i")
+	      ("t" "Remember" entry (file+headline "~/.org/refile.org" "Inbox") "* TODO %?%c\n:PROPERTIES:\n:CREATED: %U\n:END:")
+	      ("r" "Reading" entry (file+headline "~/.org/refile.org" "Readings") "* READ %?%c :read:\n:PROPERTIES:\n:CREATED: %U\n:END:")
+	      ("n" "Note" entry (file+headline "~/.org/refile.org" "Notes") "* %?%c\n:PROPERTIES:\n:CREATED: %U\n:END:")
+	      ("c" "Clockable Interruption" entry (file+headline "~/.org/refile.org" "Inbox") "* %u %?\nADDED: %U" :clock-in t :clock-resume t)
+	      ("f" "Food" entry (file+headline "~/.org/track_food.org" "Food") "* %u %?")
+	      ("jr" "Review" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))
+	      ("ja" "Accomplishment" entry (file+datetree "~/.org/journal.org") "* %u Accomplished: %?")
+	      ("jj" "Simple Entry" entry (file+datetree "~/.org/journal.org") "* %u %?")
+	      ("w" "Today I Learned Post" plain (file (leoc/web-blog-post-file "/home/arthur/projects/andersen.berlin/blog/_posts")) "---\ntitle: %(leoc/get-last-web-post-title)\ntags:\n  - til\n---\n\n%?")
+	      ("m" "Respond to mail" entry (file "~/.org/refile.org") "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n\n" :clock-in t :clock-resume t :immediate-finish t)))))
 #+END_SRC
 
 
