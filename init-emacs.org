@@ -2295,12 +2295,13 @@ helpers to work with pomodoros within the org-mode clocking function.
       (or (not (equal (buffer-file-name) "/home/arthur/.org/bookmarks.org"))
           (not (string-match "\\(\\[\\[.*\\]\\[.*\\]\\]\\|\\[\\[.*\\]\\]\\)" title)))))
 
-  (setq org-refile-use-outline-path 'file
-        org-log-refile 'time
-        org-refile-allow-creating-parent-nodes t
-        org-outline-path-complete-in-steps nil
-        org-refile-target-verify-function 'leoc/verify-refile-target
-        org-refile-targets '(("~/.org/tasks.org" :maxlevel . 2)
+  (setq org-log-refile 'time
+	org-refile-use-outline-path 'file
+	org-outline-path-complete-in-steps nil
+	org-refile-use-cache t
+	org-refile-allow-creating-parent-nodes t
+	org-refile-target-verify-function 'leoc/verify-refile-target
+	org-refile-targets '(("~/.org/tasks.org" :maxlevel . 2)
                              ("~/.org/_personal.org" :maxlevel . 4)
                              ("~/.org/_personal2.org" :maxlevel . 4)
                              ("~/.org/_sideprojects.org" :maxlevel . 2)
