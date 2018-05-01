@@ -1650,8 +1650,10 @@ Speedbar is a sidebar that shows the file tree.
     (auto-fill-mode t)
     (font-lock-add-keywords
      nil '(("\\<\\(FIX\\|TODO\\|FIXME\\|HACK\\|REFACTOR\\):"
-            1 font-lock-warning-face t))))
-
+	    1 font-lock-warning-face t)))
+    (font-lock-add-keywords
+     nil '(("\\(KC_TRNS\\)"
+	    1 font-lock-comment-face t))))
   (add-hook 'prog-mode-hook 'leoc/prog-mode-defaults)
 #+END_SRC
 
