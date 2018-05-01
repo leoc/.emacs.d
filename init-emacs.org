@@ -2130,18 +2130,6 @@ files in the Gerkhin syntax.
            ("M-n" . org-metadown)
            ("M-n" . org-metadown)
            ("C-c o o" . org-pomodoro))
-    :preface
-    (progn
-      (bind-key "C-c o r" (lambda () (interactive) (find-file "~/.org/refile.org")))
-      (bind-key "C-c o s" (lambda () (interactive) (find-file "~/.org/someday.org")))
-      (bind-key "C-c o t" (lambda () (interactive) (find-file "~/.org/tasks.org")))
-      (bind-key "C-c o j" (lambda () (interactive) (find-file "~/.org/journal.org")))
-      (bind-key "C-c o c" (lambda () (interactive) (find-file "~/.org/calendar.org")))
-      (bind-key "C-c o p" (lambda () (interactive) (find-file "~/.org/_personal.org")))
-      (bind-key "C-c o b" (lambda () (interactive) (find-file "~/.org/bookmarks.org")))
-      (bind-key "C-c b v" (lambda () (interactive) (find-file "~/.org/_business_velaluqa.org")))
-      (bind-key "C-c b c" (lambda () (interactive) (find-file "~/.org/_business_crowdcat.org")))
-      (bind-key "C-c b p" (lambda () (interactive) (find-file "~/.org/_business_personal.org"))))
     :config
     (progn
       <<leoc/org-mode-config>>
@@ -2153,6 +2141,26 @@ files in the Gerkhin syntax.
 | *File* | *Agenda* | *Binding* | *Description* |
 |------+--------+---------+-------------|
 |      |        |         |             |
+
+**** Bindings to jump to org files
+
+#+BEGIN_SRC emacs-lisp
+  (bind-key "C-c o P" (lambda () (interactive) (find-file "~/.org/passwords.org.gpg")))
+  (bind-key "C-c o b" (lambda () (interactive) (find-file "~/.org/bookmarks.org")))
+  (bind-key "C-c o c" (lambda () (interactive) (find-file "~/.org/calendar.org")))
+  (bind-key "C-c o j" (lambda () (interactive) (find-file "~/.org/journal.org")))
+  (bind-key "C-c o p" (lambda () (interactive) (find-file "~/.org/_personal.org")))
+  (bind-key "C-c o r" (lambda () (interactive) (find-file "~/.org/refile.org")))
+  (bind-key "C-c o v" (lambda () (interactive) (find-file "~/.org/_business_velaluqa.org")))
+
+  (which-key-add-key-based-replacements "C-c o P" "Open passwords.org.gpg")
+  (which-key-add-key-based-replacements "C-c o b" "Open bookmarks.org")
+  (which-key-add-key-based-replacements "C-c o c" "Open calendar.org")
+  (which-key-add-key-based-replacements "C-c o j" "Open journal.org")
+  (which-key-add-key-based-replacements "C-c o p" "Open _personal.org")
+  (which-key-add-key-based-replacements "C-c o r" "Open refile.org")
+  (which-key-add-key-based-replacements "C-c o v" "Open _business_velaluqa.org")
+#+END_SRC
 
 *** Default Hook
 
