@@ -2661,6 +2661,66 @@ helps me visualizing my clocked time in a simple table.
                            (:title "Exercise" :tags "+exercise|+health" :budget "5:15" :block week)
                            (:title "Language" :tags "+lang" :budget "5:15" :block week))))
 #+END_SRC
+*** Planning
+**** Bindings to set weekly, monthly, yearly focus
+
+I like to have a hierarchy of tasks from the macro- to the
+micro-level. Yearly bigger goals get split into smaller goals that I
+can tackle within a month, within a week etc.
+
+#+BEGIN_SRC emacs-lisp
+  (defun planning/weekly-focus ()
+    "Set deadline, schedule and tag."
+    (interactive)
+    (org-toggle-tag "week" 'on)
+    (org-toggle-tag "month" 'off)
+    (org-toggle-tag "year" 'off)
+    (org-set-tags nil t)
+    (org-deadline t (format-time-string "%Y-%m-%d" (last-day-of-week))))
+
+  (defun planning/monthly-focus ()
+    "Set deadline, schedule and tag."
+    (interactive)
+    (org-toggle-tag "week" 'off)
+    (org-toggle-tag "month" 'on)
+    (org-toggle-tag "year" 'off)
+    (org-set-tags nil t)
+    (org-deadline t (format-time-string "%Y-%m-%d" (last-day-of-month))))
+
+  (defun planning/yearly-focus ()
+    "Set deadline, schedule and tag."
+    (interactive)
+    (org-toggle-tag "week" 'off)
+    (org-toggle-tag "month" 'off)
+    (org-toggle-tag "year" 'on)
+    (org-set-tags nil t)
+    (org-deadline t (format-time-string "%Y-%m-%d" (last-day-of-year))))
+
+  (bind-key "C-c P w" 'planning/weekly-focus org-mode-map)
+  (bind-key "C-c P m" 'planning/monthly-focus org-mode-map)
+  (bind-key "C-c P y" 'planning/yearly-focus org-mode-map)
+
+  (defun last-day-of-year ()
+    "Return the last day of the year as time."
+    (encode-time 0 0 0 31 12 (nth 5 (decode-time
+				     (current-time)))))
+
+  (defun last-day-of-month ()
+    "Return the last day of month as time."
+    (let* ((now (decode-time (current-time)))
+	   (month (nth 4 now))
+	   (year (nth 5 now))
+	   (last-day-of-month (calendar-last-day-of-month month year)))
+      (encode-time 0 0 0 last-day-of-month month year)))
+
+  (defun last-day-of-week ()
+    "Return the last day of the week as time."
+    (let* ((now (current-time))
+	   (datetime (decode-time now))
+	   (dow (nth 6 datetime)))
+      (time-add now (days-to-time (- 7 dow)))))
+#+END_SRC
+
 *** Archive
 
 #+BEGIN_SRC emacs-lisp
