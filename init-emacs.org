@@ -95,6 +95,15 @@ Some of the dependencies need to be installed.
 (diminish 'auto-revert-mode)
 #+END_SRC
 
+*** EasyPG
+
+Use GPG encrypted authinfo file. This way we don't save the
+credentials in plain text.
+
+#+BEGIN_SRC emacs-lisp
+(setq auth-sources '((:source "/home/arthur/.authinfo.gpg")))
+#+END_SRC
+
 ** Functions
 *** Hook Into Modes
 
