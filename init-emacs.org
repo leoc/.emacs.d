@@ -3140,7 +3140,7 @@ uses Pandoc to create org-mode markup.
   :config
   (progn
   (org-crypt-use-before-save-magic)
-  (setq org-tags-exclude-from-inheritance '("crypt"))
+  (add-to-list 'org-tags-exclude-from-inheritance "crypt")
   ;; GPG key to use for encryption
   ;; Either the Key ID or set to nil to use symmetric encryption.
   (setq org-crypt-key "id_rsa")))
