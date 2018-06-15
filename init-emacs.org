@@ -58,17 +58,7 @@ installed and required.
 
 (eval-when-compile
   (require 'use-package))
-#+END_SRC
 
-To have an enhanced view of all available packages, I like to use ~paradox~.
-
-#+BEGIN_SRC emacs-lisp
-(use-package paradox
-  :ensure t
-  :bind (("C-c l p" . paradox-list-packages))
-  :config
-  (setq paradox-github-token t
-        paradox-execute-asynchronously nil))
 #+END_SRC
 
 *** General Dependencies
