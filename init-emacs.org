@@ -84,6 +84,7 @@ Some of the dependencies need to be installed.
 (use-package s :ensure t)
 (use-package f :ensure t)
 (use-package kv :ensure t)
+(use-package ht :ensure t)
 (use-package noflet :ensure t)
 (use-package bind-key :ensure t)
 (use-package which-key :ensure t)
