@@ -2511,6 +2511,9 @@ of a certain heading.
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'org-tags-exclude-from-inheritance "project")
 (add-to-list 'org-tags-exclude-from-inheritance "sideproject")
+(add-to-list 'org-tags-exclude-from-inheritance "week")
+(add-to-list 'org-tags-exclude-from-inheritance "month")
+(add-to-list 'org-tags-exclude-from-inheritance "year")
 #+END_SRC
 
 **** Custom Commands
