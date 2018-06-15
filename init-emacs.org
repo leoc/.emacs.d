@@ -3654,14 +3654,3 @@ Sometimes I want to quickly change something in Emacs.
 :PROPERTIES:
 :header-args: :tangle no
 :END:
-*** DONE Evil Mode
-CLOSED: [2017-02-21 Tue 16:20]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2017-02-21 Tue 16:20]
-:END:
-
-#+BEGIN_SRC emacs-lisp
-  (use-package evil-org :ensure t)
-  (use-package evil :ensure t)
-  (use-package evil-leader)
-#+END_SRC
