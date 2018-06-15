@@ -210,7 +210,7 @@ the font size.
 
 #+BEGIN_SRC emacs-lisp
 (use-package zoom-frm
-  :ensure t
+  :requires zoom-frm
   :bind
   (("C-M-*" . zoom-frm-in)
    ("C-M-_" . zoom-frm-out)))
