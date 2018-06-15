@@ -109,6 +109,7 @@ A helper to easily hook a given ~func~ into multiple modes.
   `(dolist (mode-hook ,modes)
      (add-hook mode-hook ,func)))
 #+END_SRC
+
 ** Look and Feel
 
 Some systems behave differently than others...
