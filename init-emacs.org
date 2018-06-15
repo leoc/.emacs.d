@@ -32,9 +32,9 @@ First require the ~package~ package with the correct package archives.
 #+END_SRC
 
 #+NAME: package-archives
-| melpa | http://melpa.milkbox.net/packages/             |
-| org   | http://orgmode.org/elpa/                       |
-| SC    | http://joseito.republika.pl/sunrise-commander/ |
+| melpa | http://melpa.milkbox.net/packages/ |
+| elpa  | http://elpa.gnu.org/packages/      |
+| org   | http://orgmode.org/elpa/           |
 
 #+NAME: initialize-package-archives
 #+BEGIN_SRC emacs-lisp :var archives=package-archives
