@@ -3226,7 +3226,7 @@ Do not prompt to confirm evaluation.
         (ruby . t)
         (gnuplot . t)
         (clojure . t)
-        (sh . t)
+        (shell . t)
         (ledger . t)
         (org . t)
         (plantuml . t)
