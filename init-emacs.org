@@ -1243,20 +1243,13 @@ Dired helps me using this beautiful files I love so dearly.
                      wdired-abort-changes))
         (eval `(defadvice ,fun (after revert-buffer activate)
                  (revert-buffer))))
-      (add-hook 'dired-mode-hook #'(lambda ()
-                                     (dired-omit-mode 1)
-                                     (diff-hl-dired-mode)))))
-#+END_SRC
 
-Dired Details hides some information in the dired buffer.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package dired-details
-    :ensure t
-    :config
-    (progn
-      (setq-default dired-details-hidden-string "--- ")
-      (dired-details-install)))
+      (defun leoc/dired-mode-defaults ()
+        "Configure the dired-mode buffer accordingly."
+        (dired-omit-mode 1)
+        (dired-hide-details-mode)
+        (diff-hl-dired-mode))
+      (add-hook 'dired-mode-hook 'leoc/dired-mode-defaults)))
 #+END_SRC
 
 Emacs provides transparent archive support out of the box, but
@@ -1337,9 +1330,6 @@ pops up.
               ("*cscope*" :height ,(leoc/get-popwin-height 'medium))
               ("*xref*" :height ,(leoc/get-popwin-height 'medium))))))
 #+END_SRC
-
-#+RESULTS:
-: t
 
 *** Handle Projects with Projectile
 
