@@ -58,8 +58,6 @@ installed and required.
 
 (eval-when-compile
   (require 'use-package))
-(require 'diminish)
-(require 'bind-key)
 #+END_SRC
 
 To have an enhanced view of all available packages, I like to use ~paradox~.
@@ -86,11 +84,14 @@ Some of the dependencies need to be installed.
 (use-package f :ensure t)
 (use-package kv :ensure t)
 (use-package noflet :ensure t)
+(use-package bind-key :ensure t)
+(use-package which-key :ensure t)
 #+END_SRC
 
 *** Diminish modes
 
 #+BEGIN_SRC emacs-lisp
+(use-package diminish :ensure t)
 (diminish 'auto-fill-function)
 (diminish 'auto-revert-mode)
 #+END_SRC
