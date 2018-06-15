@@ -1,0 +1,2 @@
+# -*- mode: snippet -*-
+import ${1:LocalName} from '${2:package}';
