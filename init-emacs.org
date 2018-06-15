@@ -1436,23 +1436,10 @@ The package ~ido-ubiquitous~ replaces stock emacs completion with ido
 completion wherever it is possible to do so without breaking things.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package ido-ubiquitous
+  (use-package ido-completing-read+
     :ensure t
     :config
-    (progn
-      (ido-ubiquitous-mode)
-      (dolist (cmd '(sh-set-shell
-                     ispell-change-dictionary
-                     add-dir-local-variable
-                     ahg-do-command
-                     sclang-dump-interface
-                     sclang-dump-full-interface
-                     kill-ring-search
-                     tmm-menubar
-                     erc-iswitchb
-                     iswitchb-buffer))
-        (add-to-list 'ido-ubiquitous-command-overrides
-                     `(disable exact ,(symbol-name cmd))))))
+    (ido-ubiquitous-mode))
 #+END_SRC
 
 I find it much better to see the results of ~ido-mode~ in a vertical
