@@ -2517,19 +2517,19 @@ of a certain heading.
     (progn
       (setq org-agenda-files '("~/.org/_personal.org" "~/.org/_business_velaluqa.org" "~/.org/calendar.org")
             org-agenda-start-on-weekday nil
-            org-agenda-ndays 1
+            org-agenda-span 1
             org-agenda-include-diary t
             org-agenda-window-setup 'current-window
+            org-deadline-warning-days 365
             org-agenda-repeating-timestamp-show-all t
 
             ;; Show all agenda dates - even if they are empty
             org-agenda-show-all-dates t
             ;; Sorting order for tasks on the agenda
-            org-agenda-sorting-strategy '((agenda habit-down time-up user-defined-up priority-down effort-up category-keep)
-                                          (todo category-up priority-down effort-up)
-                                          (tags category-up priority-down effort-up)
-                                          (search category-up))
-            org-agenda-cmp-user-defined 'oh/agenda-sort
+            ;; org-agenda-sorting-strategy '((agenda habit-down time-up user-defined-up priority-down effort-up category-keep)
+            ;;                               (todo category-up priority-down effort-up)
+            ;;                               (tags category-up priority-down effort-up)
+            ;;                               (search category-up))
             ;; Keep tasks with dates on the global todo lists
             org-agenda-todo-ignore-with-date nil
             ;; Keep tasks with deadlines on the global todo lists
@@ -2550,9 +2550,9 @@ of a certain heading.
             org-agenda-persistent-filter t
             ;; Enable display of the time grid
             ;; so we can see the marker for the current time
-            org-agenda-time-grid '((daily today remove-match)
-                                   #("----------------" 0 16 (org-heading t))
-                                   (830 1000 1200 1300 1500 1700 2000 2300))
+            ;; org-agenda-time-grid '((daily today remove-match)
+            ;; 			 #("----------------" 0 16 (org-heading t))
+            ;; 			 (830 1000 1200 1300 1500 1700 2000 2300))
             ;; Do not dim blocked tasks
             org-agenda-dim-blocked-tasks nil
 
