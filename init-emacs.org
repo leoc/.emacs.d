@@ -367,6 +367,13 @@ Make sure there is a newline in the end of each file.
 (setq require-final-newline t)
 #+END_SRC
 
+Improve emacs cursor movement speed.
+
+#+BEGIN_SRC emacs-lisp
+(setq auto-window-vscroll t)
+#+END_SRC
+
+
 *** Case Handling
 
 #+BEGIN_SRC emacs-lisp
