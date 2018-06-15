@@ -76,6 +76,8 @@ To have an enhanced view of all available packages, I like to use ~paradox~.
 Some of the dependencies need to be installed.
 
 #+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/vendor")
+
 (use-package alert :ensure t)
 (use-package markup :ensure t)
 (use-package popup :ensure t)
@@ -1936,22 +1938,23 @@ mode. That means cycling through visibility and other fancy outline
 navigation features:
 
 #+BEGIN_SRC emacs-lisp
+  (use-package outline-magic :ensure t)
   (use-package yaml-mode
     :ensure t
     :config
     (progn
       (add-hook 'yaml-mode-hook 'leoc/yaml-outline-hook)
 
-      (defun outline-level ()
+      (defun leoc/yaml-outline-level ()
         (let (buffer-invisibility-spec)
           (save-excursion
-            (skip-chars-forward "  ")
-            (current-column))))
+            (skip-chars-forward " \\-")
+            (/ (current-column) 2))))
 
       (defun leoc/yaml-outline-hook ()
         (interactive)
         (setq outline-regexp "^[ \\t]*\\([^#:]+\\):\\( ?&[A-Za-z0-9]+\\)?$")
-        (setq outline-level 'outline-level)
+        (setq outline-level 'leoc/yaml-outline-level)
 
         (outline-minor-mode t)
         (hide-body)
