@@ -79,7 +79,6 @@ Some of the dependencies need to be installed.
 (use-package alert :ensure t)
 (use-package markup :ensure t)
 (use-package popup :ensure t)
-(use-package frame-fns :ensure t)
 (use-package s :ensure t)
 (use-package f :ensure t)
 (use-package kv :ensure t)
