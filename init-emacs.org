@@ -1619,12 +1619,13 @@ Speedbar is a sidebar that shows the file tree.
     "Sets custom programming defaults."
     (set (make-local-variable 'comment-auto-fill-only-comments) t)
     (auto-fill-mode t)
+
     (font-lock-add-keywords
      nil '(("\\<\\(FIX\\|TODO\\|FIXME\\|HACK\\|REFACTOR\\):"
-	    1 font-lock-warning-face t)))
+            1 font-lock-warning-face t)))
     (font-lock-add-keywords
      nil '(("\\(KC_TRNS\\)"
-	    1 font-lock-comment-face t))))
+            1 font-lock-comment-face t))))
   (add-hook 'prog-mode-hook 'leoc/prog-mode-defaults)
 #+END_SRC
 
@@ -1725,24 +1726,79 @@ for writing complex stylesheets.
               (config-file "--config" flycheck-jscs)
               source)
     :error-parser flycheck-parse-checkstyle
-    :modes (js-mode js2-mode js3-mode)
+    :modes (js-mode js2-mode js3-mode jsx-mode rjsx-mode)
     :next-checkers (javascript-jshint))
   (add-to-list 'flycheck-checkers 'javascript-jscs)
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+  (defun leoc/js-mode-defaults ()
+    (run-import-js)
+    (add-hook 'after-save-hook #'import-js-fix nil t)
+    (electric-indent-mode -1)
+    (setq js2-basic-offset 2
+          js2-highlight-level 3
+          js2-bounce-indent-p t
+          tab-width 2
+          indent-tabs-mode nil
+          js2-strict-missing-semi-warning nil))
+
+  (use-package js2-mode
+    :ensure t
+    :interpreter (("node" . js2-mode))
+    :mode (("\\.js?\\'" . js2-mode))
+    :config
+    (add-hook 'js2-mode-hook 'leoc/js-mode-defaults))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (defun leoc/rjsx-mode-defaults ()
+    (leoc/js-mode-defaults)
+    (setq emmet-expand-jsx-className? t))
+
+  (use-package rjsx-mode
+    :ensure t
+    :interpreter (("node" . rjsx-mode))
+    :mode (("\\.jsx?\\'" . rjsx-mode))
+    :bind (("C-c i" . import-js-import))
+    :config
+    (add-hook 'rjsx-mode-hook 'leoc/rjsx-mode-defaults))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package prettier-js
+    :ensure t
+    :config
+    (setq prettier-js-args '(
+                          "--trailing-comma" "es5"
+                          "--single-quote" "true"
+                          "--print-width" "100"
+                          ))
+    (add-hook 'js2-mode-hook 'prettier-js-mode)
+    (add-hook 'rjsx-mode-hook 'prettier-js-mode))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package import-js :ensure t)
+#+END_SRC
+
+#+RESULTS:
+
 ***** CoffeeScript
 
 #+BEGIN_SRC emacs-lisp
+  (defun leoc/coffee-mode-defaults ()
+    "Set coffee-mode defaults."
+    (electric-indent-mode -1)
+    (setq coffee-tab-width 2
+          tab-width 2
+          coffee-js-mode 'js2-mode
+          tab-stop-list '(2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60)))
+
   (use-package coffee-mode
     :ensure t
-    :init
-    (progn
-      (setq coffee-tab-width 2)
-      (add-hook 'coffee-mode-hook '(lambda ()
-                                     (set (make-local-variable 'tab-width) 2)
-                                     (setq coffee-js-mode 'javascript-mode)
-                                     (setq tab-stop-list '(2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60))
-                                     (electric-indent-mode -1)))))
+    :config
+    (add-hook 'coffee-mode-hook 'leoc/coffee-mode-defaults))
 #+END_SRC
 
 **** Ruby
