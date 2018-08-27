@@ -733,6 +733,7 @@ displaying whitespace.
     (setq whitespace-style '(face
                              lines-tail
                              tabs
+                             indent
                              tab-mark
                              empty
                              trailing)
@@ -756,6 +757,22 @@ was initially clean.
     (progn
       (setq whitespace-cleanup-mode-only-if-initially-clean t)
       (add-to-list 'whitespace-cleanup-mode-ignore-modes 'go-mode)))
+#+END_SRC
+
+Some files have mixed tabs and spaces. This helps to quickly replace
+tabs with spaces within files and reindenting the buffer afterwards.
+
+#+BEGIN_SRC emacs-lisp
+  (defun leoc/cleanup-whitespace ()
+    "Replace tabs and indent buffer"
+    (interactive)
+    (save-excursion
+      (beginning-of-buffer)
+      (while (re-search-forward "	" nil t)
+        (replace-match "  "))
+      (indent-buffer)))
+
+  (bind-key "C-c w" 'leoc/cleanup-whitespace)
 #+END_SRC
 
 *** Auto-Save Buffer
