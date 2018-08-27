@@ -1729,9 +1729,11 @@ similar settings. Mainly the indentation and the use of ~rainbow-mode~,
 which shows the colors directly within the buffer.
 
 #+BEGIN_SRC emacs-lisp
-(defun leoc/css-defaults ()
-  (setq css-indent-offset 2)
-  (rainbow-mode))
+  (defun leoc/css-defaults ()
+    (setq css-indent-offset 2
+          tab-width 2
+          indent-tabs-mode nil)
+    (rainbow-mode))
 #+END_SRC
 
 Basic CSS mode should activate those settings.
