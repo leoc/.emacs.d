@@ -874,6 +874,12 @@ When switching windows, file buffers should be saved automatically.
 *** Flycheck
 
 #+BEGIN_SRC emacs-lisp
+(use-package flycheck-ledger :ensure t)
+(eval-after-load 'flycheck
+  '(require 'flycheck-ledger))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure t
   :bind ("C-c l e" . list-flycheck-errors)
