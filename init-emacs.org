@@ -3177,32 +3177,72 @@ etc.).
 #+BEGIN_SRC emacs-lisp
   (use-package org-protocol
     :config
-    (defun leoc/org-protocol-capture-p ()
-      "Return true if this capture was initiated via org-protocol."
-      (equal "emacs-capture" (frame-parameter nil 'name)))
-    (defun leoc/org-capture-delete-frame ()
-      "Delete frame if capture was initiated via org-protocol."
-      (when (leoc/org-protocol-capture-p)
-        (delete-frame)))
+    (progn
+      (require 'org-protocol)
+      (require 'org-protocol-capture-html)
 
-    (defun leoc/org-capture-delete-other-windows ()
-      "Make sure frame has only one window if capture was initiated via org-protocol."
-      (when (leoc/org-protocol-capture-p)
-        (delete-other-windows)))
+      (defun leoc/org-protocol-capture-p ()
+        "Return true if this capture was initiated via org-protocol."
+        (equal "emacs-capture" (frame-parameter nil 'name)))
+      (defun leoc/org-capture-delete-frame ()
+        "Delete frame if capture was initiated via org-protocol."
+        (when (leoc/org-protocol-capture-p)
+          (delete-frame)))
 
-    (add-hook 'org-capture-mode-hook 'leoc/org-capture-delete-other-windows)
-    (add-hook 'org-capture-after-finalize-hook 'leoc/org-capture-delete-frame)
+      (defun leoc/org-capture-delete-other-windows ()
+        "Make sure frame has only one window if capture was initiated via org-protocol."
+        (when (leoc/org-protocol-capture-p)
+          (delete-other-windows)))
 
-    (defadvice org-switch-to-buffer-other-window (after org-capture-supress-window-splitting activate)
-      "Delete the extra window if we're in a capture frame."
-      (leoc/org-capture-delete-other-windows))
+      (add-hook 'org-capture-mode-hook 'leoc/org-capture-delete-other-windows)
+      (add-hook 'org-capture-after-finalize-hook 'leoc/org-capture-delete-frame)
 
-    (defadvice org-capture (around org-capture-protocol-ignore-error activate)
-      "If in emacs-capture buffer, ignore errors when quitting capture."
-      (if (leoc/org-protocol-capture-p)
-          (unless (ignore-errors ad-do-it t)
-            (leoc/org-capture-delete-frame))
-        ad-do-it)))
+      (defadvice org-switch-to-buffer-other-window (after org-capture-supress-window-splitting activate)
+        "Delete the extra window if we're in a capture frame."
+        (leoc/org-capture-delete-other-windows))
+
+      (defun leoc/org-protocol-in-capture-frame (&optional capture-url)
+        "Create a new frame and run org-protocol."
+        (interactive)
+        (select-frame-by-name "emacs-capture")
+        (switch-to-buffer (get-buffer-create "*scratch*"))
+        (message "%S" capture-url)
+        (if (and capture-url
+                 (eq 0 (length capture-url)))
+            (org-capture)
+          (org-protocol-check-filename-for-protocol capture-url t nil)))
+
+      ;;; Disable all advices and hooks for debugging:
+      ;; (setq org-capture-mode-hook nil)
+      ;; (setq org-capture-after-finalize-hook nil)
+      ;; (advice-remove 'org-capture-supress-window-splitting 'org-capture)
+      ;; (advice-remove 'org-capture-protocol-ignore-error 'org-capture)
+      ;; (ad-deactivate 'org-protocol-capture-html--with-pandoc)
+      ;; (advice-remove 'org-protocol-capture-new-window 'org-protocol-capture-html--with-pandoc)
+      ))
+#+END_SRC
+
+This allows to execute ~org-protocol://~ tags with emacsclient. I use
+a custom script to execute ~leoc/org-protocol-in-capture-frame~ to
+open a new floating window, which is centered by my window manager.
+
+Add this application description to ~\~/.local/share/applications/emacs-capture.desktop~:
+
+#+BEGIN_SRC conf
+  [Desktop Entry]
+  Name=Emacs Floating
+  Exec=emacs-capture %u
+  Icon=emacs-icon
+  Type=Application
+  Terminal=false
+  MimeType=x-scheme-handler/org-protocol;
+#+END_SRC
+
+This file belongs in your ~PATH~ named as ~emacs-capture~ as executable:
+
+#+BEGIN_SRC bash
+  #!/bin/bash
+  emacsclient -c -F "((name . \"emacs-capture\") (height . 20) (width . 100))" -e "(leoc/org-protocol-in-capture-frame \"$@\")"
 #+END_SRC
 
 When capturing a larger chunk of text from the browser, this text
@@ -3210,10 +3250,13 @@ should be captured with markup. The package ~org-protocol-capture-html~
 uses Pandoc to create org-mode markup.
 
 #+BEGIN_SRC emacs-lisp
-(use-package org-protocol-capture-html
-  :ensure org
-  :load-path "vendor/org-protocol-capture-html")
+  (use-package org-protocol-capture-html
+    :ensure t
+    :load-path "vendor/org-protocol-capture-html"
+    )
 #+END_SRC
+
+
 
 *** Habits
 
