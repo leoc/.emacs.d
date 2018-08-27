@@ -3338,7 +3338,6 @@ from the UNIX command-line with a great Emacs integration.
 #+BEGIN_SRC emacs-lisp
   (use-package ledger-mode
     :ensure t
-    :defer t
     :mode ("\\.ledger$" . ledger-mode))
 
   (bind-key "C-c l l" '(lambda ()  (interactive) (dired "~/.ledger/")))
