@@ -39,12 +39,11 @@ First require the ~package~ package with the correct package archives.
 #+NAME: initialize-package-archives
 #+BEGIN_SRC emacs-lisp :var archives=package-archives
   (setq package-archives (mapcar '(lambda (archive)
-				    (let ((name (nth 0 archive))
-					  (url (nth 1 archive)))
-				      `(,name . ,url)))
-				 archives))
+                                    (let ((name (nth 0 archive))
+                                          (url (nth 1 archive)))
+                                      `(,name . ,url)))
+                                 archives))
 
-  (package-initialize)
 #+END_SRC
 
 Since everything is based on ~use-package~ I refresh package contents if
