@@ -3127,11 +3127,20 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
         "This variable contains the last blog post title captured to be added to a blog post template.")
 
       (defun leoc/web-blog-post-file (path)
+        (interactive)
         (setq leoc/web-last-blog-post-title (read-string "Title: "))
         (expand-file-name (format "%s-%s.org"
                                   (format-time-string "%Y-%m-%d")
                                   (downcase (s-replace " " "-" leoc/web-last-blog-post-title)))
                           path))
+
+      (defun leoc/find-web-blog-post-file ()
+        (setq leoc/web-last-blog-post-title (read-string "Title: "))
+        (let ((absolute-path (expand-file-name (format "%s-%s.org"
+                                                   (format-time-string "%Y-%m-%d")
+                                                   (downcase (s-replace " " "-" leoc/web-last-blog-post-title)))
+                                               "/home/arthur/projects/andersen.berlin/blog/_posts")))
+          (set-buffer (org-capture-target-buffer absolute-path))))
 
       (defun leoc/get-last-web-post-title ()
         leoc/web-last-blog-post-title)
@@ -3149,7 +3158,7 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
               ("jr" "Review" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))
               ("ja" "Accomplishment" entry (file+datetree "~/.org/journal.org") "* %u Accomplished: %?")
               ("jj" "Simple Entry" entry (file+datetree "~/.org/journal.org") "* %u %?")
-              ("w" "Today I Learned Post" plain (file (leoc/web-blog-post-file "/home/arthur/projects/andersen.berlin/blog/_posts")) "---\nlayout: post\ntitle: %(leoc/get-last-web-post-title)\ntags:\n  - til\n---\n\n%?" :unnarrowed t)
+              ("w" "Today I Learned Post" plain (function leoc/find-web-blog-post-file) "---\nlayout: post\ntitle: %(leoc/get-last-web-post-title)\ntags:\n  - til\n---\n\n%?" :unnarrowed t)
               ("m" "Respond to mail" entry (file "~/.org/refile.org") "* NEXT Respond to %:fromname on \"%:subject\" ([[%l][Link]])\nSCHEDULED: %^t\n\n%?" :immediate-finish t)))))
 #+END_SRC
 
