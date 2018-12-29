@@ -2214,9 +2214,8 @@ files in the Gerkhin syntax.
            ("M-n" . org-metadown)
            ("C-c o o" . org-pomodoro))
     :config
-    (progn
       <<leoc/org-mode-config>>
-      ))
+      )
 #+END_SRC
 
 *** Org Files
