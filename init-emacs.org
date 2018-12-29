@@ -3237,7 +3237,7 @@ open a new floating window, which is centered by my window manager.
 
 Add this application description to ~\~/.local/share/applications/emacs-capture.desktop~:
 
-#+BEGIN_SRC conf
+#+BEGIN_SRC conf :tangle no :noweb-ref nil
   [Desktop Entry]
   Name=Emacs Floating
   Exec=emacs-capture %u
@@ -3249,7 +3249,7 @@ Add this application description to ~\~/.local/share/applications/emacs-capture.
 
 This file belongs in your ~PATH~ named as ~emacs-capture~ as executable:
 
-#+BEGIN_SRC bash
+#+BEGIN_SRC bash :tangle no :noweb-ref nil
   #!/bin/bash
   emacsclient -c -F "((name . \"emacs-capture\") (height . 20) (width . 100))" -e "(leoc/org-protocol-in-capture-frame \"$@\")"
 #+END_SRC
