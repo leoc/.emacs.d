@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: <<~HEREDOC
+# key: here
+# expand-env: ((yas-indent-line 'beginning) (yas-wrap-around-region 'nil))
+# --
+<<~${1:COMMENT}
+  $0
+$1
