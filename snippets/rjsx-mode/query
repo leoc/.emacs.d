@@ -1,0 +1,8 @@
+const QUERY = gql\`
+  query () {
+    ${1:field} {
+      id
+      $0
+    }
+  }
+\`;

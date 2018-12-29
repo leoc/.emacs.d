@@ -1,0 +1,7 @@
+constructor(props) {
+  super(props)
+
+  this.state = {
+    $0
+  }
+}
