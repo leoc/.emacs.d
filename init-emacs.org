@@ -3791,6 +3791,29 @@ Sometimes I want to quickly change something in Emacs.
   (bind-key "C-c 0" 'leoc/open-init-emacs)
 #+END_SRC
 
+*** Search amazon order at point
+
+This command wraps the thing at point and performs an amazon search
+via `xdg-open`.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'thingatpt)
+
+  (defun leoc/search-amz-at-point ()
+      "Search amazon orders with order number at point or region if any."
+      (interactive)
+      (let ((term (if mark-active
+                      (buffer-substring (region-beginning) (region-end))
+                    (thing-at-point 'symbol t))))
+        (browse-url
+         (concat "https://www.amazon.de/gp/your-account/order-history?ie=UTF8&opt=ab&ref_=oh_aui_search&search="
+                 (url-hexify-string term)))))
+
+  (global-set-key (kbd "C-c C-x C-a") 'leoc/search-amz-at-point)
+#+END_SRC
+
+#+RESULTS:
+: leoc/search-amz-at-point
 ** Experiments
 :PROPERTIES:
 :header-args: :tangle no
