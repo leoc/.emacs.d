@@ -1387,7 +1387,8 @@ pops up.
     :ensure t
     :demand t
     :init
-    (projectile-global-mode)
+    (projectile-mode +1)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
     :diminish projectile-mode
     :config
     (setq projectile-remember-window-configs t
