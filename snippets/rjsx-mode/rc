@@ -4,10 +4,10 @@
 # --
 import React from 'react';
 
-export default class ${1:MyComponent} extends React.Component {
-    render() {
-        return (
-	    <div>$0</div>
-        );
-    }
+export default class ${1:`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`} extends React.Component {
+  render() {
+    return (
+      <div>$0</div>
+    );
+  }
 }
