@@ -3188,7 +3188,6 @@ etc.).
     :config
     (progn
       (require 'org-protocol)
-      (require 'org-protocol-capture-html)
 
       (defun leoc/org-protocol-capture-p ()
         "Return true if this capture was initiated via org-protocol."
@@ -3260,12 +3259,8 @@ uses Pandoc to create org-mode markup.
 
 #+BEGIN_SRC emacs-lisp
   (use-package org-protocol-capture-html
-    :ensure t
-    :load-path "vendor/org-protocol-capture-html"
-    )
+    :load-path "vendor/org-protocol-capture-html")
 #+END_SRC
-
-
 
 *** Habits
 
