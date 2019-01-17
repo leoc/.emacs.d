@@ -2227,12 +2227,15 @@ files in the Gerkhin syntax.
 
 #+BEGIN_SRC emacs-lisp
   (bind-key "C-c o P" (lambda () (interactive) (find-file "~/.org/passwords.org.gpg")))
-  (bind-key "C-c o b" (lambda () (interactive) (find-file "~/.org/bookmarks.org")))
-  (bind-key "C-c o c" (lambda () (interactive) (find-file "~/.org/calendar.org")))
-  (bind-key "C-c o j" (lambda () (interactive) (find-file "~/.org/journal.org")))
-  (bind-key "C-c o p" (lambda () (interactive) (find-file "~/.org/_personal.org")))
+  (bind-key "C-c o B" (lambda () (interactive) (find-file "~/.org/bookmarks.org")))
+  (bind-key "C-c o C" (lambda () (interactive) (find-file "~/.org/calendar.org")))
+  (bind-key "C-c o J" (lambda () (interactive) (find-file "~/.org/journal.org")))
+  (bind-key "C-c o p" (lambda () (interactive) (find-file "~/.org/personal.org")))
+  (bind-key "C-c o t" (lambda () (interactive) (find-file "~/.org/personal_projects.org")))
   (bind-key "C-c o r" (lambda () (interactive) (find-file "~/.org/refile.org")))
-  (bind-key "C-c o v" (lambda () (interactive) (find-file "~/.org/_business_velaluqa.org")))
+  (bind-key "C-c o v" (lambda () (interactive) (find-file "~/.org/business_velaluqa.org")))
+  (bind-key "C-c o a" (lambda () (interactive) (find-file "~/.org/business_ascent.org")))
+  (bind-key "C-c o b" (lambda () (interactive) (find-file "~/.org/business_buddies.org")))
 
   (which-key-add-key-based-replacements "C-c o P" "Open passwords.org.gpg")
   (which-key-add-key-based-replacements "C-c o b" "Open bookmarks.org")
@@ -2401,13 +2404,12 @@ helpers to work with pomodoros within the org-mode clocking function.
 	org-refile-use-cache t
 	org-refile-allow-creating-parent-nodes t
 	org-refile-target-verify-function 'leoc/verify-refile-target
-	org-refile-targets '(("~/.org/tasks.org" :maxlevel . 2)
-                             ("~/.org/_personal.org" :maxlevel . 4)
-                             ("~/.org/_personal2.org" :maxlevel . 4)
-                             ("~/.org/_sideprojects.org" :maxlevel . 2)
-                             ("~/.org/_business_velaluqa.org" :maxlevel . 4)
-                             ("~/.org/_business_crowdcat.org" :maxlevel . 4)
-                             ("~/.org/_business_personal.org" :maxlevel . 4)
+	org-refile-targets '(("~/.org/personal.org" :maxlevel . 4)
+                             ("~/.org/personal_goals.org" :maxlevel . 4)
+                             ("~/.org/personal_projects.org" :maxlevel . 4)
+                             ("~/.org/business_velaluqa.org" :maxlevel . 4)
+                             ("~/.org/business_ascent.org" :maxlevel . 4)
+                             ("~/.org/business_buddies.org" :maxlevel . 4)
                              ("~/.org/bookmarks.org" :maxlevel . 8)
                              ("~/.org/notes.org" :level . 1)
                              ("~/.org/thoughts.org" :level . 1)
@@ -2553,11 +2555,14 @@ of a certain heading.
 
  #+CAPTION: leoc/agenda-files
  #+NAME: leoc/agenda-files-table
- | *File Name*                   | *Description* |
- |-------------------------------+---------------|
- | ~/.org/_personal.org          |               |
- | ~/.org/_business_velaluqa.org |               |
- | ~/.org/calendar.org           |               |
+ | *File Name*                     | *Description* |
+ |---------------------------------+---------------|
+ | ~/.org/personal.org             |               |
+ | ~/.org/personal_development.org |               |
+ | ~/.org/business_velaluqa.org    |               |
+ | ~/.org/business_ascent.org      |               |
+ | ~/.org/business_buddies.org     |               |
+ | ~/.org/calendar.org             |               |
 
 #+NAME: leoc/agenda-files
 #+BEGIN_SRC emacs-lisp :noweb-ref leoc/agenda-files :var leoc-agenda-files=leoc/agenda-files-table[2:-1,0]
@@ -2583,7 +2588,7 @@ of a certain heading.
                 ("C-c o o" . org-pomodoro))
     :config
     (progn
-      (setq org-agenda-files '("~/.org/_personal.org" "~/.org/_business_velaluqa.org" "~/.org/calendar.org")
+      (setq org-agenda-files '("~/.org/personal_development.org" "~/.org/business_velaluqa.org" "~/.org/business_ascent.org" "~/.org/business_buddies.org" "~/.org/calendar.org")
             org-agenda-start-on-weekday nil
             org-agenda-span 1
             org-agenda-include-diary t
