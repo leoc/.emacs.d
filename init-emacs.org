@@ -2651,125 +2651,126 @@ For my agenda I use
 
 #+BEGIN_SRC emacs-lisp :noweb tangle :exports code
   (use-package org-super-agenda
-    :load-path "vendor/org-super-agenda"
+    :ensure t
     :config
     (progn
+
       (setq org-agenda-custom-commands
             '(
-	      ("a" "Agenda" agenda ""
-	       ((org-agenda-span 'day)
-		(org-super-agenda-groups
-		 '((:todo ("SOMEDAY" "TO-READ" "CHECK" "TO-WATCH" "WATCHING") :last t)
-		   (:name "Today" :time t :todo "TODAY")
-		   (:name "Reading" :todo "READ")
-		   (:name "Mindful Living" :tag ("mindfulness"))
-		   (:name "Important" :priority "A")
-		   (:name "Chores" :tag ("household" "chores"))
-		   (:name "Current Projects" :tag "project")
-		   (:name "Ergonomics" :tag "ergonomics")
-		   (:name "Find Rehearsal Room" :tag "rehearsal")
-		   (:name "Communication, Socializing & Networking" :tag ("networking" "socialize" "mail"))
-		   (:name "Music" :tag "music")
-		   (:name "Hacking" :tag "hacking")
-		   (:name "Food-related" :tag ("food" "dinner"))
-		   (:todo "WAITING")
-		   (:priority ("B" "C"))))))
-	      ("Z" "Agenda"
-	       ((agenda ""
-			((org-agenda-span 'day)
-			 (org-super-agenda-groups
-			  '((:discard (:tag "velaluqa"))
-			    (:name "Done today" :and (:log t) :order 100)
-			    (:name "Goals this year" :and (:tag "year" :deadline (before "2019-01-01")))
-			    (:name "Goals this month" :and (:tag "month" :deadline (before "2018-06-01")))
-			    (:name "Goals this week" :and (:tag "week" :deadline (before "2018-05-21")))
-			    ;; (:name "Habits today" :habit t)
-			    (:name "Focus area today" :and (:priority>= "A" :scheduled t))
-			    (:name "To do today" :and (:scheduled t))
-			    (:discard (:anything t))))))))
-	      ("v" "Velaluqa Agenda"
-	       ((agenda ""
-			((org-agenda-span 'day)
-			 (org-super-agenda-groups
-			  '((:discard (:not (:tag "velaluqa")))
-			    (:name "Done today" :log t :time-grid t :order 104)
-			    (:name "Goals this year" :and (:tag "year" :deadline (before "2019-01-01")))
-			    (:name "Goals this month" :and (:tag "month" :deadline (before "2018-06-01")))
-			    (:name "Goals this week" :and (:tag "week" :deadline (before "2018-05-21")))
-			    (:name "Focus area today" :and (:priority>= "A" :scheduled t))
-			    (:name "To do today" :scheduled t)
-			    (:discard (:anything t))))))))
-	      ("o" "Agenda"
-	       ((agenda "" ((org-agenda-sorting-strategy '(habit-down timestamp-up time-up priority-down category-keep user-defined-up))))
-		(tags-todo "+project-archived-shopping-CANCELLED/!-HOLD-WAITING"
-			   ((org-agenda-overriding-header "Stuck Projects")
-			    (org-agenda-skip-function
-			     '(oh/agenda-skip :headline-if '(non-project)
-					      :subtree-if '(non-stuck-project inactive-project habit scheduled deadline)))
-			    (org-tags-match-list-sublevels 'intended)))
-		(tags-todo "-archived-shopping-CANCELLED/!WAITING|HOLD"
-			   ((org-agenda-overriding-header "Waiting and Postponed Tasks")
-			    (org-agenda-skip-function
-			     '(oh/agenda-skip :subtree-if '(project habit)))
-			    (org-tags-match-list-sublevels nil)))
-		(tags-todo "-archived-shopping-WAITING-CANCELLED/!NEXT"
-			   ((org-agenda-overriding-header "Next Tasks")
-			    (org-agenda-skip-function
-			     '(oh/agenda-skip :headline-if '(project)
-					      :subtree-if '(inactive habit scheduled deadline)
-					      :subtree-if-unrestricted-and '(subtask)
-					      :subtree-if-restricted-and '(single-task)))
-			    (org-tags-match-list-sublevels 'indented)
-			    (org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
-		;; (tags-todo "-archived-shopping-CANCELLED/!-NEXT-HOLD-WAITING"
-		;;            ((org-agenda-overriding-header "Available Tasks")
-		;;             (org-agenda-skip-function
-		;;              '(oh/agenda-skip :headline-if '(project)
-		;;                               :subtree-if '(inactive habit scheduled deadline)
-		;;                               :subtree-if-unrestricted-and '(subtask)
-		;;                               :subtree-if-restricted-and '(single-task)))
-		;;             (org-agenda-sorting-strategy '(priority-down category-keep))
-		;;             (org-tags-match-list-sublevels nil)))
-		(tags-todo "+project-archived-CANCELLED/!"
-			   ((org-agenda-overriding-header "Currently Active Projects")
-			    (org-agenda-skip-function
-			     '(oh/agenda-skip :subtree-if '(non-project stuck-project inactive-project habit)
-					      :headline-if-unrestricted-and '(subproject)
-					      :headline-if-restricted-and '(top-project)))
-			    (org-tags-match-list-sublevels 'indented)
-			    (org-agenda-sorting-strategy '(priority-down category-keep)))))
-	       nil)
-	      ("r" "Tasks to Refile" alltodo ""
-	       ((org-agenda-overriding-header "Tasks to Refile")
-		(org-agenda-files '("~/.org/inbox.org"))))
-	      ("#" "Stuck Projects" tags-todo "-archived-shopping-CANCELLED/!-HOLD-WAITING"
-	       ((org-agenda-overriding-header "Stuck Projects")
-		(org-agenda-skip-function
-		 '(oh/agenda-skip :subtree-if '(inactive non-project non-stuck-project
-							 habit scheduled deadline)))))
-	      ("n" "Next Tasks" tags-todo "-archived-shopping-WAITING-CANCELLED/!NEXT"
-	       ((org-agenda-overriding-header "Next Tasks")
-		(org-agenda-skip-function
-		 '(oh/agenda-skip :subtree-if '(inactive project habit scheduled deadline)))
-		(org-tags-match-list-sublevels t)
-		(org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
-	      ("R" "Tasks" tags-todo "-archived-shopping-CANCELLED/!-NEXT-HOLD-WAITING"
-	       ((org-agenda-overriding-header "Available Tasks")
-		(org-agenda-skip-function
-		 '(oh/agenda-skip :headline-if '(project)
-				  :subtree-if '(inactive habit scheduled deadline)
-				  :subtree-if-unrestricted-and '(subtask)
-				  :subtree-if-restricted-and '(single-task)))
-		(org-agenda-sorting-strategy '(priority-down category-keep))))
-	      ("p" "Projects" tags-todo "-archived-shopping-CANCELLED/!"
-	       ((org-agenda-overriding-header "Currently Active Projects")
-		(org-agenda-skip-function
-		 '(oh/agenda-skip :subtree-if '(non-project inactive habit)))
-		(org-agenda-sorting-strategy '(priority-down category-keep))
-		(org-tags-match-list-sublevels 'indented)))
-	      ("w" "Waiting Tasks" tags-todo "-archived-shopping-CANCELLED/!WAITING|HOLD"
-	       ((org-agenda-overriding-header "Waiting and Postponed Tasks")
-		(org-agenda-skip-function '(oh/agenda-skip :subtree-if '(project habit)))))))))
+              ("a" "Agenda" agenda ""
+               ((org-agenda-span 'day)
+                (org-super-agenda-groups
+                 '((:todo ("SOMEDAY" "TO-READ" "CHECK" "TO-WATCH" "WATCHING") :order 100)
+                   (:name "Today" :time-grid t :todo "TODAY")
+                   (:name "Reading" :todo "READ")
+                   (:name "Mindful Living" :tag ("mindfulness"))
+                   (:name "Important" :priority "A")
+                   (:name "Chores" :tag ("household" "chores"))
+                   (:name "Current Projects" :tag "project")
+                   (:name "Ergonomics" :tag "ergonomics")
+                   (:name "Find Rehearsal Room" :tag "rehearsal")
+                   (:name "Communication, Socializing & Networking" :tag ("networking" "socialize" "mail"))
+                   (:name "Music" :tag "music")
+                   (:name "Hacking" :tag "hacking")
+                   (:name "Food-related" :tag ("food" "dinner"))
+                   (:todo "WAITING")
+                   (:priority ("B" "C"))))))
+              ("Z" "Agenda"
+               ((agenda ""
+                        ((org-agenda-span 'day)
+                         (org-super-agenda-groups
+                          '((:discard (:tag "velaluqa"))
+                            (:name "Done today" :and (:log t) :order 100)
+                            (:name "Goals this year" :and (:tag "year" :deadline (before "2020-01-01")))
+                            (:name "Goals this month" :and (:tag "month" :deadline (before "2019-02-01")))
+                            (:name "Goals this week" :and (:tag "week" :deadline (before "2019-01-14")))
+                            ;; (:name "Habits today" :habit t)
+                            (:name "Focus area today" :and (:priority>= "A" :scheduled t))
+                            (:name "To do today" :and (:scheduled t))
+                            (:discard (:anything t))))))))
+              ("v" "Velaluqa Agenda"
+               ((agenda ""
+                        ((org-agenda-span 'day)
+                         (org-super-agenda-groups
+                          '((:discard (:not (:tag "velaluqa")))
+                            (:name "Done today" :log t :time-grid t :order 104)
+                            (:name "Goals this year" :and (:tag "year" :deadline (before "2019-01-01")))
+                            (:name "Goals this month" :and (:tag "month" :deadline (before "2018-06-01")))
+                            (:name "Goals this week" :and (:tag "week" :deadline (before "2018-05-21")))
+                            (:name "Focus area today" :and (:priority>= "A" :scheduled t))
+                            (:name "To do today" :scheduled t)
+                            (:discard (:anything t))))))))
+              ("o" "Agenda"
+               ((agenda "" ((org-agenda-sorting-strategy '(habit-down timestamp-up time-up priority-down category-keep user-defined-up))))
+                (tags-todo "+project-archived-shopping-CANCELLED/!-HOLD-WAITING"
+                           ((org-agenda-overriding-header "Stuck Projects")
+                            (org-agenda-skip-function
+                             '(oh/agenda-skip :headline-if '(non-project)
+                                              :subtree-if '(non-stuck-project inactive-project habit scheduled deadline)))
+                            (org-tags-match-list-sublevels 'intended)))
+                (tags-todo "-archived-shopping-CANCELLED/!WAITING|HOLD"
+                           ((org-agenda-overriding-header "Waiting and Postponed Tasks")
+                            (org-agenda-skip-function
+                             '(oh/agenda-skip :subtree-if '(project habit)))
+                            (org-tags-match-list-sublevels nil)))
+                (tags-todo "-archived-shopping-WAITING-CANCELLED/!NEXT"
+                           ((org-agenda-overriding-header "Next Tasks")
+                            (org-agenda-skip-function
+                             '(oh/agenda-skip :headline-if '(project)
+                                              :subtree-if '(inactive habit scheduled deadline)
+                                              :subtree-if-unrestricted-and '(subtask)
+                                              :subtree-if-restricted-and '(single-task)))
+                            (org-tags-match-list-sublevels 'indented)
+                            (org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
+                ;; (tags-todo "-archived-shopping-CANCELLED/!-NEXT-HOLD-WAITING"
+                ;;            ((org-agenda-overriding-header "Available Tasks")
+                ;;             (org-agenda-skip-function
+                ;;              '(oh/agenda-skip :headline-if '(project)
+                ;;                               :subtree-if '(inactive habit scheduled deadline)
+                ;;                               :subtree-if-unrestricted-and '(subtask)
+                ;;                               :subtree-if-restricted-and '(single-task)))
+                ;;             (org-agenda-sorting-strategy '(priority-down category-keep))
+                ;;             (org-tags-match-list-sublevels nil)))
+                (tags-todo "+project-archived-CANCELLED/!"
+                           ((org-agenda-overriding-header "Currently Active Projects")
+                            (org-agenda-skip-function
+                             '(oh/agenda-skip :subtree-if '(non-project stuck-project inactive-project habit)
+                                              :headline-if-unrestricted-and '(subproject)
+                                              :headline-if-restricted-and '(top-project)))
+                            (org-tags-match-list-sublevels 'indented)
+                            (org-agenda-sorting-strategy '(priority-down category-keep)))))
+               nil)
+              ("r" "Tasks to Refile" alltodo ""
+               ((org-agenda-overriding-header "Tasks to Refile")
+                (org-agenda-files '("~/.org/inbox.org"))))
+              ("#" "Stuck Projects" tags-todo "-archived-shopping-CANCELLED/!-HOLD-WAITING"
+               ((org-agenda-overriding-header "Stuck Projects")
+                (org-agenda-skip-function
+                 '(oh/agenda-skip :subtree-if '(inactive non-project non-stuck-project
+                                                         habit scheduled deadline)))))
+              ("n" "Next Tasks" tags-todo "-archived-shopping-WAITING-CANCELLED/!NEXT"
+               ((org-agenda-overriding-header "Next Tasks")
+                (org-agenda-skip-function
+                 '(oh/agenda-skip :subtree-if '(inactive project habit scheduled deadline)))
+                (org-tags-match-list-sublevels t)
+                (org-agenda-sorting-strategy '(priority-down todo-state-down effort-up category-keep))))
+              ("R" "Tasks" tags-todo "-archived-shopping-CANCELLED/!-NEXT-HOLD-WAITING"
+               ((org-agenda-overriding-header "Available Tasks")
+                (org-agenda-skip-function
+                 '(oh/agenda-skip :headline-if '(project)
+                                  :subtree-if '(inactive habit scheduled deadline)
+                                  :subtree-if-unrestricted-and '(subtask)
+                                  :subtree-if-restricted-and '(single-task)))
+                (org-agenda-sorting-strategy '(priority-down category-keep))))
+              ("p" "Projects" tags-todo "-archived-shopping-CANCELLED/!"
+               ((org-agenda-overriding-header "Currently Active Projects")
+                (org-agenda-skip-function
+                 '(oh/agenda-skip :subtree-if '(non-project inactive habit)))
+                (org-agenda-sorting-strategy '(priority-down category-keep))
+                (org-tags-match-list-sublevels 'indented)))
+              ("w" "Waiting Tasks" tags-todo "-archived-shopping-CANCELLED/!WAITING|HOLD"
+               ((org-agenda-overriding-header "Waiting and Postponed Tasks")
+                (org-agenda-skip-function '(oh/agenda-skip :subtree-if '(project habit)))))))))
 #+END_SRC
 
 **** Time Budgets
