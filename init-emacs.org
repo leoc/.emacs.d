@@ -51,6 +51,8 @@ use-package is not installed and afterwards make sure to have it
 installed and required.
 
 #+BEGIN_SRC emacs-lisp
+(package-initialize)
+
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
