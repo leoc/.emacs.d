@@ -2235,6 +2235,7 @@ files in the Gerkhin syntax.
   (bind-key "C-c o p" (lambda () (interactive) (find-file "~/.org/personal.org")))
   (bind-key "C-c o t" (lambda () (interactive) (find-file "~/.org/personal_projects.org")))
   (bind-key "C-c o r" (lambda () (interactive) (find-file "~/.org/refile.org")))
+  (bind-key "C-c o m" (lambda () (interactive) (find-file "~/.org/manifest.org")))
   (bind-key "C-c o v" (lambda () (interactive) (find-file "~/.org/business_velaluqa.org")))
   (bind-key "C-c o a" (lambda () (interactive) (find-file "~/.org/business_ascent.org")))
   (bind-key "C-c o b" (lambda () (interactive) (find-file "~/.org/business_buddies.org")))
@@ -2244,6 +2245,7 @@ files in the Gerkhin syntax.
   (which-key-add-key-based-replacements "C-c o c" "Open calendar.org")
   (which-key-add-key-based-replacements "C-c o j" "Open journal.org")
   (which-key-add-key-based-replacements "C-c o p" "Open _personal.org")
+  (which-key-add-key-based-replacements "C-c o m" "Open manifest.org")
   (which-key-add-key-based-replacements "C-c o r" "Open refile.org")
   (which-key-add-key-based-replacements "C-c o v" "Open _business_velaluqa.org")
 #+END_SRC
