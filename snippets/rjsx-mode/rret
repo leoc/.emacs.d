@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: rret
+# --
+return (
+  <React.Fragment>
+    $0
+  </React.Fragment>
+);

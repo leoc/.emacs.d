@@ -1,1 +1,1 @@
-const { ${1:variable} } = ${2:this.props};$0
+const ${1:{ ${2:variable} }} = ${3:this.props};$0

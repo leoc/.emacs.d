@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: exf
+# --
+export default function ${1:`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`}(${2:props}) {
+  $0
+}
