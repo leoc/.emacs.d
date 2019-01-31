@@ -205,11 +205,11 @@ For external monitors it's always good to be able to quickly change
 the font size.
 
 #+BEGIN_SRC emacs-lisp
-(use-package zoom-frm
-  :requires zoom-frm
-  :bind
-  (("C-M-*" . zoom-frm-in)
-   ("C-M-_" . zoom-frm-out)))
+  (use-package zoom-frm
+    :load-path "vendor/zoom-frm"
+    :bind
+    (("C-M-*" . zoom-frm-in)
+     ("C-M-_" . zoom-frm-out)))
 #+END_SRC
 
 *** Empower Mode-Line
