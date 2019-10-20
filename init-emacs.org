@@ -1837,6 +1837,25 @@ for writing complex stylesheets.
 
 #+RESULTS:
 
+***** GraphQL
+
+I use graphql-mode to edit ~*.gql~ and ~*.graphql~ files which are
+packaged by webpack. Once again I prefer spaces for indentation and a
+tab width of 2 spaces.
+
+#+BEGIN_SRC emacs-lisp
+  (defun leoc/graphql-mode-defaults ()
+    (electric-indent-mode -1)
+    (setq tab-width 2
+          indent-tabs-mode nil))
+
+  (use-package graphql-mode
+    :ensure t
+    :mode (("\\.gql?\\'" . graphql-mode))
+    :config
+    (add-hook 'graphql-mode-hook 'leoc/graphql-mode-defaults))
+#+END_SRC
+
 ***** CoffeeScript
 
 #+BEGIN_SRC emacs-lisp
