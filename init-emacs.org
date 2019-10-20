@@ -2168,21 +2168,58 @@ files in the Gerkhin syntax.
 
 **** SQL Interaction
 
+I work with large database queries from time to time. To make these
+exercises as fun as possible I like to make emacs automate most of the
+defaults and help with completion and indentation.
+
+The `sqlup-mode` automatically transforms keywords to upcase:
+
+#+BEGIN_SRC emacs-lisp
+  (use-package sqlup-mode
+    :ensure t
+    :config
+    (add-hook 'sql-mode-hook 'sqlup-mode)
+    (defun leoc/sql-mode ()
+      "Use postgres as default sql product"
+      (sql-set-product "postgres"))
+    (add-hook 'sql-mode-hook 'leoc/sql-mode))
+#+END_SRC
+
+=sql-indent= helps
+
+#+BEGIN_SRC emacs-lisp
+  (use-package sql-indent
+    :ensure t
+    :config
+    (add-hook 'sql-mode-hook 'sqlind-minor-mode))
+  (use-package sqlformat :ensure t)
+
+#+END_SRC
+
+DBI is a perl packages that allows communication with most of the
+relational database servers that are currently used. =edbi= uses this
+to execute querys and extract database schemas.
+
 #+BEGIN_SRC emacs-lisp
   (use-package edbi
     :ensure t
     :config
-    (progn
-      (use-package company-edbi
-        :ensure t
-        :config
-        (eval-after-load 'company
-          '(push 'company-edbi company-backends)))
+    (use-package edbi-minor-mode
+      :ensure t
+      :config
+      (add-hook 'sql-mode-hook 'edbi-minor-mode)))
+#+END_SRC
 
-      (use-package edbi-minor-mode
-        :ensure t
-        :config
-        (add-hook 'sql-mode-hook 'edbi-minor-mode))))
+As addition I need completion at point functionality through
+`company-mode`:
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company-edbi
+    ;; :ensure t
+    :load-path "vendor/org-helpers"
+    :config
+    (eval-after-load 'company
+      '(push 'company-edbi company-backends)))
 #+END_SRC
 
 *** Rainbow Mode
