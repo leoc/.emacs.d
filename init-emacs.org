@@ -3476,6 +3476,26 @@ work as it should. So right now only:
   (bind-key "C-c o s" 'leoc/org-redmine-sync)
 #+END_SRC
 
+*** Anki Editor
+
+The [[https://github.com/louietan/anki-editor][anki-editor]] allows pushing anki flash cards to Anki via the
+*anki-connect* Anki plugin.
+
+#+BEGIN_SRC emacs-lisp
+  (defun leoc/enable-minor-mode (my-pair)
+    (when (and buffer-file-name
+               (string-match (car my-pair) buffer-file-name))
+      (funcall (cdr my-pair))))
+
+  (use-package anki-editor
+    :ensure t
+    :mode ("\\.anki\\.org$" . org-mode)
+    :config
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (leoc/enable-minor-mode '("\\.anki\\.org" . anki-editor-mode)))))
+#+END_SRC
+
 ** Accounting with Ledger
 
 Ledger is a powerful, double-entry accounting system that is accessed
