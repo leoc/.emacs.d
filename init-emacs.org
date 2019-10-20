@@ -2283,7 +2283,7 @@ As addition I need completion at point functionality through
            ("M-p" . org-metaup)
            ("M-n" . org-metadown)
            ("M-n" . org-metadown)
-           ("C-c o o" . org-pomodoro))
+           ("C-c C-x C-p" . org-pomodoro))
     :config
       <<leoc/org-mode-config>>
       )
