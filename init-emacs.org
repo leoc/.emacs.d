@@ -2372,21 +2372,22 @@ indent headings within the clocktable.
 **** Markup
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-hide-emphasis-markers t)
-  (setq org-emphasis-regexp-components-original
-        '(" \t('\"{"
-          "- \t.,:!?;'\")}\\["
-          " \t\r\n,\"'"
-          "."
-          1))
-  (setq org-emphasis-regexp-components
-        '(" \t('\"{[:alpha:]"
-          "[:alpha:]- \t.,:!?;'\")}\\["
-          " \t\r\n,\"'"
-          "."
-          0))
-  (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
-  org-emph-re
+    (setq org-hide-emphasis-markers t)
+  ;;   (setq org-emphasis-regexp-components-original
+  ;;         '(" \t('\"{"
+  ;;           "- \t.,:!?;'\")}
+  ;; \\["
+  ;;           " \t\r\n,\"'"
+  ;;           "."
+  ;;           1))
+  ;;   (setq org-emphasis-regexp-components
+  ;;         '(" \t('\"{[:alpha:]"
+  ;;           "[:alpha:]- \t.,:!?;'\")}\\["
+  ;;           " \t\r\n,\"'"
+  ;;           "."
+  ;;           0))
+  ;;   (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
+  ;;   org-emph-re
 #+END_SRC
 
 **** Movement
