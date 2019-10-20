@@ -2271,7 +2271,7 @@ As addition I need completion at point functionality through
 
 ** Org-Mode
 :PROPERTIES:
-:header-args: :noweb-ref leoc/org-mode-config :export code :tangle no
+:header-args: :noweb-ref leoc/org-mode-config :export code :tangle no :results none
 :END:
 
 #+BEGIN_SRC emacs-lisp :noweb-ref leoc/use-package-org-mode :noweb yes :tangle yes
