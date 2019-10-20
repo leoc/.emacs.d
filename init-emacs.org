@@ -1899,8 +1899,22 @@ tab width of 2 spaces.
     :ensure t
     :defer t
     :diminish rubocop-mode
-    :init
-    (add-hook 'ruby-mode-hook 'rubocop-mode))
+    )
+
+  (defun leoc/ruby-mode-defaults ()
+    "Do not use `prettier-js-mode` and `rubocop-mode` for older ruby versions."
+    (interactive)
+    (let* ((ruby-version (car (or (rvm--load-info-rvmrc) (rvm--load-info-ruby-version) (rvm--load-info-gemfile))))
+           (old-ruby-p (and ruby-version
+                            (string-match-p (regexp-quote "ruby-1") ruby-version))))
+      (if old-ruby-p
+          (setq-local flycheck-disabled-checkers (append flycheck-disabled-checkers '(ruby-rubocop)))
+        (progn
+          (message "Ruby version >= 2.0 -> loading rubocop-mode and prettier-js-mode")
+          (rubocop-mode)
+          (prettier-js-mode)))))
+
+  (add-hook 'ruby-mode-hook 'leoc/ruby-mode-defaults)
 #+END_SRC
 
 **** Python
