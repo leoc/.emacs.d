@@ -1787,7 +1787,6 @@ for writing complex stylesheets.
 #+BEGIN_SRC emacs-lisp
   (defun leoc/js-mode-defaults ()
     (run-import-js)
-    (add-hook 'after-save-hook #'import-js-fix nil t)
     (electric-indent-mode -1)
     (setq js2-basic-offset 2
           js2-highlight-level 3
@@ -1813,7 +1812,8 @@ for writing complex stylesheets.
     :ensure t
     :interpreter (("node" . rjsx-mode))
     :mode (("\\.jsx?\\'" . rjsx-mode))
-    :bind (("C-c i" . import-js-import))
+    :bind (("C-c i" . import-js-import)
+           ("C-c C-i" . import-js-fix))
     :config
     (add-hook 'rjsx-mode-hook 'leoc/rjsx-mode-defaults))
 #+END_SRC
