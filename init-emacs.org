@@ -1,7 +1,51 @@
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://leoc.github.io/css/org.css"/>
+#+header-args: :results silent :tangle yes
+
+#+NAME: bindings-from-table
+#+BEGIN_SRC emacs-lisp :noweb yes :exports none :results silent pp :tangle no :var table=()
+  (let ((current-group-name "global"))
+      (mapcan '(lambda (binding)
+                 (let ((group-name (nth 0 binding))
+                       (binding (nth 1 binding))
+                       (fun (nth 2 binding)))
+                   (if (equal current-group-name group-name)
+                       `((,binding . ,(intern fun)))
+                     (progn
+                       (setq current-group-name group-name)
+                       `(:map ,(intern group-name) (,binding . ,(intern fun)))))))
+              table))
+#+END_SRC
+
+#+NAME: bind-keys-from-table
+#+BEGIN_SRC emacs-lisp :noweb yes :exports none :results silent pp :tangle no :var table=()
+  (append '(bind-keys)
+          (let ((current-group-name "global"))
+            (mapcan '(lambda (binding)
+                       (let ((group-name (nth 0 binding))
+                             (binding (nth 1 binding))
+                             (fun (nth 2 binding)))
+                         (if (equal current-group-name group-name)
+                             `((,binding . ,(intern fun)))
+                           (progn
+                             (setq current-group-name group-name)
+                             `(:map ,(intern group-name) (,binding . ,(intern fun)))))))
+                    table)))
+#+END_SRC
+
+#+NAME: extract-mu4e-marks
+#+BEGIN_SRC emacs-lisp :tangle no :exports none :results silent pp :var table=mu4e-prefix-marks-table
+  (append '(setq) (mapcan (lambda (row)
+                            (let ((variable (nth 0 row))
+                                  (text (nth 1 row))
+                                  (symbol (nth 2 row)))
+                              `(,(intern variable) (quote ,(cons text symbol)))))
+                          table))
+#+END_SRC
+
 #+TITLE: Emacs Configuration
 * Emacs
 :PROPERTIES:
-:header-args: :results none :tangle yes
+:header-args: :results silent :tangle yes
 :END:
 
 This document describes my personal emacs configuration.
@@ -15,35 +59,41 @@ found these pretty informative and helpful:
   - [[http://doc.norang.ca/org-mode.html][Bernt Hansen]]
   - [[https://github.com/leoc/emacs.d/blob/master/init.el][Peter Vasil]]
 
-** General
-*** Personal Information
+* General
+** Personal Information
 
 #+BEGIN_SRC emacs-lisp
-(setq user-full-name "Arthur Andersen"
-      user-mail-address "arthur@andersen.berlin")
+  (setq user-full-name "Arthur Andersen"
+        user-mail-address "arthur@andersen.berlin")
 #+END_SRC
 
-*** Configure ELPA and ~use-package~
+** Configure ELPA and ~use-package~
 
 First require the ~package~ package with the correct package archives.
 
 #+BEGIN_SRC emacs-lisp
-(require 'package)
+  (require 'package)
 #+END_SRC
 
 #+NAME: package-archives
+| Name  | URL                                |
+|-------+------------------------------------|
 | melpa | http://melpa.milkbox.net/packages/ |
 | elpa  | http://elpa.gnu.org/packages/      |
 | org   | http://orgmode.org/elpa/           |
 
-#+NAME: initialize-package-archives
-#+BEGIN_SRC emacs-lisp :var archives=package-archives
-  (setq package-archives (mapcar '(lambda (archive)
-                                    (let ((name (nth 0 archive))
-                                          (url (nth 1 archive)))
-                                      `(,name . ,url)))
-                                 archives))
+#+NAME: cons-table-tuples
+#+BEGIN_SRC emacs-lisp :results replace :exports none :tangle no :var table=package-archives
+  `(quote
+   ,(mapcar '(lambda (row)
+              (let ((name (nth 0 row))
+                    (url (nth 1 row)))
+                `(,name . ,url)))
+           table))
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp :results replace :noweb yes :tangle yes :exports code
+  (setq package-archives <<cons-table-tuples()>>)
 #+END_SRC
 
 Since everything is based on ~use-package~ I refresh package contents if
@@ -51,18 +101,17 @@ use-package is not installed and afterwards make sure to have it
 installed and required.
 
 #+BEGIN_SRC emacs-lisp
-(package-initialize)
+  (package-initialize)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
 
-(eval-when-compile
-  (require 'use-package))
-
+  (eval-when-compile
+    (require 'use-package))
 #+END_SRC
 
-*** General Dependencies
+** General Dependencies
 
 Some of the dependencies need to be installed.
 
@@ -86,59 +135,86 @@ Some of the dependencies need to be installed.
     (setq which-key-side-window-location 'left))
 #+END_SRC
 
-*** Diminish modes
+** Diminish modes
 
 #+BEGIN_SRC emacs-lisp
-(use-package diminish :ensure t)
-(diminish 'auto-fill-function)
-(diminish 'auto-revert-mode)
+  (use-package diminish :ensure t)
+  (diminish 'auto-fill-function)
+  (diminish 'auto-revert-mode)
 #+END_SRC
 
-*** EasyPG
+** EasyPG
 
 Use GPG encrypted authinfo file. This way we don't save the
 credentials in plain text.
 
 #+BEGIN_SRC emacs-lisp
-(setq auth-sources '((:source "/home/arthur/.authinfo.gpg")))
+  (setq auth-sources '((:source "/home/arthur/.authinfo.gpg")))
 #+END_SRC
 
-** Functions
-*** Hook Into Modes
+* Macros
+
+These macros help tangling the ~init-emacs.el~
+
+** Extracting Bindings from Tables
+
+Can be used via ~noweb~ to extract bindings as a ~bind-keys~-compatible
+form via ~<<bindings-from-table(table=TABLE-REF)>>~ or
+~<<bind-keys-from-table(table=TABLE-REF)>>~.
+
+* Functions
+** Hook Into Modes
 
 A helper to easily hook a given ~func~ into multiple modes.
 
 #+BEGIN_SRC emacs-lisp
-(defmacro leoc/hook-into-modes (func modes)
-  "Add FUNC to list of MODES."
-  (declare (indent 1))
-  `(dolist (mode-hook ,modes)
-     (add-hook mode-hook ,func)))
+  (defmacro leoc/hook-into-modes (func modes)
+    "Add FUNC to list of MODES."
+    (declare (indent 1))
+    `(dolist (mode-hook ,modes)
+       (add-hook mode-hook ,func)))
 #+END_SRC
+** Load Minor Mode Depending on Filename Extension
 
-** Look and Feel
+#+BEGIN_SRC emacs-lisp
+  (defun leoc/enable-minor-mode (my-pair)
+      (when (and buffer-file-name
+                 (string-match (car my-pair) buffer-file-name))
+        (funcall (cdr my-pair))))
+#+END_SRC
+* Look and Feel
 
 Some systems behave differently than others...
 
-#+BEGIN_SRC emacs-lisp
-(defconst *is-mac* (eq system-type 'darwin))
-(defconst *is-cocoa-emacs* (and *is-mac* (eq window-system 'ns)))
-(defconst *is-linux* (eq system-type 'gnu/linux))
-(defconst *is-x11* (eq window-system 'x))
-(defconst *is-windows* (eq system-type 'windows-nt))
-#+END_SRC
+These constants can be used to check against the current system
+easily.
 
 #+BEGIN_SRC emacs-lisp
-(setq visible-bell nil
-      truncate-partial-width-windows nil)
+  (defconst *is-mac* (eq system-type 'darwin))
+  (defconst *is-cocoa-emacs* (and *is-mac* (eq window-system 'ns)))
+  (defconst *is-linux* (eq system-type 'gnu/linux))
+  (defconst *is-x11* (eq window-system 'x))
+  (defconst *is-windows* (eq system-type 'windows-nt))
 #+END_SRC
 
-*** Minimize UI
+Disable the ~visible-bell~:
+
+#+BEGIN_SRC emacs-lisp
+  (setq visible-bell nil)
+#+END_SRC
+
+Truncate lines by frame size only:
+
+#+BEGIN_SRC emacs-lisp
+  (setq truncate-partial-width-windows nil)
+#+END_SRC
+
+** Minimize UI
 
 Make sure that we do not see a splash screen each time we start Emacs.
 
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
+  (setq inhibit-startup-message t)
 #+END_SRC
 
 Remove the menubar, toolbar and the scrollbar.
@@ -149,13 +225,10 @@ Remove the menubar, toolbar and the scrollbar.
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 #+END_SRC
 
-*** Use Custom Color Theme
+** Use Custom Color Theme
 
 I use my custom theme [[https://github.com/leoc/summered-emacs][summered-emacs]] which is a warm color theme and
-provides two variants:
-
-- light on dark
-- dark on light
+provides a dark and light variant.
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path "~/.emacs.d/vendor/summered-theme")
@@ -170,55 +243,86 @@ This color theme should be enabled globally and with maximum decoration.
         font-lock-maximum-decoration t)
 #+END_SRC
 
-*** Use Translucent Background
+*** Swapping themes
 
-I like my emacs windows to be a little translucent, so I see my
-wallpaper to gleam through.
+From time to time the sun is so strong that I have to switch the
+theme. This function and binding helps with that.
 
-#+BEGIN_SRC emacs-lisp
-(defun leoc/transparency (value &optional frame)
-  "Sets the transparency of the frame window. 0=transparent/100=opaque"
-  (interactive "nTransparency Value 0 - 100 opaque:")
-  (let ((frame (or frame (selected-frame))))
-    (set-frame-parameter frame 'alpha value)))
+#+NAME: theme-swap-bindings-table
+| Scope  | Binding   | Function                  |
+|--------+-----------+---------------------------|
+| global | C-c C-x t | leoc/toggle-theme-variant |
 
-(defun leoc/set-frame-transparency (&optional frame)
-  (leoc/transparency 98 frame))
+#+BEGIN_SRC emacs-lisp :noweb yes
+  (defun leoc/toggle-theme-variant ()
+    "Toggle between dark and light theme."
+    (interactive)
+    (let ((loadable-theme (if (member 'summered-dark custom-enabled-themes)
+                              'summered-light
+                            'summered-dark)))
+      (mapcar '(lambda (theme)
+                 (disable-theme theme))
+              custom-enabled-themes)
+      (load-theme loadable-theme)))
 
-(add-hook 'after-make-frame-functions 'leoc/set-frame-transparency)
-(add-hook 'after-init-hook 'leoc/set-frame-transparency)
+  <<bind-keys-from-table(table=theme-swap-bindings-table)>>
 #+END_SRC
 
-*** Disable Tooltip Mode
+** Use Translucent Background
+
+I like my emacs windows to be a little translucent, so I see my
+wallpaper gleaming through.
+
+#+BEGIN_SRC emacs-lisp
+  (defun leoc/transparency (value &optional frame)
+    "Sets the transparency of the frame window. 0=transparent/100=opaque"
+    (interactive "nTransparency Value 0 - 100 opaque:")
+    (let ((frame (or frame (selected-frame))))
+      (set-frame-parameter frame 'alpha value)))
+
+  (defun leoc/set-frame-transparency (&optional frame)
+    (leoc/transparency 98 frame))
+
+  (add-hook 'after-make-frame-functions 'leoc/set-frame-transparency)
+  (add-hook 'after-init-hook 'leoc/set-frame-transparency)
+#+END_SRC
+
+** Disable Tooltip Mode
 
 #+BEGIN_SRC emacs-lisp
   (tooltip-mode -1)
 #+END_SRC
 
-*** Disable Blinking Cursor
+** Disable Blinking Cursor
 
 #+BEGIN_SRC emacs-lisp
-  (blink-cursor-mode -1)
+(blink-cursor-mode -1)
 #+END_SRC
 
-*** Zoom Frame Easily
+** Zoom Frame Easily
 
 For external monitors it's always good to be able to quickly change
 the font size.
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: zoom-frm-bindings-table
+| Scope  | Binding | Function     |
+|--------+---------+--------------|
+| global | C-M-*   | zoom-frm-in  |
+| global | C-M-_   | zoom-frm-out |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package zoom-frm
     :load-path "vendor/zoom-frm"
     :bind
-    (("C-M-*" . zoom-frm-in)
-     ("C-M-_" . zoom-frm-out)))
+    <<bindings-from-table(table=zoom-frm-bindings-table)>>
+  )
 #+END_SRC
 
-*** Empower Mode-Line
+** Empower Mode-Line
 
 Before I used a custom mode-line format, but that is too much work to
-actually maintain. Powerline is a clean enough custom mode-line, so
-why not go with it.
+maintain. Powerline is a clean enough custom mode-line, so why not go
+with it.
 
 #+BEGIN_SRC emacs-lisp
   (use-package powerline
@@ -230,125 +334,124 @@ why not go with it.
       "Setup the default mode-line."
       (interactive)
       (setq-default mode-line-format
-		    '("%e"
-		      (:eval
-		       (let* ((active (powerline-selected-window-active))
-			      (mode-line-buffer-id (if active 'mode-line-buffer-id 'mode-line-buffer-id-inactive))
-			      (mode-line (if active 'mode-line 'mode-line-inactive))
-			      (face1 (if active 'powerline-active1 'powerline-inactive1))
-			      (face2 (if active 'powerline-active2 'powerline-inactive2))
-			      (separator-left (intern (format "powerline-%s-%s"
-							      (powerline-current-separator)
-							      (car powerline-default-separator-dir))))
-			      (separator-right (intern (format "powerline-%s-%s"
-							       (powerline-current-separator)
-							       (cdr powerline-default-separator-dir))))
-			      (lhs (list (powerline-raw "%*" mode-line 'l)
-					 (powerline-raw " " mode-line)
-					 (funcall separator-left mode-line face2)
-					 (powerline-raw "%l" face2 'l)
-					 (powerline-raw ":" face2)
-					 (powerline-raw "%c" face2 'r)
-					 (funcall separator-left face2 mode-line)
-					 ;; (when powerline-display-mule-info
-					 ;; 	 (powerline-raw mode-line-mule-info mode-line 'l))
-					 (powerline-buffer-id mode-line-buffer-id)
-					 (when (and (boundp 'which-func-mode) which-func-mode)
-					   (powerline-raw which-func-format nil 'l))
-					 (powerline-raw " ")
-					 (funcall separator-left mode-line face1)
-					 (when (and (boundp 'erc-track-minor-mode) erc-track-minor-mode)
-					   (powerline-raw erc-modified-channels-object face1 'l))
-					 (powerline-major-mode face1 'l)
-					 (powerline-process face1)
-					 (powerline-minor-modes face1 'l)
-					 (powerline-narrow face1 'l)
-					 (powerline-raw " " face1)
-					 (funcall separator-left face1 face2)
-					 (powerline-vc face2 'r)
-					 (when (bound-and-true-p nyan-mode)
-					   (powerline-raw (list (nyan-create)) face2 'l))))
-			      (rhs (list (powerline-raw global-mode-string face2 'r)
-					 (funcall separator-right face2 face1)
-					 (unless window-system
-					   (powerline-raw (char-to-string #xe0a1) face1 'l))
-					 (when powerline-display-buffer-size
-					   (powerline-buffer-size face1 'l))
-					 (powerline-raw " " face1)
-					 (funcall separator-right face1 mode-line)
-					 (powerline-raw " ")
-					 (powerline-raw "%6p" mode-line 'r)
-					 (when powerline-display-hud
-					   (powerline-hud face2 face1)))))
-			 (concat (powerline-render lhs)
-				 (powerline-fill face2 (powerline-width rhs))
-				 (powerline-render rhs)))))))
+                    '("%e"
+                      (:eval
+                       (let* ((active (powerline-selected-window-active))
+                              (mode-line-buffer-id (if active 'mode-line-buffer-id 'mode-line-buffer-id-inactive))
+                              (mode-line (if active 'mode-line 'mode-line-inactive))
+                              (face1 (if active 'powerline-active1 'powerline-inactive1))
+                              (face2 (if active 'powerline-active2 'powerline-inactive2))
+                              (separator-left (intern (format "powerline-%s-%s"
+                                                              (powerline-current-separator)
+                                                              (car powerline-default-separator-dir))))
+                              (separator-right (intern (format "powerline-%s-%s"
+                                                               (powerline-current-separator)
+                                                               (cdr powerline-default-separator-dir))))
+                              (lhs (list (powerline-raw "%*" mode-line 'l)
+                                         (powerline-raw " " mode-line)
+                                         (funcall separator-left mode-line face2)
+                                         (powerline-raw "%l" face2 'l)
+                                         (powerline-raw ":" face2)
+                                         (powerline-raw "%c" face2 'r)
+                                         (funcall separator-left face2 mode-line)
+                                         ;; (when powerline-display-mule-info
+                                         ;;    (powerline-raw mode-line-mule-info mode-line 'l))
+                                         (powerline-buffer-id mode-line-buffer-id)
+                                         (when (and (boundp 'which-func-mode) which-func-mode)
+                                           (powerline-raw which-func-format nil 'l))
+                                         (powerline-raw " ")
+                                         (funcall separator-left mode-line face1)
+                                         (when (and (boundp 'erc-track-minor-mode) erc-track-minor-mode)
+                                           (powerline-raw erc-modified-channels-object face1 'l))
+                                         (powerline-major-mode face1 'l)
+                                         (powerline-process face1)
+                                         (powerline-minor-modes face1 'l)
+                                         (powerline-narrow face1 'l)
+                                         (powerline-raw " " face1)
+                                         (funcall separator-left face1 face2)
+                                         (powerline-vc face2 'r)
+                                         (when (bound-and-true-p nyan-mode)
+                                           (powerline-raw (list (nyan-create)) face2 'l))))
+                              (rhs (list (powerline-raw global-mode-string face2 'r)
+                                         (funcall separator-right face2 face1)
+                                         (unless window-system
+                                           (powerline-raw (char-to-string #xe0a1) face1 'l))
+                                         (when powerline-display-buffer-size
+                                           (powerline-buffer-size face1 'l))
+                                         (powerline-raw " " face1)
+                                         (funcall separator-right face1 mode-line)
+                                         (powerline-raw " ")
+                                         (powerline-raw "%6p" mode-line 'r)
+                                         (when powerline-display-hud
+                                           (powerline-hud face2 face1)))))
+                         (concat (powerline-render lhs)
+                                 (powerline-fill face2 (powerline-width rhs))
+                                 (powerline-render rhs)))))))
 
     (leoc/powerline-theme)
     )
 #+END_SRC
-
-** Browse Url
+* Browse Url
 
 I am using ~chromium~ as web browser.
 
 #+BEGIN_SRC emacs-lisp
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "chromium")
+  (setq browse-url-browser-function 'browse-url-generic
+        browse-url-generic-program "chromium")
 #+END_SRC
 
-** Editor
+* Editor
 
 Single character response to /yes/ or /no/ questions is much faster:
 
 #+BEGIN_SRC emacs-lisp
-(defalias 'yes-or-no-p 'y-or-n-p)
+  (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 Transparently open compressed files:
 
 #+BEGIN_SRC emacs-lisp
-(auto-compression-mode t)
+  (auto-compression-mode t)
 #+END_SRC
 
 Show keystrokes in progress:
 
 #+BEGIN_SRC emacs-lisp
-(setq echo-keystrokes 0.1)
+  (setq echo-keystrokes 0.1)
 #+END_SRC
 
 Allow pasting selection outside of Emacs.
 
 #+BEGIN_SRC emacs-lisp
-(setq x-select-enable-clipboard t)
+  (setq x-select-enable-clipboard t)
 #+END_SRC
 
 Show active region.
 
 #+BEGIN_SRC emacs-lisp
-(transient-mark-mode 1)
-(make-variable-buffer-local 'transient-mark-mode)
-(put 'transient-mark-mode 'permanent-local t)
-(setq-default transient-mark-mode t)
+  (transient-mark-mode 1)
+  (make-variable-buffer-local 'transient-mark-mode)
+  (put 'transient-mark-mode 'permanent-local t)
+  (setq-default transient-mark-mode t)
 #+END_SRC
 
 Remove text in active region if inserting text.
 
 #+BEGIN_SRC emacs-lisp
-(delete-selection-mode 1)
+  (delete-selection-mode 1)
 #+END_SRC
 
 Always display line and column numbers.
 
 #+BEGIN_SRC emacs-lisp
-(setq line-number-mode t)
-(setq column-number-mode t)
+  (setq line-number-mode t)
+  (setq column-number-mode t)
 #+END_SRC
 
 Lines should be 80 characters wide, not 72.
 
 #+BEGIN_SRC emacs-lisp
-(setq fill-column 80)
+  (setq fill-column 80)
 #+END_SRC
 
 Easily navigate sillycased words.
@@ -365,19 +468,26 @@ Easily navigate sillycased words.
 Make sure there is a newline in the end of each file.
 
 #+BEGIN_SRC emacs-lisp
-(setq require-final-newline t)
+  (setq require-final-newline t)
 #+END_SRC
 
 Improve emacs cursor movement speed.
 
 #+BEGIN_SRC emacs-lisp
-(setq auto-window-vscroll t)
+  (setq auto-window-vscroll t)
 #+END_SRC
 
 
-*** Case Handling
+** Case Handling
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: case-handling-bindings-table
+| Scope  | Binding | Function             |
+|--------+---------+----------------------|
+| global | M-S-l   | leoc/downcase-dwim   |
+| global | M-S-u   | leoc/upcase-dwim     |
+| global | M-S-c   | leoc/capitalize-dwim |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (defun leoc/capitalize-dwim ()
     (interactive)
     (if (region-active-p)
@@ -396,42 +506,50 @@ Improve emacs cursor movement speed.
         (save-excursion (downcase-region (region-beginning) (region-end)))
       (downcase-word 1)))
 
-  (bind-key "M-S-l" 'leoc/downcase-dwim)
-  (bind-key "M-S-u" 'leoc/upcase-dwim)
-  (bind-key "M-S-c" 'leoc/capitalize-dwim)
+  <<bind-keys-from-table(table=case-handling-bindings-table)>>
 #+END_SRC
 
-*** Align by Regular Expression
+** Align by Regular Expression
 
 Sometimes I want to align multiple lines by a certain character,
 string or regular expression. The function =align-regexp= comes in handy
 here. I simply mark a region, hit =C-x a= type the string I want to be
 aligned et voila!
 
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-x a") 'align-regexp)
+#+NAME: align-regexp-bindings-table
+| Scope  | Binding | Function     |
+|--------+---------+--------------|
+| global | C-x a   | align-regexp |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
+  <<bind-keys-from-table(table=align-regexp-bindings-table)>>
 #+END_SRC
 
-*** Move Line
+** Move Line
 
 #+BEGIN_SRC emacs-lisp
-(defun leoc/move-line-up ()
-  "Move up the current line."
-  (interactive)
-  (transpose-lines 1)
-  (previous-line 2))
+  (defun leoc/move-line-up ()
+    "Move up the current line."
+    (interactive)
+    (transpose-lines 1)
+    (previous-line 2))
 
-(defun leoc/move-line-down ()
-  "Move down the current line."
-  (interactive)
-  (next-line 1)
-  (transpose-lines 1)
-  (previous-line 1))
+  (defun leoc/move-line-down ()
+    "Move down the current line."
+    (interactive)
+    (next-line 1)
+    (transpose-lines 1)
+    (previous-line 1))
 #+END_SRC
 
-*** Duplicate Line or Region
+** Duplicate Line or Region
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: duplicate-line-bindings-table
+| Scope  | Binding | Function                              |
+|--------+---------+---------------------------------------|
+| global | C-c d   | leoc/duplicate-current-line-or-region |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (defun leoc/duplicate-current-line-or-region (arg)
     "Duplicates the current line or region ARG times.
   If there's no region, the current line will be duplicated."
@@ -463,12 +581,18 @@ aligned et voila!
       (forward-char -1))
     (leoc/duplicate-region num (point-at-bol) (1+ (point-at-eol))))
 
-  (bind-key "C-c d" 'leoc/duplicate-current-line-or-region)
+  <<bind-keys-from-table(table=duplicate-line-bindings-table)>>
 #+END_SRC
 
-*** New Line Above, Below and Beyond
+** New Line Above, Below and Beyond
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: new-line-bindings-table
+| Scope  | Binding | Function             |
+|--------+---------+----------------------|
+| global | C-o     | leoc/open-line-below |
+| global | M-o     | leoc/open-line-above |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (defun leoc/open-line-below ()
     (interactive)
     (end-of-line)
@@ -482,17 +606,17 @@ aligned et voila!
     (forward-line -1)
     (indent-for-tab-command))
 
-  (bind-key "C-o" 'leoc/open-line-below)
-  (bind-key "M-o" 'leoc/open-line-above)
+  <<bind-keys-from-table(table=new-line-bindings-table)>>
 #+END_SRC
 
-*** Toggle Quotes
+** Toggle Quotes
 
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-z") 'toggle-quotes)
-#+END_SRC
+#+NAME: toggle-quotes-bindings-table
+| Scope  | Binding | Function           |
+|--------+---------+--------------------|
+| global | C-c C-z | leoc/toggle-quotes |
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :noweb yes
   (defun current-quotes-char ()
     (nth 3 (syntax-ppss)))
 
@@ -507,7 +631,7 @@ aligned et voila!
   (defun alternate-quotes-char ()
     (if (eq ?' (current-quotes-char)) ?\" ?'))
 
-  (defun toggle-quotes ()
+  (defun leoc/toggle-quotes ()
     (interactive)
     (if (point-is-in-string-p)
         (let ((old-quotes (char-to-string (current-quotes-char)))
@@ -526,17 +650,22 @@ aligned et voila!
             (replace-string new-quotes (concat "\\" new-quotes) nil start end)
             (replace-string (concat "\\" old-quotes) old-quotes nil start end)))
       (error "Point isn't in a string")))
+
+  <<bind-keys-from-table(table=toggle-quotes-bindings-table)>>
 #+END_SRC
 
-*** Sentence Ending
+#+RESULTS:
+: leoc/toggle-quotes
+
+** Sentence Ending
 
 Sentences do not need double spaces to end.
 
 #+BEGIN_SRC emacs-lisp
-(set-default 'sentence-end-double-space nil)
+  (set-default 'sentence-end-double-space nil)
 #+END_SRC
 
-*** Hardcore Emacs
+** Hardcore Emacs
 
 Some features should be disabled to promote other use of
 functionality. For instance:
@@ -544,36 +673,36 @@ functionality. For instance:
 Disable marking regions with ~Shift~:
 
 #+BEGIN_SRC emacs-lisp
-(setq shift-select-mode nil)
+  (setq shift-select-mode nil)
 #+END_SRC
 
 Unset unholy keys.
 
 #+BEGIN_SRC emacs-lisp
-(global-unset-key [up])
-(global-unset-key [down])
-(global-unset-key [left])
-(global-unset-key [right])
-(global-unset-key [M-left])
-(global-unset-key [M-right])
+  (global-unset-key [up])
+  (global-unset-key [down])
+  (global-unset-key [left])
+  (global-unset-key [right])
+  (global-unset-key [M-left])
+  (global-unset-key [M-right])
 #+END_SRC
 
-*** Auto-Refresh
+** Auto-Refresh
 
 Auto-refresh buffers.
 
 #+BEGIN_SRC emacs-lisp
-(global-auto-revert-mode 1)
+  (global-auto-revert-mode 1)
 #+END_SRC
 
 Also auto-refresh dired, but be quiet about it.
 
 #+BEGIN_SRC emacs-lisp
-(setq global-auto-revert-non-file-buffers t)
-(setq auto-revert-verbose nil)
+  (setq global-auto-revert-non-file-buffers t)
+  (setq auto-revert-verbose nil)
 #+END_SRC
 
-*** Backup Files
+** Backup Files
 
 Backup of a file the first time it is saved.
 
@@ -605,56 +734,56 @@ Delete excess backup files silently.
   (setq delete-old-versions -1)
 #+END_SRC
 
-*** Auto Save
+** Auto Save
 
 Write auto-save files to custom directory.
 
 #+BEGIN_SRC emacs-lisp
-(defvar auto-saves-dir (expand-file-name "auto-saves" user-emacs-directory)
-  "Specifies the directory to save auto-saves in.")
-(unless (file-exists-p auto-saves-dir)
-  (make-directory auto-saves-dir t))
-(setq auto-save-file-name-transforms `((".*" ,auto-saves-dir t))
-      auto-save-default t     ; auto-save every buffer that visits a file
-      auto-save-timeout 20    ; number of seconds idle time before auto-save (default: 30)
-      auto-save-interval 200  ; number of keystrokes between auto-saves (default: 300)
-      )
+  (defvar auto-saves-dir (expand-file-name "auto-saves" user-emacs-directory)
+    "Specifies the directory to save auto-saves in.")
+  (unless (file-exists-p auto-saves-dir)
+    (make-directory auto-saves-dir t))
+  (setq auto-save-file-name-transforms `((".*" ,auto-saves-dir t))
+        auto-save-default t     ; auto-save every buffer that visits a file
+        auto-save-timeout 20    ; number of seconds idle time before auto-save (default: 30)
+        auto-save-interval 200  ; number of keystrokes between auto-saves (default: 300)
+        )
 #+END_SRC
 
-*** Temporary Files
+** Temporary Files
 
 Change the temporary file directory.
 
 #+BEGIN_SRC emacs-lisp
-(defvar tmp-dir (expand-file-name "tmp" user-emacs-directory)
-  "Specifies the temp directory.")
-(unless (file-exists-p tmp-dir)
-  (make-directory tmp-dir t))
-(setq temporary-file-directory tmp-dir)
+  (defvar tmp-dir (expand-file-name "tmp" user-emacs-directory)
+    "Specifies the temp directory.")
+  (unless (file-exists-p tmp-dir)
+    (make-directory tmp-dir t))
+  (setq temporary-file-directory tmp-dir)
 #+END_SRC
 
-*** Set Coding System to UTF-8
+** Set Coding System to UTF-8
 
 #+BEGIN_SRC emacs-lisp
-(set-language-environment 'utf-8)
-(set-default-coding-systems 'utf-8)
-(setq locale-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
+  (set-language-environment 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (setq locale-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
 #+END_SRC
 
-*** Bookmarks
+** Bookmarks
 
 Write bookmarks to specific file.
 
 #+BEGIN_SRC emacs-lisp
-(setq bookmark-default-file (concat user-emacs-directory "bookmarks")
-      bookmark-save-flag 1)
+  (setq bookmark-default-file (concat user-emacs-directory "bookmarks")
+        bookmark-save-flag 1)
 #+END_SRC
 
-*** Smooth Scrolling
+** Smooth Scrolling
 
 # Smooth Scrolling keeps the cursor away from edges when scrolling up or
 # down.
@@ -670,7 +799,7 @@ Write bookmarks to specific file.
 #       scroll-preserve-screen-position 1)
 # #+END_SRC
 
-*** Save History
+** Save History
 
 #+BEGIN_SRC emacs-lisp
   (setq history-length 1000)
@@ -684,46 +813,53 @@ Write bookmarks to specific file.
             savehist-save-minibuffer-history t)))
 #+END_SRC
 
-*** Recent File
+** Recent File
 
 #+BEGIN_SRC emacs-lisp
-(use-package recentf
-  :defer t
-  :init (recentf-mode)
-  :config
-  (setq recentf-max-saved-items 200
-        recentf-auto-cleanup 300
-        recentf-exclude (list "/\\.git/.*\\'" ; Git contents
-                              "/elpa/.*\\'"   ; Package files
-                              ".*\\.gz\\'"
-                              "TAGS"
-                              ".*-autoloads\\.el\\'"
-                              "ido.last")))
+  (use-package recentf
+    :defer t
+    :init (recentf-mode)
+    :config
+    (setq recentf-max-saved-items 200
+          recentf-auto-cleanup 300
+          recentf-exclude (list "/\\.git/.*\\'" ; Git contents
+                                "/elpa/.*\\'"   ; Package files
+                                ".*\\.gz\\'"
+                                "TAGS"
+                                ".*-autoloads\\.el\\'"
+                                "ido.last")))
 #+END_SRC
 
-*** Uniquify Buffer Names
+** Uniquify Buffer Names
 
 #+BEGIN_SRC emacs-lisp
-(use-package uniquify
-  :config
-  (setq uniquify-buffer-name-style 'forward
-        uniquify-separator "/"
-        uniquify-after-kill-buffer-p t
-        uniquify-ignore-buffers-re "^\\*"))
+  (use-package uniquify
+    :config
+    (setq uniquify-buffer-name-style 'forward
+          uniquify-separator "/"
+          uniquify-after-kill-buffer-p t
+          uniquify-ignore-buffers-re "^\\*"))
 #+END_SRC
 
-*** Ediff
+** Ediff
 
 #+BEGIN_SRC emacs-lisp
-(setq ediff-diff-options "-w"
-      ediff-split-window-function 'split-window-horizontally
-      ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq ediff-diff-options "-w"
+        ediff-split-window-function 'split-window-horizontally
+        ediff-window-setup-function 'ediff-setup-windows-plain)
 #+END_SRC
 
-*** Whitespace
+** Whitespace
 
 Whitespace should be visible immediately. The ~whitespace~ package helps
 displaying whitespace.
+
+#+NAME: -bindings-table
+| Scope  | Binding | Function |
+|--------+---------+----------|
+| global | C-c w w |          |
+| global | C-c w m |          |
+| global | C-c w i |          |
 
 #+BEGIN_SRC emacs-lisp
   (use-package whitespace
@@ -731,13 +867,7 @@ displaying whitespace.
     :bind ("C-c T w" . whitespace-mode)
     :init (leoc/hook-into-modes #'whitespace-mode '(prog-mode-hook))
     :config
-    (setq whitespace-style '(face
-                             lines-tail
-                             tabs
-                             indent
-                             tab-mark
-                             empty
-                             trailing)
+    (setq whitespace-style '(face lines-tail tabs indent tab-mark empty trailing)
           whitespace-global-modes '(not go-mode)))
 #+END_SRC
 
@@ -769,14 +899,14 @@ tabs with spaces within files and reindenting the buffer afterwards.
     (interactive)
     (save-excursion
       (beginning-of-buffer)
-      (while (re-search-forward "	" nil t)
+      (while (re-search-forward "  " nil t)
         (replace-match "  "))
       (indent-buffer)))
 
   (bind-key "C-c w" 'leoc/cleanup-whitespace)
 #+END_SRC
 
-*** Auto-Save Buffer
+** Auto-Save Buffer
 
 When switching windows, file buffers should be saved automatically.
 
@@ -787,55 +917,55 @@ When switching windows, file buffers should be saved automatically.
     (when buffer-file-name (save-buffer)))
 #+END_SRC
 
-*** Browse Kill Ring
+** Browse Kill Ring
 
 #+BEGIN_SRC emacs-lisp
-(use-package browse-kill-ring
-  :disabled t
-  :ensure t
-  :bind ("M-C-y" . browse-kill-ring)
-  :config
-  (setq browse-kill-ring-show-preview nil
-        browse-kill-ring-quit-action 'save-and-restore))
+  (use-package browse-kill-ring
+    :disabled t
+    :ensure t
+    :bind ("M-C-y" . browse-kill-ring)
+    :config
+    (setq browse-kill-ring-show-preview nil
+          browse-kill-ring-quit-action 'save-and-restore))
 #+END_SRC
 
-*** Ibuffer
+** Ibuffer
 
 #+BEGIN_SRC emacs-lisp
-(use-package ibuffer
-  :bind ([remap list-buffers] . ibuffer)
-  :init (add-hook 'ibuffer-mode-hook 'ibuffer-auto-mode)
-  :config
-  (progn
-    (use-package ibuf-ext
-      :config (setq ibuffer-show-empty-filter-groups nil))))
+  (use-package ibuffer
+    :bind ([remap list-buffers] . ibuffer)
+    :init (add-hook 'ibuffer-mode-hook 'ibuffer-auto-mode)
+    :config
+    (progn
+      (use-package ibuf-ext
+        :config (setq ibuffer-show-empty-filter-groups nil))))
 
-(use-package ibuffer-projectile
-  :ensure t
-  :defer t
-  :init (with-eval-after-load 'ibuffer
-          (defun leoc/ibuffer-group-buffers ()
-            (setq ibuffer-filter-groups
-                  (append
-                   '(("IRC" (mode . erc-mode))
-                     ("Help" (or (name . "\\*Help\\*")
-                                 (name . "\\*Apropos\\*")
-                                 (name . "\\*info\\*")))
-                     ("Emacs" (or (name . "^\\*scratch\\*$")
-                                  (name . "^\\*Messages\\*$")
-                                  (name . "^\\*Completions\\*$")
-                                  (name . "^\\*Backtrace\\*$")
-                                  (mode . inferior-emacs-lisp-mode)))
-                     ("root" (filename . "^/sudo:root.*"))
-                     ("Org" (mode . org-mode)))
-                   (ibuffer-projectile-generate-filter-groups)))
-            (unless (eq ibuffer-sorting-mode 'filename/process)
-              (ibuffer-do-sort-by-filename/process)))
-          (add-hook 'ibuffer-hook
-                    #'leoc/ibuffer-group-buffers)))
+  (use-package ibuffer-projectile
+    :ensure t
+    :defer t
+    :init (with-eval-after-load 'ibuffer
+            (defun leoc/ibuffer-group-buffers ()
+              (setq ibuffer-filter-groups
+                    (append
+                     '(("IRC" (mode . erc-mode))
+                       ("Help" (or (name . "\\*Help\\*")
+                                   (name . "\\*Apropos\\*")
+                                   (name . "\\*info\\*")))
+                       ("Emacs" (or (name . "^\\*scratch\\*$")
+                                    (name . "^\\*Messages\\*$")
+                                    (name . "^\\*Completions\\*$")
+                                    (name . "^\\*Backtrace\\*$")
+                                    (mode . inferior-emacs-lisp-mode)))
+                       ("root" (filename . "^/sudo:root.*"))
+                       ("Org" (mode . org-mode)))
+                     (ibuffer-projectile-generate-filter-groups)))
+              (unless (eq ibuffer-sorting-mode 'filename/process)
+                (ibuffer-do-sort-by-filename/process)))
+            (add-hook 'ibuffer-hook
+                      #'leoc/ibuffer-group-buffers)))
 #+END_SRC
 
-*** Yank Indent Mode
+** Yank Indent Mode
 
 #+BEGIN_SRC emacs-lisp
   (defvar yank-indent-modes '(LaTeX-mode
@@ -888,46 +1018,56 @@ When switching windows, file buffers should be saved automatically.
     (yank t))
 #+END_SRC
 
-** Packages
-*** Flycheck
+* Packages
+** Flycheck
+
+#+NAME: flycheck-bindings-table
+| Scope  | Binding | Function             |
+|--------+---------+----------------------|
+| global | C-c l e | list-flycheck-errors |
 
 #+BEGIN_SRC emacs-lisp
-(use-package flycheck-ledger :ensure t)
-(eval-after-load 'flycheck
-  '(require 'flycheck-ledger))
+  (use-package flycheck-ledger :ensure t)
+  (eval-after-load 'flycheck
+    '(require 'flycheck-ledger))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :ensure t
-  :bind ("C-c l e" . list-flycheck-errors)
-  :commands (flycheck-get-checker-for-buffer
-             flycheck-may-enable-mode)
-  :init
-  (add-hook 'after-init-hook #'global-flycheck-mode)
-  :config
-  (progn
-    (defun leoc/flycheck-mode-on-safe ()
-      (when (and (flycheck-may-enable-mode)
-                 (flycheck-get-checker-for-buffer))
-        (flycheck-mode)))
-    (advice-add 'flycheck-mode-on-safe :override
-                #'leoc/flycheck-mode-on-safe)))
+#+BEGIN_SRC emacs-lisp :noweb yes
+  (use-package flycheck
+    :ensure t
+    :bind
+    <<bindings-from-table(table=flycheck-bindings-table)>>
+    :commands (flycheck-get-checker-for-buffer
+               flycheck-may-enable-mode)
+    :init
+    (add-hook 'after-init-hook #'global-flycheck-mode)
+    :config
+    (progn
+      (defun leoc/flycheck-mode-on-safe ()
+        (when (and (flycheck-may-enable-mode)
+                   (flycheck-get-checker-for-buffer))
+          (flycheck-mode)))
+      (advice-add 'flycheck-mode-on-safe :override
+                  #'leoc/flycheck-mode-on-safe)))
 #+END_SRC
 
-*** Git
+** Magit
 
 The best Git interface I have seen so far is Magit.
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: magit-bindings-table
+| Scope                 | Binding | Function                     |
+|-----------------------+---------+------------------------------|
+| global                | C-x g   | magit-status                 |
+| magit-status-mode-map | C-x C-k | leoc/magit-kill-file-on-line |
+| magit-status-mode-map | q       | leoc/magit-quit-session      |
+| magit-status-mode-map | W       | leoc/magit-toggle-whitespace |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package magit
     :ensure t
     :bind
-    (("C-x g" . magit-status)
-     :map magit-status-mode-map
-     ("C-x C-k" . leoc/magit-kill-file-on-line)
-     ("q" . leoc/magit-quit-session)
-     ("W" . leoc/magit-toggle-whitespace))
+    <<bindings-from-table(table=magit-bindings-table)>>
     :config
     (progn
       (setq magit-auto-revert-mode nil)
@@ -971,13 +1111,20 @@ The best Git interface I have seen so far is Magit.
 
 The only things left are some modes to edit git-specific files.
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: git-timemachine-bindings-table
+| Scope  | Binding | Function               |
+|--------+---------+------------------------|
+| global | C-c v t | git-timemachine-toggle |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package gitconfig-mode :ensure t)
   (use-package gitignore-mode :ensure t)
   (use-package git-commit :ensure t)
   (use-package git-timemachine
     :ensure t
-    :bind ("C-c v t" . git-timemachine-toggle))
+    :bind
+    <<bindings-from-table(table=git-timemachine-bindings-table)>>
+  )
 #+END_SRC
 
 To have inline information about not committed changes I use ~diff-hl~.
@@ -992,35 +1139,47 @@ To have inline information about not committed changes I use ~diff-hl~.
       (add-hook 'dired-mode-hook 'diff-hl-dired-mode)))
 #+END_SRC
 
-*** Gist
+** Gist
 
-#+BEGIN_SRC emacs-lisp
-(use-package yagist
-  :ensure t
-  :bind(("C-c G c" . yagist-region-or-buffer)
-        ("C-c G p" . yagist-region-or-buffer-private)
-        ("C-c G l" . yagist-list))
-  :config (setq yagist-view-gist t))
+#+NAME: gist-bindings-table
+| Scope  | Binding | Function                        |
+|--------+---------+---------------------------------|
+| global | C-c G c | yagist-region-or-buffer         |
+| global | C-c G p | yagist-region-or-buffer-private |
+| global | C-c G l | yagist-list                     |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
+  (use-package yagist
+    :ensure t
+    :bind
+    <<bindings-from-table(table=gist-bindings-table)>>
+    :config
+    (setq yagist-view-gist t))
 #+END_SRC
 
-** Editing
-*** Show Parenthesis
+* Editing
+** Show Parenthesis
 
 Highlight matching parentheses when the point is on them.
 
 #+BEGIN_SRC emacs-lisp
-(show-paren-mode 1)
+  (show-paren-mode 1)
 #+END_SRC
 
-*** Spell-Checking with FlySpell
+** Spell-Checking with FlySpell
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: flyspell-bindings-table
+| Scope             | Binding | Function                   |
+|-------------------+---------+----------------------------|
+| flyspell-mode-map | M-<tab> | nil                        |
+| flyspell-mode-map | C-:     | flyspell-auto-correct-word |
+| flyspell-mode-map | C-.     | ispell-word                |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package flyspell
     :defer t
-    :bind (:map flyspell-mode-map
-                ("M-\t" . nil)
-                ("C-:" . flyspell-auto-correct-word)
-                ("C-." . ispell-word))
+    :bind
+    <<bindings-from-table(table=flyspell-bindings-table)>>
     :config
     (progn
       (defun leoc/flyspell-switch-dictionary ()
@@ -1035,47 +1194,60 @@ Highlight matching parentheses when the point is on them.
             flyspell-issue-message-flag nil)))
 #+END_SRC
 
-*** Edit File as Super User
+** Edit File as Super User
 
 #+BEGIN_SRC emacs-lisp
-(defun sudo-edit (&optional arg)
-  (interactive "p")
-  (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@localhost:" (ido-read-file-name "File: ")))
-    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+  (defun sudo-edit (&optional arg)
+    (interactive "p")
+    (if (or arg (not buffer-file-name))
+        (find-file (concat "/sudo:root@localhost:" (ido-read-file-name "File: ")))
+      (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 #+END_SRC
 
-*** Multiple Cursors
+** Multiple Cursors
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: mc-bindings-table
+| Scope  | Binding   | Function                               |
+|--------+-----------+----------------------------------------|
+| global | M-n       | mc/mark-next-like-this                 |
+| global | M-p       | mc/mark-previous-like-this             |
+| global | C-x C-m   | mc/mark-all-dwim                       |
+| global | C-c b i   | mc/insert-numbers                      |
+| global | C-c b h   | mc-hide-unmatched-lines-mode           |
+| global | C-c b a   | mc/mark-all-like-this                  |
+| global | C-c b d   | mc/mark-all-symbols-like-this-in-defun |
+| global | C-c b r   | mc/reverse-regions                     |
+| global | C-c b s   | mc/sort-regions                        |
+| global | C-c b l   | mc/edit-lines                          |
+| global | C-c b C-a | mc/edit-beginnings-of-lines            |
+| global | C-c b C-e | mc/edit-ends-of-lines                  |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package multiple-cursors
     :ensure t
     :demand t
-    :config
-    (bind-key* "M-n" 'mc/mark-next-like-this)
-    (bind-key* "M-p" 'mc/mark-previous-like-this)
-    (bind-key* "C-x C-m" 'mc/mark-all-dwim)
-    (bind-key* "C-c b i" 'mc/insert-numbers)
-    (bind-key* "C-c b h" 'mc-hide-unmatched-lines-mode)
-    (bind-key* "C-c b a" 'mc/mark-all-like-this)
-    (bind-key* "C-c b d" 'mc/mark-all-symbols-like-this-in-defun)
-    (bind-key* "C-c b r" 'mc/reverse-regions)
-    (bind-key* "C-c b s" 'mc/sort-regions)
-    (bind-key* "C-c b l" 'mc/edit-lines)
-    (bind-key* "C-c b C-a" 'mc/edit-beginnings-of-lines)
-    (bind-key* "C-c b C-e" 'mc/edit-ends-of-lines))
+    :bind*
+    <<bindings-from-table(table=mc-bindings-table)>>
+  )
 #+END_SRC
 
-*** Expand Region
+** Expand Region
 
-#+BEGIN_SRC emacs-lisp
-(use-package expand-region
-  :ensure t
-  :bind (("C-=" . er/expand-region)
-         ("C-M-m" . er/expand-region)))
+#+NAME: er-bindings-table
+| Scope  | Binding | Function         |
+|--------+---------+------------------|
+| global | C-=     | er/expand-region |
+| global | C-M-m   | er/expand-region |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
+  (use-package expand-region
+    :ensure t
+    :bind
+    <<bindings-from-table(table=er-bindings-table)>>
+  )
 #+END_SRC
 
-*** Remote Files via Tramp
+** Remote Files via Tramp
 
 Tramp is a package that comes with Emacs and allows working with
 remote files and remote directories.
@@ -1096,58 +1268,63 @@ remote files and remote directories.
               (nil "\\`root\\'" "/ssh:%h:")))))
 #+END_SRC
 
-*** Very Large Files
+** Very Large Files
 
 #+BEGIN_SRC emacs-lisp
-(use-package vlf
-  :ensure t
-  :config
-  (progn
-    (require 'vlf-setup)
-    (setq vlf-application 'dont-ask)))
+  (use-package vlf
+    :ensure t
+    :config
+    (progn
+      (require 'vlf-setup)
+      (setq vlf-application 'dont-ask)))
 #+END_SRC
 
-*** Isearch with Regular Expressiond by Default
+** Isearch with Regular Expressiond by Default
 
-#+BEGIN_SRC emacs-lisp
-(bind-key "C-s" 'isearch-forward-regexp)
-(bind-key "C-r" 'isearch-backward-regexp)
-(bind-key "C-M-s" 'isearch-forward)
-(bind-key "C-M-r" 'isearch-backward)
+#+NAME: isearch-bindings-table
+| Scope  | Binding | Function                |
+|--------+---------+-------------------------|
+| global | C-s     | isearch-forward-regexp  |
+| global | C-r     | isearch-backward-regexp |
+| global | C-M-s   | isearch-forward         |
+| global | C-M-r   | isearch-backward        |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
+  <<bind-keys-from-table(table=isearch-bindings-table)>>
 #+END_SRC
 
-*** Indent Region or Buffer
+** Indent Region or Buffer
 
 #+BEGIN_SRC emacs-lisp
-(defun indent-buffer ()
-  (interactive)
-  (indent-region (point-min) (point-max)))
+  (defun indent-buffer ()
+    (interactive)
+    (indent-region (point-min) (point-max)))
 
-(defun indent-region-or-buffer ()
-  "Indents a region if selected, otherwise the whole buffer."
-  (interactive)
-  (save-excursion
-    (if (region-active-p)
+  (defun indent-region-or-buffer ()
+    "Indents a region if selected, otherwise the whole buffer."
+    (interactive)
+    (save-excursion
+      (if (region-active-p)
+          (progn
+            (indent-region (region-beginning) (region-end))
+            (message "Indented selected region."))
         (progn
-          (indent-region (region-beginning) (region-end))
-          (message "Indented selected region."))
-      (progn
-        (indent-buffer)
-        (message "Indented buffer.")))))
+          (indent-buffer)
+          (message "Indented buffer.")))))
 #+END_SRC
 
-*** Easily Build RegExps with =re-builder=
+** Easily Build RegExps with =re-builder=
 
 #+BEGIN_SRC emacs-lisp
-(use-package re-builder
-  :ensure t
-  :defer t
-  :config
-  (progn
-    (setq reb-re-syntax 'string)))
+  (use-package re-builder
+    :ensure t
+    :defer t
+    :config
+    (progn
+      (setq reb-re-syntax 'string)))
 #+END_SRC
 
-*** Speed Things Up With Snippets
+** Speed Things Up With Snippets
 
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
@@ -1187,19 +1364,24 @@ remote files and remote directories.
       (define-key yas/keymap (kbd "C-a") 'yas/goto-start-of-active-field)
       (define-key yas/keymap (kbd "<return>") 'yas/exit-all-snippets)))
 #+END_SRC
-*** Auto Completion
+** Auto Completion
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: ac-bindings-table
+| Scope              | Binding | Function                   |
+|--------------------+---------+----------------------------|
+| global             | C-<tab> | company-complete           |
+| company-active-map | C-n     | company-select-next        |
+| company-active-map | C-p     | company-select-previous    |
+| company-active-map | <tab>   | company-complete-selection |
+| company-active-map | C-j     | company-complete-selection |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package company
     :ensure t
     :demand t
     :diminish company-mode
-    :bind (("C-<tab>" . company-complete)
-           :map company-active-map
-           ("C-n" . company-select-next)
-           ("C-p" . company-select-previous)
-           ("<tab>" . company-complete-selection)
-           ("C-j" . company-complete-selection))
+    :bind
+    <<bindings-from-table(table=ac-bindings-table)>>
     :config
     (progn
       (add-hook 'prog-mode-hook 'company-mode)
@@ -1220,7 +1402,8 @@ remote files and remote directories.
         (with-eval-after-load 'company
           (company-quickhelp-mode)))))
 #+END_SRC
-*** Be Smart About Parenthesis Pairs
+
+** Be Smart About Parenthesis Pairs
 
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
@@ -1229,33 +1412,56 @@ remote files and remote directories.
     (smartparens-global-mode))
 #+END_SRC
 
-** Navigation
-*** Switching Buffers Back And Forth
+* Navigation
+** Switching Buffers Back And Forth
 
-#+BEGIN_SRC emacs-lisp
-(bind-key "C-S-<left>" 'previous-buffer)
-(bind-key "C-S-<right>" 'next-buffer)
+#+NAME: switch-buffer-bindings-table
+| Scope  | Binding     | Function        |
+|--------+-------------+-----------------|
+| global | C-S-<left>  | previous-buffer |
+| global | C-S-<right> | next-buffer     |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
+  <<bind-keys-from-table(table=switch-buffer-bindings-table)>>
 #+END_SRC
 
-*** Switching Windows Back And Forth
+** Switching Windows Back And Forth
 
-#+BEGIN_SRC emacs-lisp
-(bind-key "C-x O" '(lambda () (interactive) (other-window -1)))
-(bind-key "C-x C-o" '(lambda () (interactive) (other-window 2)))
+#+NAME: switch-window-bindings-table
+| Scope  | Binding | Function              |
+|--------+---------+-----------------------|
+| global | C-x O   | leoc/back-window      |
+| global | C-x C-o | leoc/skip-next-window |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
+  (defun leoc/back-window ()
+    (interactive)
+    (other-window -1))
+
+  (defun leoc/skip-next-window ()
+    (interactive)
+    (other-window 2))
+
+  <<bind-keys-from-table(table=switch-window-bindings-table)>>
 #+END_SRC
 
-*** File Navigation with Dired
+** File Navigation with Dired
 
 Dired helps me using this beautiful files I love so dearly.
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: dired-bindings-table
+| Scope          | Binding   | Function                   |
+|----------------+-----------+----------------------------|
+| global         | C-x C-j   | dired-jump                 |
+| global         | C-x 4 C-j | dired-jump-other-window    |
+| dired-mode-map | C-x C-k   | dired-do-delete            |
+| dired-mode-map | C-o       | leoc/dired-open-externally |
+| dired-mode-map | C-c C-o   | dired-omit-mode            |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package dired
-    :bind (("C-x C-j" . dired-jump)
-           ("C-x 4 C-j" . dired-jump-other-window)
-           :map dired-mode-map
-           ("C-x C-k" . dired-do-delete)
-           ("C-o" . leoc/dired-open-externally)
-           ("C-c C-o" . dired-omit-mode))
+    :bind
+    <<bindings-from-table(table=dired-bindings-table)>>
     :config
     (progn
       (require 'dired-x)
@@ -1305,6 +1511,8 @@ Dired helps me using this beautiful files I love so dearly.
 Emacs provides transparent archive support out of the box, but
 ~dired-atool~ gives flexible tools to pack and unpack archives.
 
+bt
+
 #+BEGIN_SRC emacs-lisp
   (use-package dired-atool
     :ensure t
@@ -1315,7 +1523,7 @@ Emacs provides transparent archive support out of the box, but
                 ("Z" . dired-atool-do-pack)))
 #+END_SRC
 
-*** Streamline Popup Windows
+** Streamline Popup Windows
 
 Popwin helps to control all those secondary windows and buffers that
 pop up while using those various modes we love so dearly. You can
@@ -1381,7 +1589,7 @@ pops up.
               ("*xref*" :height ,(leoc/get-popwin-height 'medium))))))
 #+END_SRC
 
-*** Handle Projects with Projectile
+** Handle Projects with Projectile
 
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
@@ -1398,8 +1606,8 @@ pops up.
           projectile-completion-system 'ido))
 #+END_SRC
 
-*** Helm
-**** Find Occurences via Helm Swoop
+** Helm
+*** Find Occurences via Helm Swoop
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm-swoop
@@ -1407,7 +1615,7 @@ pops up.
     :bind (("C-c h o" . helm-swoop)))
 #+END_SRC
 
-**** Go To Symbol in File
+*** Go To Symbol in File
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm-imenu
@@ -1415,7 +1623,7 @@ pops up.
     :bind (("C-c h i" . helm-imenu)))
 #+END_SRC
 
-**** Find Files via =locate=
+*** Find Files via =locate=
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm-locate
@@ -1423,42 +1631,52 @@ pops up.
     :bind (("C-c h l" . helm-locate)))
 #+END_SRC
 
-**** Find Documentation Entries via Helm
+*** Find Documentation Entries via Helm
 
 #+BEGIN_SRC emacs-lisp
-(use-package helm-dash
-  :ensure t)
+  (use-package helm-dash
+    :ensure t)
 #+END_SRC
 
-**** Find Files in Project
+*** Find Files in Project
 
 With helm we can find files within our projectile projects.
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm-projectile
-     :defer t
-     :ensure t
-     :demand t
-     :init
-     (progn
-       (define-key projectile-command-map (kbd "g") #'helm-projectile-grep)
-       (define-key projectile-command-map (kbd "s") #'helm-projectile-ag)))
+    :defer t
+    :ensure t
+    :demand t
+    :init
+    (progn
+      (define-key projectile-command-map (kbd "g") #'helm-projectile-grep)
+      (define-key projectile-command-map (kbd "s") #'helm-projectile-ag)))
 #+END_SRC
 
-**** Grep Through Files with ~ag~
+*** Grep Through Files with ~ag~
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm-ag :ensure t)
 #+END_SRC
 
-*** Improved Completing Read with Ido
+** Improved Completing Read with Ido
 
 The package ~ido~ (Interactively Do Things) provides better completing
 reads, showing candidates interactively.
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: ido-bindings-table
+| Scope                     | Binding | Function                   |
+|---------------------------+---------+----------------------------|
+| ido-common-completion-map | C-n     | ido-next-match             |
+| ido-common-completion-map | C-p     | ido-prev-match             |
+| ido-file-completion-map   | C-w     | ido-delete-backward-updir  |
+| ido-file-completion-map   | C-x C-w | ido-copy-current-file-name |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package ido
     :demand t
+    :bind
+    <<bindings-from-table(table=ido-bindings-table)>>
     :config
     (progn
       (ido-mode 1)
@@ -1473,14 +1691,7 @@ reads, showing candidates interactively.
             ido-use-filename-at-point nil
             ido-default-file-method 'selected-window
             ido-max-directory-size 100000)
-      (set-default 'imenu-auto-rescan t)
-
-      (add-hook 'ido-setup-hook
-                '(lambda ()
-                   (define-key ido-common-completion-map (kbd "C-n") 'ido-next-match)
-                   (define-key ido-common-completion-map (kbd "C-p") 'ido-prev-match)
-                   (define-key ido-file-completion-map (kbd "C-w") 'ido-delete-backward-updir)
-                   (define-key ido-file-completion-map (kbd "C-x C-w") 'ido-copy-current-file-name)))))
+      (set-default 'imenu-auto-rescan t)))
 #+END_SRC
 
 The package ~ido-ubiquitous~ replaces stock emacs completion with ido
@@ -1497,10 +1708,10 @@ I find it much better to see the results of ~ido-mode~ in a vertical
 manner. Vertical mode is much more friendly to the eye...
 
 #+BEGIN_SRC emacs-lisp
-(use-package ido-vertical-mode
-  :ensure t
-  :init
-  (ido-vertical-mode 1))
+  (use-package ido-vertical-mode
+    :ensure t
+    :init
+    (ido-vertical-mode 1))
 #+END_SRC
 
 Fuzzy Matching à la Sublime Text makes some things easier too.
@@ -1526,136 +1737,146 @@ commands. And to all the other commands, too.
            ("M-X" . smex-major-mode-commands)))
 #+END_SRC
 
-*** Jumping around windows & buffers
+** Jumping around windows & buffers
 
 Going to a line is traditionally bound to =M-g M-g=. I use the prefix
 =M-g= to bind the ~avy~ package, which provides means to jump to char,
 word, line and much more.
 
-| *Binding* | *Function*        |
-|---------+-----------------|
-| ~M-g j~   | ~avy-goto-char~   |
-| ~M-g l~   | ~avy-goto-line~   |
-| ~M-g u~   | ~avy-goto-word-0~ |
+#+NAME: avy-bindings-table
+| Scope  | Binding | Function        |
+|--------+---------+-----------------|
+| global | M-g j   | avy-goto-char   |
+| global | M-g l   | avy-goto-line   |
+| global | M-g u   | avy-goto-word-0 |
 
-#+BEGIN_SRC emacs-lisp
-(use-package avy
-  :ensure t
-  :bind (("M-g j" . avy-goto-char)
-         ("M-g l" . avy-goto-line)
-         ("M-g u" . avy-goto-word-0)))
+#+BEGIN_SRC emacs-lisp :noweb yes
+  (use-package avy
+    :ensure t
+    :bind
+    <<bindings-from-table(table=avy-bindings-table)>>
+  )
 #+END_SRC
 
-*** Temporary Window Configurations
+** Temporary Window Configurations
 
 #+BEGIN_SRC emacs-lisp
-;; (defvar frame-winset-mode-line "")
-;; (put 'frame-winset-mode-line 'risky-local-variable t)
+  ;; (defvar frame-winset-mode-line "")
+  ;; (put 'frame-winset-mode-line 'risky-local-variable t)
 
-;; (unless (memq 'frame-winset-mode-line global-mode-string)
-;;   (setq global-mode-string (append '(frame-winset-mode-line)
-;;                                    global-mode-string)))
+  ;; (unless (memq 'frame-winset-mode-line global-mode-string)
+  ;;   (setq global-mode-string (append '(frame-winset-mode-line)
+  ;;                                    global-mode-string)))
 
-;; (defface frame-winset-active-face
-;;   '((t (:foreground "yellow" :bold 't)))
-;;   "Winset mode line color"
-;;   :group 'faces)
+  ;; (defface frame-winset-active-face
+  ;;   '((t (:foreground "yellow" :bold 't)))
+  ;;   "Winset mode line color"
+  ;;   :group 'faces)
 
-;; (defface frame-winset-inactive-face
-;;   '((t (:foreground "gray")))
-;;   "Winset mode line color"
-;;   :group 'faces)
+  ;; (defface frame-winset-inactive-face
+  ;;   '((t (:foreground "gray")))
+  ;;   "Winset mode line color"
+  ;;   :group 'faces)
 
-(defun frame-winset-update-mode-line ()
-  "Set the modeline accordingly to the current state."
-  (let ((current-index (frame-parameter nil 'window-configuration-index)))
-    (setq frame-winset-mode-line
-          (loop for element in '("[" 0 1 2 3 4 5 6 7 8 "]")
-                collect (let ((element-string (format "%s " (if (stringp element)
-                                                               element
-                                                              (+ 1 element)))))
-                          (if (eq element current-index)
+  (defun frame-winset-update-mode-line ()
+    "Set the modeline accordingly to the current state."
+    (let ((current-index (frame-parameter nil 'window-configuration-index)))
+      (setq frame-winset-mode-line
+            (loop for element in '("[" 0 1 2 3 4 5 6 7 8 "]")
+                  collect (let ((element-string (format "%s " (if (stringp element)
+                                                                  element
+                                                                (+ 1 element)))))
+                            (if (eq element current-index)
+                                (propertize element-string
+                                            'face 'frame-winset-active-face)
                               (propertize element-string
-                                          'face 'frame-winset-active-face)
-                            (propertize element-string
-                                        'face 'frame-winset-inactive-face)))))
-  (force-mode-line-update)))
+                                          'face 'frame-winset-inactive-face)))))
+      (force-mode-line-update)))
 
-(defun window-toggle-maximize ()
-  "Make the current window the maximum and go back."
-  (interactive)
-  (let ((last-window-configuration (frame-parameter nil 'temp-buffer-save)))
-    (if last-window-configuration
-        (progn
-          (set-window-configuration last-window-configuration)
-          (set-frame-parameter nil 'temp-buffer-save nil))
+  (defun window-toggle-maximize ()
+    "Make the current window the maximum and go back."
+    (interactive)
+    (let ((last-window-configuration (frame-parameter nil 'temp-buffer-save)))
+      (if last-window-configuration
+          (progn
+            (set-window-configuration last-window-configuration)
+            (set-frame-parameter nil 'temp-buffer-save nil))
         (progn
           (set-frame-parameter nil 'temp-buffer-save (current-window-configuration))
           (delete-other-windows)))))
 
-(defun substitute-nth (n value list)
-  "Substitute the element at N by VALUE in given LIST."
-  (loop for i from 0
-        for j in list
-        collect (if (= i n) value j)))
+  (defun substitute-nth (n value list)
+    "Substitute the element at N by VALUE in given LIST."
+    (loop for i from 0
+          for j in list
+          collect (if (= i n) value j)))
 
-(set-frame-parameter nil 'window-configurations '(nil nil nil nil nil nil nil nil nil))
-(set-frame-parameter nil 'window-configuration-index 0)
+  (set-frame-parameter nil 'window-configurations '(nil nil nil nil nil nil nil nil nil))
+  (set-frame-parameter nil 'window-configuration-index 0)
 
-(defun window-setup-frame (frame)
-  "Set the frame parameters of FRAME needed for fast window configuration switching."
-  (set-frame-parameter frame 'window-configurations '(nil nil nil nil nil nil nil nil nil))
-  (set-frame-parameter frame 'window-configuration-index 0))
-(add-hook 'after-make-frame-functions 'window-setup-frame)
+  (defun window-setup-frame (frame)
+    "Set the frame parameters of FRAME needed for fast window configuration switching."
+    (set-frame-parameter frame 'window-configurations '(nil nil nil nil nil nil nil nil nil))
+    (set-frame-parameter frame 'window-configuration-index 0))
+  (add-hook 'after-make-frame-functions 'window-setup-frame)
 
-(defun window-switch-to-configuration (index)
-  "Switch to a frame local window configuration with INDEX."
-  (let* ((index (- index 1))
-         (current-index (frame-parameter nil 'window-configuration-index))
-         (configurations (frame-parameter nil 'window-configurations))
-         (new-configurations (substitute-nth current-index (current-window-configuration) configurations)))
-    (unless (eq index current-index)
-      (set-frame-parameter nil 'window-configurations new-configurations)
-      (set-frame-parameter nil 'window-configuration-index index)
-      (if (nth index configurations)
-          (set-window-configuration (nth index configurations))
-        (delete-other-windows))
-      (frame-winset-update-mode-line))))
+  (defun window-switch-to-configuration (index)
+    "Switch to a frame local window configuration with INDEX."
+    (let* ((index (- index 1))
+           (current-index (frame-parameter nil 'window-configuration-index))
+           (configurations (frame-parameter nil 'window-configurations))
+           (new-configurations (substitute-nth current-index (current-window-configuration) configurations)))
+      (unless (eq index current-index)
+        (set-frame-parameter nil 'window-configurations new-configurations)
+        (set-frame-parameter nil 'window-configuration-index index)
+        (if (nth index configurations)
+            (set-window-configuration (nth index configurations))
+          (delete-other-windows))
+        (frame-winset-update-mode-line))))
 
-(global-set-key (kbd "M-1") '(lambda () (interactive) (window-switch-to-configuration 1)))
-(global-set-key (kbd "M-2") '(lambda () (interactive) (window-switch-to-configuration 2)))
-(global-set-key (kbd "M-3") '(lambda () (interactive) (window-switch-to-configuration 3)))
-(global-set-key (kbd "M-4") '(lambda () (interactive) (window-switch-to-configuration 4)))
-(global-set-key (kbd "M-5") '(lambda () (interactive) (window-switch-to-configuration 5)))
-(global-set-key (kbd "M-6") '(lambda () (interactive) (window-switch-to-configuration 6)))
-(global-set-key (kbd "M-7") '(lambda () (interactive) (window-switch-to-configuration 7)))
-(global-set-key (kbd "M-8") '(lambda () (interactive) (window-switch-to-configuration 8)))
-(global-set-key (kbd "M-9") '(lambda () (interactive) (window-switch-to-configuration 9)))
-(global-set-key (kbd "M-0") '(lambda () (interactive) (window-toggle-maximize)))
+  (global-set-key (kbd "M-1") '(lambda () (interactive) (window-switch-to-configuration 1)))
+  (global-set-key (kbd "M-2") '(lambda () (interactive) (window-switch-to-configuration 2)))
+  (global-set-key (kbd "M-3") '(lambda () (interactive) (window-switch-to-configuration 3)))
+  (global-set-key (kbd "M-4") '(lambda () (interactive) (window-switch-to-configuration 4)))
+  (global-set-key (kbd "M-5") '(lambda () (interactive) (window-switch-to-configuration 5)))
+  (global-set-key (kbd "M-6") '(lambda () (interactive) (window-switch-to-configuration 6)))
+  (global-set-key (kbd "M-7") '(lambda () (interactive) (window-switch-to-configuration 7)))
+  (global-set-key (kbd "M-8") '(lambda () (interactive) (window-switch-to-configuration 8)))
+  (global-set-key (kbd "M-9") '(lambda () (interactive) (window-switch-to-configuration 9)))
+  (global-set-key (kbd "M-0") '(lambda () (interactive) (window-toggle-maximize)))
 #+END_SRC
-*** Speedbar As Sidebar
+
+*** TODO Add mode line
+SCHEDULED: <2019-11-08 Fri>
+:PROPERTIES:
+:CREATED:  [2019-10-31 Thu 18:02]
+:END:
+
+- Show which virtual windows are active?
+
+** Speedbar As Sidebar
 
 Speedbar is a sidebar that shows the file tree.
 
 #+BEGIN_SRC emacs-lisp
-(use-package speedbar
-  :config
-  (setq speedbar-use-images nil ; Only use ASCII characters
-        speedbar-update-flag nil ; Do not update automatically.
-        speedbar-show-unknown-files t ; Show all files in speedbar, such as Ruby and Java files.
-        ))
+  (use-package speedbar
+    :config
+    (setq speedbar-use-images nil ; Only use ASCII characters
+          speedbar-update-flag nil ; Do not update automatically.
+          speedbar-show-unknown-files t ; Show all files in speedbar, such as Ruby and Java files.
+          ))
 #+END_SRC
 
-*** Custom Keymap
+** Custom Keymap
 
 #+BEGIN_SRC elisp
-(define-prefix-command 'leoc-map)
-(global-set-key (kbd "C-ß") 'leoc-map)
+  (define-prefix-command 'leoc-map)
+  (global-set-key (kbd "C-ß") 'leoc-map)
 
-(define-key leoc-map (kbd "m") 'mu4e)
-(define-key leoc-map (kbd "c") 'mu4e-compose-new)
+  (define-key leoc-map (kbd "m") 'mu4e)
+  (define-key leoc-map (kbd "c") 'mu4e-compose-new)
 #+END_SRC
-** Programming
+* Programming
 
 #+BEGIN_SRC emacs-lisp
   (use-package which-func
@@ -1663,7 +1884,7 @@ Speedbar is a sidebar that shows the file tree.
     (which-func-mode 1))
 #+END_SRC
 
-*** Appearance
+** Appearance
 
 #+BEGIN_SRC emacs-lisp
   (defun leoc/prog-mode-defaults ()
@@ -1680,17 +1901,17 @@ Speedbar is a sidebar that shows the file tree.
   (add-hook 'prog-mode-hook 'leoc/prog-mode-defaults)
 #+END_SRC
 
-*** Documentation
-**** Dash
+** Documentation
+*** Dash
 
 #+BEGIN_SRC emacs-lisp
-(use-package helm-dash :ensure t)
+  (use-package helm-dash :ensure t)
 #+END_SRC
 
-*** Languages / Environments
-**** Web
-***** HTML
-****** Haml-mode
+** Languages / Environments
+*** Web
+**** HTML
+***** Haml-mode
 
 Haml (HTML Abstraction Markup Language) is a templating system to
 avoid writing the inline code in a web document and make HTML easy and
@@ -1708,7 +1929,7 @@ help to embed Ruby code while developing a web application.
     :mode "\\.hamlc?\\'")
 #+END_SRC
 
-****** Emmet-mode
+***** Emmet-mode
 
 Emmet-mode provides [[https://www.emacswiki.org/emacs/ZenCoding][ZenCoding]]-features for Emacs.
 
@@ -1724,7 +1945,7 @@ Emmet-mode provides [[https://www.emacswiki.org/emacs/ZenCoding][ZenCoding]]-fea
     (setq emmet-self-closing-tag-style " /"))
 #+END_SRC
 
-***** Stylesheets
+**** Stylesheets
 
 For stylesheets I use a variety of preprocessors, which have some
 similar settings. Mainly the indentation and the use of ~rainbow-mode~,
@@ -1741,7 +1962,7 @@ which shows the colors directly within the buffer.
 Basic CSS mode should activate those settings.
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'css-mode-hook 'leoc/css-defaults)
+  (add-hook 'css-mode-hook 'leoc/css-defaults)
 #+END_SRC
 
 SCSS mode combines functionality for SASS and SCSS syntax.
@@ -1762,14 +1983,14 @@ Stylus is an interesting preprocessor combinding multiple paradigms
 for writing complex stylesheets.
 
 #+BEGIN_SRC emacs-lisp
-(use-package stylus-mode
-  :ensure t
-  :defer t
-  :init
-  (add-hook 'stylus-mode-hook 'leoc/css-defaults))
+  (use-package stylus-mode
+    :ensure t
+    :defer t
+    :init
+    (add-hook 'stylus-mode-hook 'leoc/css-defaults))
 #+END_SRC
 
-***** JavaScript
+**** JavaScript
 
 #+BEGIN_SRC emacs-lisp
   (flycheck-def-config-file-var flycheck-jscs javascript-jscs ".jscsrc" :safe #'stringp)
@@ -1819,16 +2040,46 @@ for writing complex stylesheets.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(use-package prettier-js
+  (use-package prettier-js
     :ensure t
     :config
-    (setq prettier-js-args '(
-                          "--trailing-comma" "es5"
-                          "--single-quote" "true"
-                          "--print-width" "100"
-                          ))
-    (add-hook 'js2-mode-hook 'prettier-js-mode)
-    (add-hook 'rjsx-mode-hook 'prettier-js-mode))
+    (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+    (add-hook 'graphql-mode-hook prettier-js-mode))
+#+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp
+  ;; turn on flychecking globally
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+
+  ;; disable jshint since we prefer eslint checking
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
+
+  ;; use eslint with rjsx-mode files
+  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'rjsx-minor-mode)
+
+  ;; (defun leoc/js-mode-setup ()
+  ;;   (flycheck-mode t)
+  ;;   (flycheck-select-checker 'javascript-eslint))
+  ;; (add-hook 'rjsx-mode-hook 'leoc/js-mode-setup)
+  ;; (add-hook 'js2-mode-hook 'leoc/js-mode-setup)
+
+  ;; use local eslint from node_modules before global
+  ;; http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+  (defun leoc/use-eslint-from-node-modules ()
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint (and root
+                        (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                          root))))
+      (when (and eslint (file-executable-p eslint))
+        (setq-local flycheck-javascript-eslint-executable eslint))))
+  (add-hook 'flycheck-mode-hook #'leoc/use-eslint-from-node-modules)
+
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1837,7 +2088,7 @@ for writing complex stylesheets.
 
 #+RESULTS:
 
-***** GraphQL
+**** GraphQL
 
 I use graphql-mode to edit ~*.gql~ and ~*.graphql~ files which are
 packaged by webpack. Once again I prefer spaces for indentation and a
@@ -1856,7 +2107,7 @@ tab width of 2 spaces.
     (add-hook 'graphql-mode-hook 'leoc/graphql-mode-defaults))
 #+END_SRC
 
-***** CoffeeScript
+**** CoffeeScript
 
 #+BEGIN_SRC emacs-lisp
   (defun leoc/coffee-mode-defaults ()
@@ -1873,7 +2124,7 @@ tab width of 2 spaces.
     (add-hook 'coffee-mode-hook 'leoc/coffee-mode-defaults))
 #+END_SRC
 
-**** Ruby
+*** Ruby
 
 #+BEGIN_SRC emacs-lisp
   (use-package rinari :ensure t :defer t)
@@ -1901,6 +2152,10 @@ tab width of 2 spaces.
     :diminish rubocop-mode
     )
 
+  (defun leoc/found-prettierrc-p ()
+    ""
+    (file-exists-p (projectile-expand-root ".prettierrc")))
+
   (defun leoc/ruby-mode-defaults ()
     "Do not use `prettier-js-mode` and `rubocop-mode` for older ruby versions."
     (interactive)
@@ -1912,21 +2167,22 @@ tab width of 2 spaces.
         (progn
           (message "Ruby version >= 2.0 -> loading rubocop-mode and prettier-js-mode")
           (rubocop-mode)
-          (prettier-js-mode)))))
+          (when (leoc/found-prettierrc-p)
+            (prettier-js-mode))))))
 
   (add-hook 'ruby-mode-hook 'leoc/ruby-mode-defaults)
 #+END_SRC
 
-**** Python
+*** Python
 
 #+BEGIN_SRC emacs-lisp
-(use-package python-mode
-  :ensure t
-  :config
-  (flycheck-add-next-checker 'python-flake8 'python-pylint))
+  (use-package python-mode
+    :ensure t
+    :config
+    (flycheck-add-next-checker 'python-flake8 'python-pylint))
 #+END_SRC
 
-**** LISP
+*** LISP
 
 Paredit is a great mode to work with LISPs parenthesis.
 
@@ -1944,16 +2200,16 @@ Paredit is a great mode to work with LISPs parenthesis.
       '(text-mode-hook prog-mode-hook)))
 #+END_SRC
 
-***** Clojure
+**** Clojure
 
 #+BEGIN_SRC emacs-lisp
   (use-package cider :ensure t)
   (use-package clojure-mode :ensure t)
 #+END_SRC
 
-****** ClojureScript
+***** ClojureScript
 
-***** Emacs Lisp
+**** Emacs Lisp
 
 #+BEGIN_SRC emacs-lisp
   (use-package lisp-mode
@@ -1993,7 +2249,7 @@ Paredit is a great mode to work with LISPs parenthesis.
     (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'leoc/elisp-eval-region))
 #+END_SRC
 
-****** Litable
+***** Litable
 
 Litable evaluates lisp code on the fly and shows evaluation results
 inline.
@@ -2003,22 +2259,22 @@ inline.
     :ensure t
     :demand t
     :bind (:map litable-mode-map
-           ("C-c l a" . litable-accept-as-pure)))
+                ("C-c l a" . litable-accept-as-pure)))
 #+END_SRC
 
-****** SLIME like Navigation
+***** SLIME like Navigation
 
 #+BEGIN_SRC emacs-lisp
-(use-package elisp-slime-nav
-  :ensure t
-  :defer t
-  :diminish elisp-slime-nav-mode
-  :init
-  (leoc/hook-into-modes #'elisp-slime-nav-mode
-    '(emacs-lisp-mode-hook ielm-mode-hook)))
+  (use-package elisp-slime-nav
+    :ensure t
+    :defer t
+    :diminish elisp-slime-nav-mode
+    :init
+    (leoc/hook-into-modes #'elisp-slime-nav-mode
+      '(emacs-lisp-mode-hook ielm-mode-hook)))
 #+END_SRC
 
-****** Code Evaluation
+***** Code Evaluation
 
 It is quite helpful to evaluate inline Elisp code. Even in other
 language buffers I can hit =C-c C-r= which evaluates the preceding
@@ -2030,21 +2286,21 @@ Among other things this gets handy when:
 - concatenating strings within multiple-cursors mode
 
 #+BEGIN_SRC emacs-lisp
-(defun leoc/eval-and-replace ()
-  "Replace the preceding sexp with its value."
-  (interactive)
-  (backward-kill-sexp)
-  (condition-case nil
-      (prin1 (eval (read (current-kill 0)))
-             (current-buffer))
-    (error (message "Invalid expression")
-           (insert (current-kill 0)))))
+  (defun leoc/eval-and-replace ()
+    "Replace the preceding sexp with its value."
+    (interactive)
+    (backward-kill-sexp)
+    (condition-case nil
+        (prin1 (eval (read (current-kill 0)))
+               (current-buffer))
+      (error (message "Invalid expression")
+             (insert (current-kill 0)))))
 
-(global-set-key (kbd "C-c C-r") 'leoc/eval-and-replace)
+  (global-set-key (kbd "C-c C-r") 'leoc/eval-and-replace)
 #+END_SRC
 
-**** Serialization Formats
-***** YAML
+*** Serialization Formats
+**** YAML
 
 I love the quick navigation through org-mode outlines. With the
 ~outline-minor-mode~ we can achieve something similar with the YAML
@@ -2079,12 +2335,12 @@ navigation features:
         (define-key outline-minor-mode-map [M-up] 'outline-move-subtree-up))))
 #+END_SRC
 
-***** JSON
+**** JSON
 
 #+BEGIN_SRC emacs-lisp
-(use-package json-mode :ensure t :defer t)
+  (use-package json-mode :ensure t :defer t)
 #+END_SRC
-**** Java
+*** Java
 
 #+BEGIN_SRC emacs-lisp
   (use-package eclim
@@ -2097,7 +2353,7 @@ navigation features:
       (use-package company-emacs-eclim
         :ensure t
         :config
-	(with-eval-after-load 'company
+        (with-eval-after-load 'company
           (require 'company-emacs-eclim)))
 
       (setq eclim-eclipse-dirs '("~/.eclipse")
@@ -2133,22 +2389,22 @@ navigation features:
         (local-set-key (kbd "M-,") 'pop-tag-mark))))
 #+END_SRC
 
-**** Lua
+*** Lua
 
 #+BEGIN_SRC emacs-lisp
-(use-package lua-mode :ensure t :defer t)
+  (use-package lua-mode :ensure t :defer t)
 #+END_SRC
 
-**** Cucumber
+*** Cucumber
 
 The package ~feature-mode~ provides everything I need for working with
 files in the Gerkhin syntax.
 
 #+BEGIN_SRC emacs-lisp
-(use-package feature-mode :ensure t)
+  (use-package feature-mode :ensure t)
 #+END_SRC
 
-**** XML
+*** XML
 
 #+BEGIN_SRC emacs-lisp
   (use-package nxml-mode
@@ -2160,13 +2416,13 @@ files in the Gerkhin syntax.
           nxml-slash-auto-complete-flag t))
 #+END_SRC
 
-**** Markdown
+*** Markdown
 
 #+BEGIN_SRC emacs-lisp
-(use-package markdown-mode :ensure t :defer t)
+  (use-package markdown-mode :ensure t :defer t)
 #+END_SRC
 
-**** SQL Interaction
+*** SQL Interaction
 
 I work with large database queries from time to time. To make these
 exercises as fun as possible I like to make emacs automate most of the
@@ -2215,14 +2471,13 @@ As addition I need completion at point functionality through
 
 #+BEGIN_SRC emacs-lisp
   (use-package company-edbi
-    ;; :ensure t
-    :load-path "vendor/org-helpers"
+    :ensure t
     :config
     (eval-after-load 'company
       '(push 'company-edbi company-backends)))
 #+END_SRC
 
-*** Rainbow Mode
+** Rainbow Mode
 
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
@@ -2231,18 +2486,18 @@ As addition I need completion at point functionality through
     (defun lighten-color-at-point (&optional pct)
       (interactive "p")
       (unless (looking-at-p "#")
-	(re-search-backward "#"))
+        (re-search-backward "#"))
       (save-excursion
-	(push-mark nil t t)
-	(let ((dist (skip-chars-forward "#A-Za-z0-9" (+ (point) 7)))
-	      (percent (or pct 5)))
-	  (insert (apply 'color-rgb-to-hex
-			 (apply 'color-hsl-to-rgb
-				(apply 'color-lighten-hsl
-				       (append (apply 'color-rgb-to-hsl
-						      (color-name-to-rgb (buffer-substring-no-properties (mark) (point))))
-					       (list percent))))))
-	  (delete-region (region-beginning) (+ (region-beginning) dist)))))
+        (push-mark nil t t)
+        (let ((dist (skip-chars-forward "#A-Za-z0-9" (+ (point) 7)))
+              (percent (or pct 5)))
+          (insert (apply 'color-rgb-to-hex
+                         (apply 'color-hsl-to-rgb
+                                (apply 'color-lighten-hsl
+                                       (append (apply 'color-rgb-to-hsl
+                                                      (color-name-to-rgb (buffer-substring-no-properties (mark) (point))))
+                                               (list percent))))))
+          (delete-region (region-beginning) (+ (region-beginning) dist)))))
 
     (defun darken-color-at-point (&optional pct)
       (interactive "p")
@@ -2251,15 +2506,15 @@ As addition I need completion at point functionality through
     (defun convert-color-at-point (&optional pct)
       (interactive "p")
       (unless (looking-at-p "#")
-	(re-search-backward "#"))
+        (re-search-backward "#"))
       (save-excursion
-	(push-mark nil t t)
-	(let ((dist (skip-chars-forward "#A-Za-z0-9" (+ (point) 7)))
-	      (percent (or pct 5)))
-	  (insert (s-join ", " (mapcar #'(lambda (a)
-					   (format "%s" (truncate (* 255 a))))
-				       (color-name-to-rgb (buffer-substring-no-properties (mark) (point))))))
-	  (delete-region (region-beginning) (+ (region-beginning) dist)))))
+        (push-mark nil t t)
+        (let ((dist (skip-chars-forward "#A-Za-z0-9" (+ (point) 7)))
+              (percent (or pct 5)))
+          (insert (s-join ", " (mapcar #'(lambda (a)
+                                           (format "%s" (truncate (* 255 a))))
+                                       (color-name-to-rgb (buffer-substring-no-properties (mark) (point))))))
+          (delete-region (region-beginning) (+ (region-beginning) dist)))))
 
     (defun leoc-rainbow-mode-hook ()
       (local-set-key (kbd "C-c l l") 'convert-color-at-point)
@@ -2269,110 +2524,149 @@ As addition I need completion at point functionality through
     (add-hook 'rainbow-mode-hook 'leoc-rainbow-mode-hook))
 #+END_SRC
 
-** Org-Mode
+* Org-Mode
 :PROPERTIES:
-:header-args: :noweb-ref leoc/org-mode-config :export code :tangle no :results none
+:header-args: :noweb-ref leoc/org-mode-config :export code :tangle no
 :END:
 
-#+BEGIN_SRC emacs-lisp :noweb-ref leoc/use-package-org-mode :noweb yes :tangle yes
+#+NAME: org-bindings-table
+| Scope        | Binding     | Function     |
+|--------------+-------------+--------------|
+| global       | C-c a       | org-agenda   |
+| org-mode-map | M-p         | org-metaup   |
+| org-mode-map | M-n         | org-metadown |
+| org-mode-map | C-c C-x C-p | org-pomodoro |
+
+#+BEGIN_SRC emacs-lisp :noweb-ref leoc/use-package-org-mode :noweb tangle :tangle yes
   (use-package org
     :ensure org-plus-contrib
-    :diminish (org-indent-mode)
-    :bind (("C-c a" . org-agenda)
-           :map org-mode-map
-           ("M-p" . org-metaup)
-           ("M-n" . org-metadown)
-           ("M-n" . org-metadown)
-           ("C-c C-x C-p" . org-pomodoro))
+    :bind
+    <<bindings-from-table(table=org-bindings-table)>>
     :config
-      <<leoc/org-mode-config>>
-      )
+    <<leoc/org-mode-config>>
+    )
 #+END_SRC
 
-*** Org Files
-
-| *File* | *Agenda* | *Binding* | *Description* |
-|------+--------+---------+-------------|
-|      |        |         |             |
-
-**** Bindings to jump to org files
+** YaSnippet
 
 #+BEGIN_SRC emacs-lisp
-  (bind-key "C-c o P" (lambda () (interactive) (find-file "~/.org/passwords.org.gpg")))
-  (bind-key "C-c o B" (lambda () (interactive) (find-file "~/.org/bookmarks.org")))
-  (bind-key "C-c o C" (lambda () (interactive) (find-file "~/.org/calendar.org")))
-  (bind-key "C-c o J" (lambda () (interactive) (find-file "~/.org/journal.org")))
-  (bind-key "C-c o p" (lambda () (interactive) (find-file "~/.org/personal.org")))
-  (bind-key "C-c o t" (lambda () (interactive) (find-file "~/.org/personal_projects.org")))
-  (bind-key "C-c o r" (lambda () (interactive) (find-file "~/.org/refile.org")))
-  (bind-key "C-c o m" (lambda () (interactive) (find-file "~/.org/manifest.org")))
-  (bind-key "C-c o v" (lambda () (interactive) (find-file "~/.org/business_velaluqa.org")))
-  (bind-key "C-c o a" (lambda () (interactive) (find-file "~/.org/business_ascent.org")))
-  (bind-key "C-c o b" (lambda () (interactive) (find-file "~/.org/business_buddies.org")))
+(defun yas/org-very-safe-expand ()
+  (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
 
-  (which-key-add-key-based-replacements "C-c o P" "Open passwords.org.gpg")
-  (which-key-add-key-based-replacements "C-c o b" "Open bookmarks.org")
-  (which-key-add-key-based-replacements "C-c o c" "Open calendar.org")
-  (which-key-add-key-based-replacements "C-c o j" "Open journal.org")
-  (which-key-add-key-based-replacements "C-c o p" "Open _personal.org")
-  (which-key-add-key-based-replacements "C-c o m" "Open manifest.org")
-  (which-key-add-key-based-replacements "C-c o r" "Open refile.org")
-  (which-key-add-key-based-replacements "C-c o v" "Open _business_velaluqa.org")
+(add-hook 'org-mode-hook
+          (lambda ()
+            ;; yasnippet (using the new org-cycle hooks)
+            (make-variable-buffer-local 'yas/trigger-key)
+            (setq yas/trigger-key [tab])
+            (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
+            (define-key yas/keymap [tab] 'yas/next-field)))
 #+END_SRC
 
-*** Default Hook
+** Org Files
+
+I want to be in the respective org file quickly.
+
+#+NAME: org-files-table
+| *File*                            | *Binding* | *Agenda* | *Description*                 |
+|---------------------------------+---------+--------+-----------------------------|
+| ~/.org/                         | C-c o o | no     | Where all my org files live |
+| ~/.org/personal_current.org     | C-c o p | yes    |                             |
+| ~/.org/projects_ascent.org      | C-c o a | yes    |                             |
+| ~/.org/projects_bellini.org     | C-c o b | yes    |                             |
+| ~/.org/projects_mba.org         | C-c o m | yes    |                             |
+| ~/.org/projects_velaluqa.org    | C-c o v | yes    |                             |
+| ~/.org/calendar.org             | C-c o c | yes    |                             |
+| ~/.org/passwords.org.gpg        | C-c o P | no     |                             |
+| ~/.org/manifest.org             | C-c o M | no     |                             |
+
+#+NAME: extract-agenda-files
+#+BEGIN_SRC emacs-lisp :noweb-ref null :exports none :results pp :tangle no :var table=()
+  `(quote ,(remove nil
+                   (mapcar '(lambda (file)
+                              (let ((filepath (nth 0 file))
+                                    (agenda-p (equal (nth 2 file) "yes")))
+                                (when agenda-p filepath)))
+                           table)))
+#+END_SRC
+
+#+NAME: bind-keys-to-org-files
+#+BEGIN_SRC emacs-lisp :noweb-ref null :exports none :results pp :tangle no :var table=()
+  (append '(progn)
+          (mapcan (lambda (row)
+                     (let* ((filepath (nth 0 row))
+                            (escaped-filename (replace-regexp-in-string "[_ .]+" "-" (file-name-base filepath)))
+                            (fun (intern (concat "leoc/find-" (if (equal "" escaped-filename) "all" escaped-filename) "-org")))
+                            (binding (nth 1 row)))
+                       `(
+                         (defun ,fun ()
+                           (interactive)
+                           (find-file ,filepath))
+                         (bind-key ,binding (quote ,fun)))
+                       ))
+                  table))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :noweb yes
+  (setq org-agenda-files
+        <<extract-agenda-files(table=org-files-table)>>
+        )
+  <<bind-keys-to-org-files(table=org-files-table)>>
+#+END_SRC
+
+
+** Default Hook
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook #'(lambda ()
-                               (auto-fill-mode +1)
-                               (rainbow-delimiters-mode -1)))
+  (defun leoc/org-mode-defaults ()
+    (auto-fill-mode +1)
+    (rainbow-delimiters-mode -1))
+
+  (add-hook 'org-mode-hook 'leoc/org-mode-defaults)
 #+END_SRC
 
-*** Function
-**** Convert clock format to decimal
+** Function
+*** Convert clock format to decimal
 
 #+BEGIN_SRC emacs-lisp
-(defun org-clock-to-decimal (time)
-  (when (string-match-p "^\\*\\(.*\\)\\*$" time)
-    (setq time (substring time 1 -1)))
-  (let* ((time (s-split ":" time))
-         (hours (string-to-number (nth 0 time)))
-         (minutes (string-to-number (nth 1 time)))
-         (decimal (/ (+ (* hours 60.0) minutes) 60.0)))
-    (format "%0.2f" (/ (ceiling (* decimal 100.0)) 100.0))))
+  (defun org-clock-to-decimal (time)
+    (when (string-match-p "^\\*\\(.*\\)\\*$" time)
+      (setq time (substring time 1 -1)))
+    (let* ((time (s-split ":" time))
+           (hours (string-to-number (nth 0 time)))
+           (minutes (string-to-number (nth 1 time)))
+           (decimal (/ (+ (* hours 60.0) minutes) 60.0)))
+      (format "%0.2f" (/ (ceiling (* decimal 100.0)) 100.0))))
 #+END_SRC
 
-**** Override Clock Table Indent String
+*** Override Clock Table Indent String
 
 The original indent string function uses "\\emsp" as indentation, but
 this seems to be problematic, so we use simple underscores "__" to
 indent headings within the clocktable.
 
 #+BEGIN_SRC emacs-lisp
-(defun org-clocktable-indent-string (level)
-  (if (= level 1) ""
-    (let ((str " "))
-      (dotimes (k (1- level) str)
-        (setq str (concat "__" str))))))
+  (defun org-clocktable-indent-string (level)
+    (if (= level 1) ""
+      (let ((str " "))
+        (dotimes (k (1- level) str)
+          (setq str (concat "__" str))))))
 #+END_SRC
 
-*** Settings
+** Settings
 
 #+BEGIN_SRC emacs-lisp
   (setq org-startup-indented t
-        ;; Deprecated since org 9.0. ~completing-read~ is enough.
-        org-completion-use-ido nil
         ;; Separate drawers for clocking and logs
         org-drawers '("PROPERTIES" "LOGBOOK"))
 
-  ;; Other symbols: ▼
-  (setq org-ellipsis " ↴")
+  ;; Other symbols: ▼ / ↴
+  (setq org-ellipsis "▼")
 #+END_SRC
 
-**** Markup
+*** Markup
 
 #+BEGIN_SRC emacs-lisp
-    (setq org-hide-emphasis-markers t)
+  (setq org-hide-emphasis-markers t)
   ;;   (setq org-emphasis-regexp-components-original
   ;;         '(" \t('\"{"
   ;;           "- \t.,:!?;'\")}
@@ -2390,63 +2684,64 @@ indent headings within the clocktable.
   ;;   org-emph-re
 #+END_SRC
 
-**** Movement
+*** Movement
 
 #+BEGIN_SRC emacs-lisp
-(setq org-use-speed-commands t)
+  (setq org-use-speed-commands t)
 #+END_SRC
 
-**** Logging & Clocking
+*** Logging & Clocking
 
 #+BEGIN_SRC emacs-lisp
-(setq org-log-done 'time
-      org-log-repeat 'time
-      org-log-reschedule 'time
-      org-log-redeadline 'time
-      org-log-into-drawer "LOGBOOK"
-      ;; Show lot sof clocking history so it's easy to pick items off the C-F11 list
-      org-clock-history-length 36
-      ;; Save clock data and state changes and notes in the LOGBOOK drawer
-      org-clock-into-drawer t
-      ;; Sometimes I change tasks I'm clocking quickly
-      ;; this removes clocked tasks with 0:00 duration
-      org-clock-out-remove-zero-time-clocks t
-      ;; Do not prompt to resume an active clock
-      org-clock-persist-query-resume nil
-      ;; Include current clocking task in clock reports
-      org-clock-report-include-clocking-task t
-      )
+  (setq org-log-done 'time
+        org-log-repeat 'time
+        org-log-reschedule 'time
+        org-log-redeadline 'time
+        org-log-into-drawer "LOGBOOK"
+        ;; Show lot sof clocking history so it's easy to pick items off the C-F11 list
+        org-clock-history-length 36
+        ;; Save clock data and state changes and notes in the LOGBOOK drawer
+        org-clock-into-drawer t
+        ;; Sometimes I change tasks I'm clocking quickly
+        ;; this removes clocked tasks with 0:00 duration
+        org-clock-out-remove-zero-time-clocks t
+        ;; Do not prompt to resume an active clock
+        org-clock-persist-query-resume nil
+        ;; Include current clocking task in clock reports
+        org-clock-report-include-clocking-task t
+        )
+  (setq org-html-htmlize-output-type 'css)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(setq org-time-clocksum-format '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
+  (setq org-time-clocksum-format '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
 #+END_SRC
 
-***** Persistent Clocks
+**** Persistent Clocks
 
 Resume active clocking task when emacs is restarted.
 
 #+BEGIN_SRC emacs-lisp
-(org-clock-persistence-insinuate)
+  (org-clock-persistence-insinuate)
 #+END_SRC
 
-***** Auto Save After Clocking
+**** Auto Save After Clocking
 
 I want to make sure that clocks are saved immediately when clocking in
 or out so I don't lose any clocks.
 
 #+BEGIN_SRC emacs-lisp
-(defun my-save-on-clocking-command ()
-  (save-excursion
-    (save-window-excursion
-      (org-clock-goto)
-      (save-buffer))))
+  (defun my-save-on-clocking-command ()
+    (save-excursion
+      (save-window-excursion
+        (org-clock-goto)
+        (save-buffer))))
 
-(add-hook 'org-clock-in-hook 'my-save-on-clocking-command)
-(add-hook 'org-clock-out-hook 'my-save-on-clocking-command)
+  (add-hook 'org-clock-in-hook 'my-save-on-clocking-command)
+  (add-hook 'org-clock-out-hook 'my-save-on-clocking-command)
 #+END_SRC
 
-***** Pomodoro Technique
+**** Pomodoro Technique
 
 The [[https://en.wikipedia.org/wiki/Pomodoro_Technique][Pomodoro Technique]]™ is a time management method developed by
 Francesco Cirillo in the late 1980s. The technique uses a timer to
@@ -2460,38 +2755,54 @@ The [[https://github.com/lolownia/org-pomodoro][org-pomodoro]] package implement
 helpers to work with pomodoros within the org-mode clocking function.
 
 #+BEGIN_SRC emacs-lisp
-(use-package org-pomodoro
-  :ensure t
-  :defer t)
+  (use-package org-pomodoro
+    :ensure t
+    :defer t)
 #+END_SRC
 
-**** Refile
+*** Refile
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: org-refile-targets-table
+| File                            | Level    | Depth |
+|---------------------------------+----------+-------|
+| ~/.org/personal_current.org     | maxlevel |     8 |
+| ~/.org/projects_ascent.org      | maxlevel |     8 |
+| ~/.org/projects_bellini.org     | maxlevel |     8 |
+| ~/.org/projects_buddies.org     | maxlevel |     8 |
+| ~/.org/projects_mba.org         | maxlevel |     8 |
+| ~/.org/projects_movieapp.org    | maxlevel |     8 |
+| ~/.org/projects_secretstore.org | maxlevel |     8 |
+| ~/.org/projects_velaluqa.org    | maxlevel |     8 |
+| ~/.org/bookmarks.org            | maxlevel |     8 |
+| ~/.org/calendar.org             | level    |     1 |
+
+#+NAME: extract-refile-targets
+#+BEGIN_SRC emacs-lisp :noweb-ref null :exports replace code :results pp :tangle no :var table=()
+  `(quote ,(mapcar '(lambda (target)
+             (let ((path (nth 0 target))
+                   (level (intern (concat ":" (nth 1 target))))
+                   (depth (nth 2 target)))
+               `(,path ,level . ,depth)))
+          table))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (defun leoc/verify-refile-target ()
     (let ((title (nth 4 (org-heading-components))))
       (or (not (equal (buffer-file-name) "/home/arthur/.org/bookmarks.org"))
           (not (string-match "\\(\\[\\[.*\\]\\[.*\\]\\]\\|\\[\\[.*\\]\\]\\)" title)))))
 
   (setq org-log-refile 'time
-	org-refile-use-outline-path 'file
-	org-outline-path-complete-in-steps nil
-	org-refile-use-cache t
-	org-refile-allow-creating-parent-nodes t
-	org-refile-target-verify-function 'leoc/verify-refile-target
-	org-refile-targets '(("~/.org/personal.org" :maxlevel . 4)
-                             ("~/.org/personal_goals.org" :maxlevel . 4)
-                             ("~/.org/personal_projects.org" :maxlevel . 4)
-                             ("~/.org/business_velaluqa.org" :maxlevel . 4)
-                             ("~/.org/business_ascent.org" :maxlevel . 4)
-                             ("~/.org/business_buddies.org" :maxlevel . 4)
-                             ("~/.org/bookmarks.org" :maxlevel . 8)
-                             ("~/.org/notes.org" :level . 1)
-                             ("~/.org/thoughts.org" :level . 1)
-                             ("~/.org/calendar.org" :level . 1)))
+        org-refile-use-outline-path 'file
+        org-outline-path-complete-in-steps nil
+        org-refile-use-cache t
+        org-refile-allow-creating-parent-nodes t
+        org-refile-target-verify-function 'leoc/verify-refile-target
+        org-refile-targets
+        <<extract-refile-targets(table=org-refile-targets-table)>>)
 #+END_SRC
 
-**** Replace Disputed Keys
+*** Replace Disputed Keys
 
 Disable ~S-arrow~ bindings for org-mode, so we can use those bindings
 for navigating through windows.
@@ -2500,24 +2811,24 @@ for navigating through windows.
   (setq org-replace-disputed-keys t)
 #+END_SRC
 
-**** Code Blocks
+*** Code Blocks
 
 #+BEGIN_SRC emacs-lisp
-(setq org-src-fontify-natively t)
-(setq org-src-tab-acts-natively t)
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
 #+END_SRC
 
-***** Emacs Lisp Code Blocks
+**** Emacs Lisp Code Blocks
 
 To quickly write ~emacs-lisp~ code blocks within my Emacs configuration
 I like this little template addition:
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'org-structure-template-alist
-        '("m" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC" "<src lang=\"emacs-lisp\">\n\n</src>"))
+  (add-to-list 'org-structure-template-alist
+               '("m" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC" "<src lang=\"emacs-lisp\">\n\n</src>"))
 #+END_SRC
 
-**** Todo Keywords
+*** Todo Keywords
 
 #+BEGIN_SRC emacs-lisp
   (setq org-use-fast-todo-selection t)
@@ -2542,18 +2853,18 @@ For visual feedback I have a custom color for each todo keyword.
           ("CANCELLED" :foreground "#9eb9a7" :weight bold)))
 #+END_SRC
 
-**** Priority Settings
+*** Priority Settings
 
 Similar to the ~TODO~ keywords I color each priority level differently.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-priority-faces
-      '((65 :foreground "#ff7000" :weight bold)
-        (66 :foreground "#ffa060" :weight bold)
-        (67 :foreground "#ffcca8" :weight bold)))
+  (setq org-priority-faces
+        '((65 :foreground "#ff7000" :weight bold)
+          (66 :foreground "#ffa060" :weight bold)
+          (67 :foreground "#ffcca8" :weight bold)))
 #+END_SRC
 
-**** Tags
+*** Tags
 
 Use ~fast-tag-selection~ for selecting tags. This shows a window listing
 common tags, from which I can choose with one key press.
@@ -2566,35 +2877,35 @@ The common tags are defined as follows:
 
 #+BEGIN_SRC emacs-lisp
   (setq org-tag-alist '((:startgroup . nil)
-			(:newline)
-			("1vp" . ?1)
-			("2ci" . ?2)
-			("3lt" . ?3)
-			("4mf" . ?4)
-			("5cw" . ?5)
-			("6hf" . ?6)
-			(:newline)
-			("7es" . ?7)
-			("8sr" . ?8)
-			("9ew" . ?9)
-			("aci" . ?a)
-			("bpo" . ?b)
-			("cac" . ?c)
-			(:newline)
-			(:endgroup . nil)
-			(:startgroup . nil)
-			("business" . ?b)
-			("personal" . ?p)
-			(:endgroup . nil)
-			(:startgroup . nil)
-			("year" . ?y)
-			("month" . ?m)
-			("week" . ?w)
-			("day" . ?d)
-			(:endgroup . nil)))
+                        (:newline)
+                        ("1vp" . ?1)
+                        ("2ci" . ?2)
+                        ("3lt" . ?3)
+                        ("4mf" . ?4)
+                        ("5cw" . ?5)
+                        ("6hf" . ?6)
+                        (:newline)
+                        ("7es" . ?7)
+                        ("8sr" . ?8)
+                        ("9ew" . ?9)
+                        ("aci" . ?a)
+                        ("bpo" . ?b)
+                        ("cac" . ?c)
+                        (:newline)
+                        (:endgroup . nil)
+                        (:startgroup . nil)
+                        ("business" . ?b)
+                        ("personal" . ?p)
+                        (:endgroup . nil)
+                        (:startgroup . nil)
+                        ("year" . ?y)
+                        ("month" . ?m)
+                        ("week" . ?w)
+                        ("day" . ?d)
+                        (:endgroup . nil)))
 #+END_SRC
 
-**** Expiry
+*** Expiry
 
 Currently I do not use the expiration feature of ~org-expiry~, but I
 want to have each org heading to have a ~CREATED~ date to know the age
@@ -2609,12 +2920,12 @@ of a certain heading.
             org-expiry-inactive-timestamps t)
 
       (defun leoc/insert-created-timestamp ()
-        "Insert a CREATED property using org-expiry.el for TODO entries"
+        "Insert a CREATED property using org-expiry.el for new TODO entries"
         (org-expiry-insert-created)
         (org-back-to-heading)
         (org-end-of-line)
-        (when (equal (char-before) " ")
-          (insert " ")))
+        (when (equal (char-before) " ") (insert " "))
+        (save-excursion (outline-hide-subtree)))
 
       ;; Whenever a TODO entry is created, I want a timestamp
       ;; Advice org-insert-todo-heading to insert a created timestamp using org-expiry
@@ -2624,47 +2935,46 @@ of a certain heading.
 
       ;; Make it active
       (ad-activate 'org-insert-todo-heading)))
+
+#+END_SRC
+*** Sticky Heading
+:PROPERTIES:
+:CREATED:  [2019-03-27 Wed 13:25]
+:END:
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-sticky-header
+    :ensure t
+    :config
+    (setq org-sticky-header-full-path 'full
+          org-sticky-header-outline-path-separator " → "
+          org-sticky-header-prefix " Headline: "))
 #+END_SRC
 
-*** Agenda
-
- #+CAPTION: leoc/agenda-files
- #+NAME: leoc/agenda-files-table
- | *File Name*                     | *Description* |
- |---------------------------------+---------------|
- | ~/.org/personal.org             |               |
- | ~/.org/personal_development.org |               |
- | ~/.org/business_velaluqa.org    |               |
- | ~/.org/business_ascent.org      |               |
- | ~/.org/business_buddies.org     |               |
- | ~/.org/calendar.org             |               |
-
-#+NAME: leoc/agenda-files
-#+BEGIN_SRC emacs-lisp :noweb-ref leoc/agenda-files :var leoc-agenda-files=leoc/agenda-files-table[2:-1,0]
-  ;; Because the org-agenda `:config` block is deferred it does not have
-  ;; access to the `leoc-agenda-files` variable that would be tangled
-  ;; via a `let` statement. So I define a global variable instead.
-  `(quote ,leoc-agenda-files)
-#+END_SRC
+** Agenda
 
 #+BEGIN_SRC emacs-lisp
   (use-package org-helpers
     :load-path "vendor/org-helpers")
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :noweb tangle
+#+NAME: org-agenda-bindings-table
+| Scope               | Binding | Function                       |
+|---------------------+---------+--------------------------------|
+| org-agenda-mode-map | W       | oh/agenda-remove-restriction   |
+| org-agenda-mode-map | N       | oh/agenda-restrict-to-subtree  |
+| org-agenda-mode-map | P       | oh/agenda-restrict-to-project  |
+| org-agenda-mode-map | q       | bury-buffer                    |
+| org-agenda-mode-map | C-c o o | org-pomodoro                   |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package org-agenda
     :ensure org
-    :bind (:map org-agenda-mode-map
-                ("W" . oh/agenda-remove-restriction)
-                ("N" . oh/agenda-restrict-to-subtree)
-                ("P" . oh/agenda-restrict-to-project)
-                ("q" . bury-buffer)
-                ("C-c o o" . org-pomodoro))
+    :bind
+    <<bindings-from-table(table=org-agenda-bindings-table)>>
     :config
     (progn
-      (setq org-agenda-files '("~/.org/personal_development.org" "~/.org/business_velaluqa.org" "~/.org/business_ascent.org" "~/.org/business_buddies.org" "~/.org/calendar.org")
-            org-agenda-start-on-weekday nil
+      (setq org-agenda-start-on-weekday nil
             org-agenda-span 1
             org-agenda-include-diary t
             org-agenda-window-setup 'current-window
@@ -2693,14 +3003,14 @@ of a certain heading.
             ;; Remove completed items from search results
             org-agenda-skip-timestamp-if-done t
             ;; Display tags farther right
-            org-agenda-tags-column -102
+            org-agenda-tags-column -120
             org-agenda-hide-tags-regexp "personal\\|habit\\|business\\|practice\\|music\\|ATTACH\\|hacking\\|code\\|project\\|pd\\|read"
             org-agenda-persistent-filter t
             ;; Enable display of the time grid
             ;; so we can see the marker for the current time
             ;; org-agenda-time-grid '((daily today remove-match)
-            ;; 			 #("----------------" 0 16 (org-heading t))
-            ;; 			 (830 1000 1200 1300 1500 1700 2000 2300))
+            ;;        #("----------------" 0 16 (org-heading t))
+            ;;        (830 1000 1200 1300 1500 1700 2000 2300))
             ;; Do not dim blocked tasks
             org-agenda-dim-blocked-tasks nil
 
@@ -2710,17 +3020,17 @@ of a certain heading.
             org-agenda-clockreport-parameter-plist '(:link t :maxlevel 3 :fileskip0 t))))
 #+END_SRC
 
-**** Getting Things Done
+*** Getting Things Done
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'org-tags-exclude-from-inheritance "project")
-(add-to-list 'org-tags-exclude-from-inheritance "sideproject")
-(add-to-list 'org-tags-exclude-from-inheritance "week")
-(add-to-list 'org-tags-exclude-from-inheritance "month")
-(add-to-list 'org-tags-exclude-from-inheritance "year")
+  (add-to-list 'org-tags-exclude-from-inheritance "project")
+  (add-to-list 'org-tags-exclude-from-inheritance "sideproject")
+  (add-to-list 'org-tags-exclude-from-inheritance "week")
+  (add-to-list 'org-tags-exclude-from-inheritance "month")
+  (add-to-list 'org-tags-exclude-from-inheritance "year")
 #+END_SRC
 
-**** Custom Commands
+*** Custom Commands
 
 For my agenda I use
 
@@ -2848,25 +3158,26 @@ For my agenda I use
                 (org-agenda-skip-function '(oh/agenda-skip :subtree-if '(project habit)))))))))
 #+END_SRC
 
-**** Time Budgets
+*** Time Budgets
 
 I plan to work a defined amount of time on certain tasks. Time Budgets
 helps me visualizing my clocked time in a simple table.
 
 #+BEGIN_SRC emacs-lisp
-(use-package org-time-budgets
-  :ensure t
-  :load-path "/home/arthur/projects/org-time-budgets/"
-  :config
-  (setq org-time-budgets '((:title "Business" :tags "+business" :budget "30:00" :block workweek)
-                           (:title "Sideprojects" :tags "+personal+project" :budget "14:00" :block week)
-                           (:title "Music Theory" :tags "+music+theory" :budget "2:55" :block week)
-                           (:title "Music Practice" :tags "+music+practice" :budget "2:55" :block week)
-                           (:title "Exercise" :tags "+exercise|+health" :budget "5:15" :block week)
-                           (:title "Language" :tags "+lang" :budget "5:15" :block week))))
+  (use-package org-time-budgets
+    :ensure t
+    :load-path "/home/arthur/projects/org-time-budgets/"
+    :config
+    (setq org-time-budgets '((:title "Business" :tags "+business" :budget "30:00" :block workweek)
+                             (:title "Sideprojects" :tags "+personal+project" :budget "14:00" :block week)
+                             (:title "Music Theory" :tags "+music+theory" :budget "2:55" :block week)
+                             (:title "Music Practice" :tags "+music+practice" :budget "2:55" :block week)
+                             (:title "Exercise" :tags "+exercise|+health" :budget "5:15" :block week)
+                             (:title "Language" :tags "+lang" :budget "5:15" :block week))))
 #+END_SRC
-*** Planning
-**** Bindings to set weekly, monthly, yearly focus
+
+** Planning
+*** Bindings to set weekly, monthly, yearly focus
 
 I like to have a hierarchy of tasks from the macro- to the
 micro-level. Yearly bigger goals get split into smaller goals that I
@@ -2907,25 +3218,25 @@ can tackle within a month, within a week etc.
   (defun last-day-of-year ()
     "Return the last day of the year as time."
     (encode-time 0 0 0 31 12 (nth 5 (decode-time
-				     (current-time)))))
+                                     (current-time)))))
 
   (defun last-day-of-month ()
     "Return the last day of month as time."
     (let* ((now (decode-time (current-time)))
-	   (month (nth 4 now))
-	   (year (nth 5 now))
-	   (last-day-of-month (calendar-last-day-of-month month year)))
+           (month (nth 4 now))
+           (year (nth 5 now))
+           (last-day-of-month (calendar-last-day-of-month month year)))
       (encode-time 0 0 0 last-day-of-month month year)))
 
   (defun last-day-of-week ()
     "Return the last day of the week as time."
     (let* ((now (current-time))
-	   (datetime (decode-time now))
-	   (dow (nth 6 datetime)))
+           (datetime (decode-time now))
+           (dow (nth 6 datetime)))
       (time-add now (days-to-time (- 7 dow)))))
 #+END_SRC
 
-*** Archive
+** Archive
 
 #+BEGIN_SRC emacs-lisp
   (defun leoc/org-archive-subtree (&optional find-done)
@@ -3069,37 +3380,37 @@ can tackle within a month, within a week etc.
                    old-path))
 
                 ;; (if (and heading (not (and datetree-date (not datetree-subheading-p))))
-                ;; 	  (progn
-                ;; 	    (if (re-search-forward
-                ;; 		 (concat "^" (regexp-quote heading)
-                ;; 			 "[ \t]*\\(:[[:alnum:]_@#%:]+:\\)?[ \t]*\\($\\|\r\\)")
-                ;; 		 nil t)
-                ;; 		(goto-char (match-end 0))
-                ;; 	      ;; Heading not found, just insert it at the end
-                ;; 	      (goto-char (point-max))
-                ;; 	      (or (bolp) (insert "\n"))
-                ;; 	      ;; datetrees don't need too much spacing
-                ;; 	      (insert (if datetree-date "" "\n") heading "\n")
-                ;; 	      (end-of-line 0))
-                ;; 	    ;; Make the subtree visible
-                ;; 	    (outline-show-subtree)
-                ;; 	    (if org-archive-reversed-order
-                ;; 		(progn
-                ;; 		  (org-back-to-heading t)
-                ;; 		  (outline-next-heading))
-                ;; 	      (org-end-of-subtree t))
-                ;; 	    (skip-chars-backward " \t\r\n")
-                ;; 	    (and (looking-at "[ \t\r\n]*")
-                ;; 		 ;; datetree archives don't need so much spacing.
-                ;; 		 (replace-match (if datetree-date "\n" "\n\n"))))
-                ;; 	;; No specific heading, just go to end of file.
-                ;; 	(goto-char (point-max))
-                ;; 	;; Subtree narrowing can let the buffer end on
-                ;; 	;; a headline.  `org-paste-subtree' then deletes it.
-                ;; 	;; To prevent this, make sure visible part of buffer
-                ;; 	;; always terminates on a new line, while limiting
-                ;; 	;; number of blank lines in a date tree.
-                ;; 	(unless (and datetree-date (bolp)) (insert "\n")))
+                ;;     (progn
+                ;;       (if (re-search-forward
+                ;;      (concat "^" (regexp-quote heading)
+                ;;        "[ \t]*\\(:[[:alnum:]_@#%:]+:\\)?[ \t]*\\($\\|\r\\)")
+                ;;      nil t)
+                ;;     (goto-char (match-end 0))
+                ;;         ;; Heading not found, just insert it at the end
+                ;;         (goto-char (point-max))
+                ;;         (or (bolp) (insert "\n"))
+                ;;         ;; datetrees don't need too much spacing
+                ;;         (insert (if datetree-date "" "\n") heading "\n")
+                ;;         (end-of-line 0))
+                ;;       ;; Make the subtree visible
+                ;;       (outline-show-subtree)
+                ;;       (if org-archive-reversed-order
+                ;;     (progn
+                ;;       (org-back-to-heading t)
+                ;;       (outline-next-heading))
+                ;;         (org-end-of-subtree t))
+                ;;       (skip-chars-backward " \t\r\n")
+                ;;       (and (looking-at "[ \t\r\n]*")
+                ;;      ;; datetree archives don't need so much spacing.
+                ;;      (replace-match (if datetree-date "\n" "\n\n"))))
+                ;;   ;; No specific heading, just go to end of file.
+                ;;   (goto-char (point-max))
+                ;;   ;; Subtree narrowing can let the buffer end on
+                ;;   ;; a headline.  `org-paste-subtree' then deletes it.
+                ;;   ;; To prevent this, make sure visible part of buffer
+                ;;   ;; always terminates on a new line, while limiting
+                ;;   ;; number of blank lines in a date tree.
+                ;;   (unless (and datetree-date (bolp)) (insert "\n")))
 
                 (or (bolp) (insert "\n"))
                 ;; Paste
@@ -3152,75 +3463,86 @@ can tackle within a month, within a week etc.
   (advice-add 'org-archive-subtree :override 'leoc/org-archive-subtree)
 #+END_SRC
 
-#+RESULTS:
-: org-archive-subtree
-
-*** Exporting and Publishing
+** Exporting and Publishing
 
 To export blocks with syntax coloring we need the ~htmlize~ package.
 
 #+BEGIN_SRC emacs-lisp
-(use-package htmlize
-  :ensure t
-  :defer t)
+  (use-package htmlize
+    :ensure t
+    :defer t)
 #+END_SRC
 
-**** Ditaa
-**** Presentations with Reveal.js
+*** Ditaa
+*** Presentations with Reveal.js
 
 #+BEGIN_SRC emacs-lisp
-(use-package ox-reveal
-  :ensure t
-  :defer t)
+  (use-package ox-reveal
+    :ensure t
+    :defer t)
 #+END_SRC
 
-*** Capture
-**** Templates
+** Capture
+
+I use ~org-capture~ to get thoughts out of my brain and information into
+org-mode quickly.
+
+*** Templates
 
 #+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates
+        '(("b" "Web Bookmark" entry (file+headline "~/.org/refile.org" "Bookmarks") "* %a%?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i")
+          ("t" "Remember" entry (file+headline "~/.org/refile.org" "Inbox") "* TODO %?%a\n:PROPERTIES:\n:CREATED: %U\n:END:")
+          ("r" "Reading" entry (file+headline "~/.org/refile.org" "Readings") "* READ %a%? :read:\n:PROPERTIES:\n:CREATED: %U\n:END:")
+          ("n" "Note" entry (file+headline "~/.org/refile.org" "Notes") "* %a%?\n:PROPERTIES:\n:CREATED: %U\n:END:")
+          ("c" "Clockable Interruption" entry (file+headline "~/.org/refile.org" "Inbox") "* %u %?\nADDED: %U" :clock-in t :clock-resume t)
+          ("f" "Food" entry (file+headline "~/.org/track_food.org" "Food") "* %u %?")
+          ("l" "Link to current clocking task" checkitem (clock) "- %a%?" :immediate-finish t)
+          ("j" "Journal")
+          ("jr" "Review" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))
+          ("ja" "Accomplishment" entry (file+datetree "~/.org/journal.org") "* %u Accomplished: %?")
+          ("jj" "Simple Entry" entry (file+datetree "~/.org/journal.org") "* %u %?")
+          ("js" "Daily Review" entry (file+datetree "~/.org/journal.org") "* %u\n%?")
+          ("w" "Today I Learned Post" plain (function leoc/find-web-blog-post-file) "---\nlayout: post\ntitle: %(leoc/get-last-web-post-title)\ntags:\n  - til\n---\n\n%?" :unnarrowed t)
+          ("m" "Respond to mail" entry (file "~/.org/refile.org") "* NEXT Respond to %:fromname on \"%:subject\" ([[%l][Link]])\nSCHEDULED: %^t\n\n%?" :immediate-finish t)))
+#+END_SRC
+
+Via these bindings I can call them quickly from anywhere:
+
+#+NAME: org-capture-shortcuts-table
+| Binding | Capture Template | Description                                                                             | maxlevel |
+|---------+------------------+------------------------------------------------------------------------------------------|
+| C-c c   | c                | Captures a clockable interruption or social activity.                                    |
+| C-c j j | jj               | Captures a note into my journal.                                                         |
+| C-c j a | ja               | Captures an accomplishment into my journal.                                              |
+| C-c j r | jr               | Captures my daily review into my journal.                                                |
+| C-c r   | r                | Captures a resource that I want to READ some time soon.                                  |
+| C-c m   | m                | Captures a mail and creates a NEXT task to remind me of responding to the linked e-mail. |
+| C-c n   | n                | Captures a note in refile.org                                                            |
+| C-c t   | t                | Captures a TODO with a CREATED property tracking the date and time the task was created. |
+
+#+NAME: extract-org-capture-shortcuts
+#+BEGIN_SRC emacs-lisp :noweb-ref null :tangle no :exports none :results pp :var table=()
+  (append '(progn) (mapcan (lambda (row)
+                     (let* ((binding (nth 0 row))
+                            (template (nth 1 row))
+                            (fun (intern (concat "leoc/org-capture-shortcut-" template))))
+                       `(
+                          (defun ,fun ()
+                            (interactive)
+                            (org-capture nil ,template))
+                          (bind-key ,binding (quote ,fun)))
+                       ))
+                   table))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package org-capture
     :ensure org
     :defer t
-    :bind
-    (("C-c c" . leoc/org-capture-clockable-interruption)
-     ("C-c j j" . leoc/org-capture-journal-day)
-     ("C-c j a" . leoc/org-capture-journal-accomplishment)
-     ("C-c j n" . leoc/org-capture-journal-note)
-     ("C-c r" . leoc/org-capture-reading)
-     ("C-c m" . leoc/org-capture-mail)
-     ("C-c n" . leoc/org-capture-note)
-     ("C-c t" . leoc/org-capture-task))
     :config
     (progn
-      (defun leoc/org-capture-clockable-interruption ()
-        (interactive)
-        (org-capture nil "c"))
-
-      (defun leoc/org-capture-journal-day ()
-        (interactive)
-        (org-capture nil "jj"))
-      (defun leoc/org-capture-journal-note ()
-        (interactive)
-        (org-capture nil "jn"))
-      (defun leoc/org-capture-journal-accomplishment ()
-        (interactive)
-        (org-capture nil "ja"))
-
-      (defun leoc/org-capture-task ()
-        (interactive)
-        (org-capture nil "t"))
-
-      (defun leoc/org-capture-reading ()
-        (interactive)
-        (org-capture nil "r"))
-
-      (defun leoc/org-capture-mail ()
-        (interactive)
-        (org-capture nil "m"))
-
-      (defun leoc/org-capture-note ()
-        (interactive)
-        (org-capture nil "n"))
+      <<extract-org-capture-shortcuts(table=org-capture-shortcuts-table)>>
 
       (defvar leoc/web-last-blog-post-title nil
         "This variable contains the last blog post title captured to be added to a blog post template.")
@@ -3236,32 +3558,18 @@ To export blocks with syntax coloring we need the ~htmlize~ package.
       (defun leoc/find-web-blog-post-file ()
         (setq leoc/web-last-blog-post-title (read-string "Title: "))
         (let ((absolute-path (expand-file-name (format "%s-%s.org"
-                                                   (format-time-string "%Y-%m-%d")
-                                                   (downcase (s-replace " " "-" leoc/web-last-blog-post-title)))
+                                                       (format-time-string "%Y-%m-%d")
+                                                       (downcase (s-replace " " "-" leoc/web-last-blog-post-title)))
                                                "/home/arthur/projects/andersen.berlin/blog/_posts")))
           (set-buffer (org-capture-target-buffer absolute-path))))
 
       (defun leoc/get-last-web-post-title ()
-        leoc/web-last-blog-post-title)
-
-      (setq org-capture-templates
-            '(
-              ("b" "Web Bookmark" entry (file+headline "~/.org/refile.org" "Bookmarks") "* %a%?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i")
-              ("t" "Remember" entry (file+headline "~/.org/refile.org" "Inbox") "* TODO %?%a\n:PROPERTIES:\n:CREATED: %U\n:END:")
-              ("r" "Reading" entry (file+headline "~/.org/refile.org" "Readings") "* READ %a%? :read:\n:PROPERTIES:\n:CREATED: %U\n:END:")
-              ("n" "Note" entry (file+headline "~/.org/refile.org" "Notes") "* %a%?\n:PROPERTIES:\n:CREATED: %U\n:END:")
-              ("c" "Clockable Interruption" entry (file+headline "~/.org/refile.org" "Inbox") "* %u %?\nADDED: %U" :clock-in t :clock-resume t)
-              ("f" "Food" entry (file+headline "~/.org/track_food.org" "Food") "* %u %?")
-              ("l" "Link to current clocking task" checkitem (clock) "- %a%?" :immediate-finish t)
-              ("j" "Journal")
-              ("jr" "Review" plain (file+datetree "~/.org/journal.org") (file "~/.org/templates/review"))
-              ("ja" "Accomplishment" entry (file+datetree "~/.org/journal.org") "* %u Accomplished: %?")
-              ("jj" "Simple Entry" entry (file+datetree "~/.org/journal.org") "* %u %?")
-              ("w" "Today I Learned Post" plain (function leoc/find-web-blog-post-file) "---\nlayout: post\ntitle: %(leoc/get-last-web-post-title)\ntags:\n  - til\n---\n\n%?" :unnarrowed t)
-              ("m" "Respond to mail" entry (file "~/.org/refile.org") "* NEXT Respond to %:fromname on \"%:subject\" ([[%l][Link]])\nSCHEDULED: %^t\n\n%?" :immediate-finish t)))))
+        leoc/web-last-blog-post-title)))
 #+END_SRC
 
-***** Refile after capture
+#+RESULTS:
+
+**** Refile after capture
 
 Some capturing templates should initiate a refile upon finalizing the
 capturing process.
@@ -3270,12 +3578,12 @@ capturing process.
   (defun leoc/refile-maybe ()
     (let ((key (org-capture-get :key)))
       (when (member key '("b" "t" "c" "m"))
-	(org-refile))))
+        (org-refile))))
 
   (add-hook 'org-capture-before-finalize-hook 'leoc/refile-maybe)
 #+END_SRC
 
-**** Protocol
+*** Protocol
 
 Org-protocol allows capturing from outside Emacs. I use it to capture
 things via /Chromium User Scripts/ which makes it easy to capture
@@ -3361,7 +3669,9 @@ uses Pandoc to create org-mode markup.
     :load-path "vendor/org-protocol-capture-html")
 #+END_SRC
 
-*** Habits
+** Habits
+
+I like to track habits in the org-agenda.
 
 #+BEGIN_SRC emacs-lisp
   (use-package org-habit
@@ -3374,7 +3684,7 @@ uses Pandoc to create org-mode markup.
           org-habit-show-done-always-green nil))
 #+END_SRC
 
-*** Contacts
+** Contacts
 
 #+BEGIN_SRC emacs-lisp
   (use-package org-contacts
@@ -3384,48 +3694,48 @@ uses Pandoc to create org-mode markup.
     (setq org-contacts-files '("~/.org/contacts.org")))
 #+END_SRC
 
-*** Encryption
+** Encryption
 
 #+BEGIN_SRC emacs-lisp
-(use-package org-crypt
-  :ensure org
-  :defer t
-  :config
-  (progn
-  (org-crypt-use-before-save-magic)
-  (add-to-list 'org-tags-exclude-from-inheritance "crypt")
-  ;; GPG key to use for encryption
-  ;; Either the Key ID or set to nil to use symmetric encryption.
-  (setq org-crypt-key "id_rsa")))
+  (use-package org-crypt
+    :ensure org
+    :defer t
+    :config
+    (progn
+      (org-crypt-use-before-save-magic)
+      (add-to-list 'org-tags-exclude-from-inheritance "crypt")
+      ;; GPG key to use for encryption
+      ;; Either the Key ID or set to nil to use symmetric encryption.
+      (setq org-crypt-key "id_rsa")))
 #+END_SRC
 
-*** Babel
+** Babel
 
 Do not prompt to confirm evaluation.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-confirm-babel-evaluate nil)
+  (setq org-confirm-babel-evaluate nil)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'org
     (org-babel-do-load-languages
-      'org-babel-load-languages
-      '((emacs-lisp . t)
-        (dot . t)
-        (ditaa . t)
-        (python . t)
-        (ruby . t)
-        (gnuplot . t)
-        (clojure . t)
-        (shell . t)
-        (ledger . t)
-        (org . t)
-        (plantuml . t)
-        (latex . t))))
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (dot . t)
+       (ditaa . t)
+       (python . t)
+       (ruby . t)
+       (gnuplot . t)
+       (clojure . t)
+       (shell . t)
+       (ledger . t)
+       (org . t)
+       (plantuml . t)
+       (latex . t))))
 #+END_SRC
 
-*** org-passwords
+** org-passwords
 
 #+BEGIN_SRC emacs-lisp
   (require 'org-passwords)
@@ -3433,24 +3743,25 @@ Do not prompt to confirm evaluation.
   (setq org-passwords-random-words-dictionary "/etc/dictionaries-common/words")
 #+END_SRC
 
-*** Velaluqa
+** Velaluqa
 
 For [[http://www.velalu.qa][Velaluqa]] I have some custom defaults to generate beautiful
 documents.
 
-
 #+BEGIN_SRC emacs-lisp :tangle no
-(load "~/projects/velaluqa/documents/templates/emacs.el")
+  (load "~/projects/velaluqa/documents/templates/emacs.el")
 #+END_SRC
 
-*** Templates
+** Templates
 
 #+BEGIN_SRC elisp
   (add-to-list 'org-structure-template-alist
                (list "p" ":PROPERTIES:\n?\n:END:"))
+  (add-to-list 'org-structure-template-alist
+               (list "b" "#+NAME: -bindings-table\n| Scope  | Binding | Function             |\n|--------+---------+----------------------|\n|"))
 #+END_SRC
 
-*** Redmine Sync Binding
+** Redmine Sync Binding
 
 I use org-mode to track all my issues. Currently I use [[https://github.com/leoc/org-redmine.rb][org-redmine.rb]]
 to synchronize clocks and new issues to Redmine.
@@ -3461,7 +3772,12 @@ work as it should. So right now only:
 - sync of clocks to time entries in the respective project
 - creation of new issues from headlines the format of: ~\* TODO # - Title of the issue  :@bug:~
 
-#+BEGIN_SRC emacs-lisp :results none
+#+NAME: redmine-sync-bindings-table
+| Scope  | Binding | Function              |
+|--------+---------+-----------------------|
+| global | C-c o s | leoc/org-redmine-sync |
+
+#+BEGIN_SRC emacs-lisp :results none :noweb yes
   (defun leoc/org-redmine-sync (&optional prefix)
     "Run org-redmine sync command for the last X days given by PREFIX."
     (interactive "P")
@@ -3473,20 +3789,15 @@ work as it should. So right now only:
       (shell-command (concat "urxvt -e bash --login -c \"cd /home/arthur/projects/org-redmine-time-transfer; ./org-redmine sync;\"") nil nil))
     (kill-buffer "*Shell Command Output*"))
 
-  (bind-key "C-c o s" 'leoc/org-redmine-sync)
+  <<bind-keys-from-table(table=redmine-sync-bindings-table)>>
 #+END_SRC
 
-*** Anki Editor
+** Anki Editor
 
 The [[https://github.com/louietan/anki-editor][anki-editor]] allows pushing anki flash cards to Anki via the
 *anki-connect* Anki plugin.
 
 #+BEGIN_SRC emacs-lisp
-  (defun leoc/enable-minor-mode (my-pair)
-    (when (and buffer-file-name
-               (string-match (car my-pair) buffer-file-name))
-      (funcall (cdr my-pair))))
-
   (use-package anki-editor
     :ensure t
     :mode ("\\.anki\\.org$" . org-mode)
@@ -3496,25 +3807,35 @@ The [[https://github.com/louietan/anki-editor][anki-editor]] allows pushing anki
                 (leoc/enable-minor-mode '("\\.anki\\.org" . anki-editor-mode)))))
 #+END_SRC
 
-** Accounting with Ledger
+* Accounting with Ledger
 
 Ledger is a powerful, double-entry accounting system that is accessed
 from the UNIX command-line with a great Emacs integration.
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: leoc/ledger-bindings-table
+| Scope  | Binding | Function                |
+|--------+---------+-------------------------|
+| global | C-c l l | leoc/dired-ledger-files |
+
+#+BEGIN_SRC emacs-lisp :noweb yes :tangle yes
+  (defun leoc/dired-ledger-files ()
+    "Open dired in ~/.ledger/."
+    (interactive)
+    (dired "~/.ledger/"))
+
   (use-package ledger-mode
     :ensure t
+    :bind
+    <<bindings-from-table(table=leoc/ledger-bindings-table)>>
     :mode ("\\.ledger$" . ledger-mode))
-
-  (bind-key "C-c l l" '(lambda ()  (interactive) (dired "~/.ledger/")))
 #+END_SRC
 
-** e-Mail
+* e-Mail
 :PROPERTIES:
-:header-args: :noweb-ref leoc/mu4e-config :results none :export code :tangle no
+:header-args: :export code :tangle yes :results none
 :END:
 
-#+BEGIN_SRC emacs-lisp :noweb-ref leoc/use-package-mu4e :noweb yes :tangle yes :var headers-marks=headers-marks
+#+BEGIN_SRC emacs-lisp
   (use-package mu4e
     :load-path "/usr/local/share/emacs/site-lisp/mu4e"
     :config
@@ -3570,14 +3891,12 @@ from the UNIX command-line with a great Emacs integration.
             ;; Make sure UIDs are not duplicated.
             ;; Otherwise mbsync would lament and stop syncing.
             mu4e-change-filenames-when-moving t)
-
-      <<leoc/mu4e-config>>
       ))
 #+END_SRC
 
-*** User Interface
+** User Interface
 
-**** Header Fields
+*** Header Fields
 
 #+BEGIN_SRC emacs-lisp
   (setq mu4e-headers-fields '((:maildir      . 30)
@@ -3588,9 +3907,9 @@ from the UNIX command-line with a great Emacs integration.
                               (:subject      . nil)))
 #+END_SRC
 
-**** Header Tag Marks
+*** Header Tag Marks
 
-#+NAME: headers-marks
+#+NAME: mu4e-header-marks-table
 | *Mark Name*                   | *Text* | *Symbol* |
 |-----------------------------+------+--------|
 | mu4e-headers-draft-mark     | D    | D      |
@@ -3605,28 +3924,27 @@ from the UNIX command-line with a great Emacs integration.
 | mu4e-headers-signed-mark    | s    | s      |
 | mu4e-headers-unread-mark    | u    | u      |
 
-#+NAME: configure-headers-marks :exports none
-#+BEGIN_SRC emacs-lisp
-  (mapcar '(lambda (mark)
-	    (let ((variable (nth 0 mark))
-		  (text (nth 1 mark))
-		  (symbol (nth 2 mark)))
-	      `(setq ,(intern variable) '(,text . ,symbol))))
-	  headers-marks)
+#+BEGIN_SRC emacs-lisp :noweb yes
+  <<extract-mu4e-marks(table=mu4e-header-marks-table)>>
 #+END_SRC
 
-**** Thread Prefix Markers
+*** Thread Prefix Markers
 
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-headers-has-child-prefix (purecopy '("+"  . "└┬")))
-(setq mu4e-headers-empty-parent-prefix (purecopy '("-"  . "─")))
-(setq mu4e-headers-first-child-prefix (purecopy '("\\" . "├")))
-(setq mu4e-headers-duplicate-prefix (purecopy '("="  . "═")))
-(setq mu4e-headers-default-prefix (purecopy '("|"  . "├")))
+#+NAME: mu4e-prefix-marks-table
+| Variable                         | Text | Symbol |
+|----------------------------------+------+--------|
+| mu4e-headers-has-child-prefix    | +    | └      |
+| mu4e-headers-empty-parent-prefix | -    | ─      |
+| mu4e-headers-first-child-prefix  | \    | ├      |
+| mu4e-headers-duplicate-prefix    | =    | ═      |
+| mu4e-headers-default-prefix      | ¦    | ├      |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
+  <<extract-mu4e-marks(table=mu4e-prefix-marks-table)>>
 #+END_SRC
 
-*** Behaviour
-**** Org-Mime
+** Behaviour
+*** Org-Mime
 
 #+BEGIN_SRC emacs-lisp
   (use-package org-mu4e
@@ -3634,71 +3952,101 @@ from the UNIX command-line with a great Emacs integration.
     (setq org-mu4e-convert-to-html t))
 #+END_SRC
 
-**** Bookmarks
+*** Bookmarks
 
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-bookmarks '(("flag:unread AND NOT flag:trashed"      "Unread messages"      ?u)
-                         ("date:today..now AND NOT flag:trashed"  "Today's messages"     ?t)
-                         ("date:7d..now AND NOT flag:trashed"     "Last 7 days"          ?w)
-                         ("mime:image/*"                          "Messages with images" ?p)))
+#+NAME: mu4e-bookmark-bindings-table
+| Title                | Binding | Query                                |
+|----------------------+---------+--------------------------------------|
+| Unread messages      | u       | flag:unread AND NOT flag:trashed     |
+| Today's messages     | t       | date:today..now AND NOT flag:trashed |
+| Last 7 days          | w       | date:7d..now AND NOT flag:trashed    |
+| Messages with images | p       | mime:image/*                         |
+
+#+NAME: mu4e-bookmark-bindings
+#+BEGIN_SRC emacs-lisp :tangle no :exports none :results silent pp :var table=mu4e-bookmark-bindings-table
+  `(quote ,(mapcar (lambda (row)
+                    (let ((title (nth 0 row))
+                          (char (nth 1 row))
+                          (query (nth 2 row)))
+                      `(,query ,title ,(string-to-char char))))
+                  table))
 #+END_SRC
 
-**** Maildir Shortcuts
-
-#+BEGIN_SRC emacs-lisp
-(setq mu4e-maildir-shortcuts '(("/gmail/Inbox"          . ?s)
-                               ("/icloud/Inbox"         . ?d)
-                               ("/tuberlin/Inbox"       . ?f)
-                               ("/gmail/Sent"           . ?w)
-                               ("/icloud/Sent"          . ?e)
-                               ("/tuberlin/Sent"        . ?r)
-                               ("/gmail/Trash"          . ?x)
-                               ("/icloud/Trash"         . ?c)
-                               ("/tuberlin/Trash"       . ?v)))
+#+BEGIN_SRC emacs-lisp :noweb yes
+  (setq mu4e-bookmarks
+        <<mu4e-bookmark-bindings()>>
+        )
 #+END_SRC
 
-**** Citation Behaviour
+*** Maildir Shortcuts
 
-#+BEGIN_SRC emacs-lisp
-(setq message-cite-reply-position 'above
-      message-citation-line-function 'message-insert-formatted-citation-line
-      message-citation-line-format "----- original message -----\nOn %a, %b %d %Y, %f wrote:\n")
+#+NAME: mu4e-maildir-shortcuts-table
+| Maildir         | Binding |
+|-----------------+---------|
+| /gmail/Inbox    | s       |
+| /icloud/Inbox   | d       |
+| /gmail/Sent     | w       |
+| /icloud/Sent    | e       |
+| /gmail/Trash    | x       |
+| /icloud/Trash   | c       |
+
+#+NAME: mu4e-maildir-shortcuts
+#+BEGIN_SRC emacs-lisp :tangle no :exports none :results silent pp :var table=mu4e-maildir-shortcuts-table
+  `(quote ,(mapcar (lambda (row)
+                    (let ((maildir (nth 0 row))
+                          (char (nth 1 row)))
+                      (cons maildir (string-to-char char))))
+                  table))
 #+END_SRC
 
-**** Smart Refiling
-
-#+BEGIN_SRC emacs-lisp
-(load "~/.mu4e-refile-assocs.el")
-(setq mu4e-refile-folder
-      '(lambda (msg)
-        (let* ((maildir (mu4e-message-field msg :maildir))
-               (account (my-mu4e-find-account 'mu4e-maildir-prefix maildir))
-               (maildir-prefix (my-mu4e-account-value account 'mu4e-maildir-prefix))
-               (maildir-postfix (catch 'found
-                                  (dolist (assoc my-mu4e-refile-assocs)
-                                    (let ((postfix (car assoc))
-                                          (sender-list (cdr assoc)))
-                                      (dolist (sender sender-list)
-                                        (when (mu4e-message-contact-field-matches msg :from sender)
-                                          (throw 'found postfix))))))))
-          (if maildir-postfix
-              (concat maildir-prefix "/" maildir-postfix)
-            (concat maildir-prefix "/Archive")))))
-#+END_SRC
-**** Encryption
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'mu4e-compose-mode-hook 'epa-mail-mode)
-(add-hook 'mu4e-view-mode-hook 'epa-mail-mode)
+#+BEGIN_SRC emacs-lisp :noweb yes
+  (setq mu4e-maildir-shortcuts
+        <<mu4e-maildir-shortcuts()>>
+        )
 #+END_SRC
 
-*** Accounts
+*** Citation Behaviour
+
+#+BEGIN_SRC emacs-lisp
+  (setq message-cite-reply-position 'above
+        message-citation-line-function 'message-insert-formatted-citation-line
+        message-citation-line-format "----- original message -----\nOn %a, %b %d %Y, %f wrote:\n")
+#+END_SRC
+
+*** Smart Refiling
+
+#+BEGIN_SRC emacs-lisp
+  (load "~/.mu4e-refile-assocs.el")
+  (setq mu4e-refile-folder
+        '(lambda (msg)
+           (let* ((maildir (mu4e-message-field msg :maildir))
+                  (account (my-mu4e-find-account 'mu4e-maildir-prefix maildir))
+                  (maildir-prefix (my-mu4e-account-value account 'mu4e-maildir-prefix))
+                  (maildir-postfix (catch 'found
+                                     (dolist (assoc my-mu4e-refile-assocs)
+                                       (let ((postfix (car assoc))
+                                             (sender-list (cdr assoc)))
+                                         (dolist (sender sender-list)
+                                           (when (mu4e-message-contact-field-matches msg :from sender)
+                                             (throw 'found postfix))))))))
+             (if maildir-postfix
+                 (concat maildir-prefix "/" maildir-postfix)
+               (concat maildir-prefix "/Archive")))))
+#+END_SRC
+*** Encryption
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'mu4e-compose-mode-hook 'epa-mail-mode)
+  (add-hook 'mu4e-view-mode-hook 'epa-mail-mode)
+#+END_SRC
+
+** Accounts
 
 Mu4e does not support multiple accounts by default, so I have to trick
 around a bit, to have a multiple accounts working the way as I want
 them to work.
 
-**** My e-Mail Addresses
+*** My e-Mail Addresses
 
 First mu4e needs to be able to distinguish between my own e-Mail
 addresses and the addresses of other people.
@@ -3709,90 +4057,90 @@ addresses and the addresses of other people.
   (setq mu4e-user-mail-address-list mu4e-my-email-addresses)
 #+END_SRC
 
-**** Account Defaults
+*** Account Defaults
 
 #+BEGIN_SRC emacs-lisp
-(setq mu4e-maildir-prefix "/gmail"
-      mu4e-sent-folder "/Sent"
-      mu4e-drafts-folder "/Drafts"
-      mu4e-trash-folder  "/Trash"
-      message-signature ""
-      user-mail-address "leoc.git@gmail.com"
-      smtpmail-default-smtp-server "smtp.gmail.com"
-      smtpmail-local-domain "gmail.com"
-      smtpmail-smtp-server "smtp.gmail.com"
-      starttls-use-gnutls t
-      message ""
-      smtpmail-smtp-service 587)
+  (setq mu4e-maildir-prefix "/gmail"
+        mu4e-sent-folder "/Sent"
+        mu4e-drafts-folder "/Drafts"
+        mu4e-trash-folder  "/Trash"
+        message-signature ""
+        user-mail-address "leoc.git@gmail.com"
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-local-domain "gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        starttls-use-gnutls t
+        message ""
+        smtpmail-smtp-service 587)
 #+END_SRC
 
-**** Multi-Account Extensions
+*** Multi-Account Extensions
 
 #+BEGIN_SRC emacs-lisp
-(defvar my-mu4e-account-alist nil
-  "Defines all mu4e accounts.")
+  (defvar my-mu4e-account-alist nil
+    "Defines all mu4e accounts.")
 
-(load "~/.mu4e-accounts.el")
+  (load "~/.mu4e-accounts.el")
 
-(defun my-mu4e-find-account (variable value)
-  "Find the first account that match VARIABLE with VALUE.
+  (defun my-mu4e-find-account (variable value)
+    "Find the first account that match VARIABLE with VALUE.
 
-The VALUE may be a sequence aswell, where the first account is returned,
-which VARIABLE value is a member of the VALUE sequence."
-  (car (find-if #'(lambda (account)
-                    (let* ((account-vars (cdr account))
-                           (variable-value (cadr (assoc variable account-vars))))
-                      (cond ((listp value)
-                             (member variable-value value))
-                            ((eq variable 'mu4e-maildir-prefix)
-                             (string-match variable-value value))
-                            (t (equal variable-value value)))))
-                my-mu4e-account-alist)))
+  The VALUE may be a sequence aswell, where the first account is returned,
+  which VARIABLE value is a member of the VALUE sequence."
+    (car (find-if #'(lambda (account)
+                      (let* ((account-vars (cdr account))
+                             (variable-value (cadr (assoc variable account-vars))))
+                        (cond ((listp value)
+                               (member variable-value value))
+                              ((eq variable 'mu4e-maildir-prefix)
+                               (string-match variable-value value))
+                              (t (equal variable-value value)))))
+                  my-mu4e-account-alist)))
 
-(defun my-mu4e-account-value (account var)
-  "Find the value for a given ACCOUNT VAR."
-  (let ((account-vars (cdr (assoc account my-mu4e-account-alist)))
-        value)
-    (if account-vars
-        (mapc #'(lambda (pair)
-                  (if (eq (car pair) var)
-                      (setq value (cadr pair))))
-              account-vars))
-    value))
+  (defun my-mu4e-account-value (account var)
+    "Find the value for a given ACCOUNT VAR."
+    (let ((account-vars (cdr (assoc account my-mu4e-account-alist)))
+          value)
+      (if account-vars
+          (mapc #'(lambda (pair)
+                    (if (eq (car pair) var)
+                        (setq value (cadr pair))))
+                account-vars))
+      value))
 
-(defun my-mu4e-set-account-variables (account)
-  "Set the account variables for given email ACCOUNT."
-  (let ((account-vars
-         (cdr (assoc account my-mu4e-account-alist))))
-    (if account-vars
-        (mapc #'(lambda (var)
-                  (set (car var) (cadr var)))
-              account-vars)
-      (error (format "No email account found: %S" account)))))
+  (defun my-mu4e-set-account-variables (account)
+    "Set the account variables for given email ACCOUNT."
+    (let ((account-vars
+           (cdr (assoc account my-mu4e-account-alist))))
+      (if account-vars
+          (mapc #'(lambda (var)
+                    (set (car var) (cadr var)))
+                account-vars)
+        (error (format "No email account found: %S" account)))))
 
-(defadvice mu4e~get-folder (before load-corresponding-account (foldervar msg))
-  (when msg
-    (let* ((maildir (mu4e-message-field msg :maildir))
-           (account (my-mu4e-find-account 'mu4e-maildir-prefix maildir)))
-      (my-mu4e-set-account-variables account))))
+  (defadvice mu4e~get-folder (before load-corresponding-account (foldervar msg))
+    (when msg
+      (let* ((maildir (mu4e-message-field msg :maildir))
+             (account (my-mu4e-find-account 'mu4e-maildir-prefix maildir)))
+        (my-mu4e-set-account-variables account))))
 
-(ad-activate 'mu4e~get-folder)
+  (ad-activate 'mu4e~get-folder)
 
-(defun my-mu4e-set-account-for-composition ()
-  "Ask for and set the account to compose a new message with."
-  (let* ((account (if mu4e-compose-parent-message
-                      (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
-                        (my-mu4e-find-account 'mu4e-maildir-prefix maildir))
-                    (completing-read (format "Compose with account: (%s) "
-                                             (mapconcat #'(lambda (var) (car var)) my-mu4e-account-alist "/"))
-                                     (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
-                                     nil t nil nil (caar my-mu4e-account-alist)))))
-    (my-mu4e-set-account-variables account)))
+  (defun my-mu4e-set-account-for-composition ()
+    "Ask for and set the account to compose a new message with."
+    (let* ((account (if mu4e-compose-parent-message
+                        (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
+                          (my-mu4e-find-account 'mu4e-maildir-prefix maildir))
+                      (completing-read (format "Compose with account: (%s) "
+                                               (mapconcat #'(lambda (var) (car var)) my-mu4e-account-alist "/"))
+                                       (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
+                                       nil t nil nil (caar my-mu4e-account-alist)))))
+      (my-mu4e-set-account-variables account)))
 
-(add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account-for-composition)
+  (add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account-for-composition)
 #+END_SRC
 
-*** Contacts
+** Contacts
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'mu4e-headers-actions
@@ -3801,7 +4149,7 @@ which VARIABLE value is a member of the VALUE sequence."
                '("org-contact-add" . mu4e-action-add-org-contact) t)
 #+END_SRC
 
-**** Completion via Mailaprop
+*** Completion via Mailaprop
 
 Mailaprop extracts all mail addresses from the mail folder and creates
 an ~.eld~ file with an index.
@@ -3811,61 +4159,61 @@ an ~.eld~ file with an index.
   (load-file (expand-file-name "~/.emacs.d/vendor/mailaprop/mailaprop.el"))
 
   (setq mailaprop-drop-address-regexps
-	(list
-	 "member@paypal.com"
-	 "member@paypal.de"
-	 "=\?.*\?=" ; never want to email Uncle Fester
-	 ))
+        (list
+         "member@paypal.com"
+         "member@paypal.de"
+         "=\?.*\?=" ; never want to email Uncle Fester
+         ))
 
   (when (featurep 'mailaprop)
     (mailaprop-load-addresses))
 #+END_SRC
-*** Functions
-**** Extract names from e-mail
+** Functions
+*** Extract names from e-mail
 
 This one is used by a yasnippet that automatically expands a greeting
 text for mails.
 
 #+BEGIN_SRC emacs-lisp
-(defun leoc/mu4e-get-names-for-yasnippet ()
-  "Return comma separated string of names for an email"
-  (interactive)
-  (let ((email-name "") str email-string email-list email-name2 tmpname)
-    (save-excursion
-      (goto-char (point-min))
-      ;; first line in email could be some hidden line containing NO to field
-      (setq str (buffer-substring-no-properties (point-min) (point-max))))
-    ;; take name from TO field - match series of names
-    (when (string-match "^To: \"?\\(.+\\)" str)
-      (setq email-string (match-string 1 str)))
-    ;;split to list by comma
-    (setq email-list (split-string email-string " *, *"))
-    ;;loop over emails
-    (dolist (tmpstr email-list)
-      ;;get first word of email string
-      (setq tmpname (car (split-string tmpstr " ")))
-      ;;remove whitespace or ""
-      (setq tmpname (replace-regexp-in-string "[ \"]" "" tmpname))
-      ;;join to string
-      (setq email-name
-            (concat email-name ", " tmpname)))
-    ;;remove initial comma
-    (setq email-name (replace-regexp-in-string "^, " "" email-name))
+  (defun leoc/mu4e-get-names-for-yasnippet ()
+    "Return comma separated string of names for an email"
+    (interactive)
+    (let ((email-name "") str email-string email-list email-name2 tmpname)
+      (save-excursion
+        (goto-char (point-min))
+        ;; first line in email could be some hidden line containing NO to field
+        (setq str (buffer-substring-no-properties (point-min) (point-max))))
+      ;; take name from TO field - match series of names
+      (when (string-match "^To: \"?\\(.+\\)" str)
+        (setq email-string (match-string 1 str)))
+      ;;split to list by comma
+      (setq email-list (split-string email-string " *, *"))
+      ;;loop over emails
+      (dolist (tmpstr email-list)
+        ;;get first word of email string
+        (setq tmpname (car (split-string tmpstr " ")))
+        ;;remove whitespace or ""
+        (setq tmpname (replace-regexp-in-string "[ \"]" "" tmpname))
+        ;;join to string
+        (setq email-name
+              (concat email-name ", " tmpname)))
+      ;;remove initial comma
+      (setq email-name (replace-regexp-in-string "^, " "" email-name))
 
-    ;;see if we want to use the name in the FROM field
-    ;;get name in FROM field if available, but only if there is only
-    ;;one name in TO field
-    (if (< (length email-list) 2)
-        (when (string-match "^\\([^ ,\n]+\\).+writes:$" str)
-          (progn (setq email-name2 (match-string 1 str))
-                 ;;prefer name in FROM field if TO field has "@"
-                 (when (string-match "@" email-name)
-                   (setq email-name email-name2))
-                 )))
-    email-name))
+      ;;see if we want to use the name in the FROM field
+      ;;get name in FROM field if available, but only if there is only
+      ;;one name in TO field
+      (if (< (length email-list) 2)
+          (when (string-match "^\\([^ ,\n]+\\).+writes:$" str)
+            (progn (setq email-name2 (match-string 1 str))
+                   ;;prefer name in FROM field if TO field has "@"
+                   (when (string-match "@" email-name)
+                     (setq email-name email-name2))
+                   )))
+      email-name))
 #+END_SRC
-** Miscellaneous
-*** Searching the Web with Google
+* Miscellaneous
+** Searching the Web with Google
 
 #+BEGIN_SRC emacs-lisp
   (defun leoc/search-google ()
@@ -3881,7 +4229,7 @@ text for mails.
   (global-set-key (kbd "C-c g") 'leoc/search-google)
 #+END_SRC
 
-*** Searching the =dict.leo.org=
+** Searching the =dict.leo.org=
 
 #+BEGIN_SRC emacs-lisp
   (defun leoc/search-dict ()
@@ -3897,20 +4245,26 @@ text for mails.
 
   (global-set-key (kbd "C-c C-g") 'leoc/search-dict)
 #+END_SRC
-*** Configure Emacs
-**** Open Emacs File
+
+** Configure Emacs
+*** Open Emacs File
 
 Sometimes I want to quickly change something in Emacs.
 
-#+BEGIN_SRC emacs-lisp
+#+NAME: emacs-init-bindings-table
+| Scope  | Binding | Function             |
+|--------+---------+----------------------|
+| global | C-c 0   | leoc/open-init-emacs |
+
+#+BEGIN_SRC emacs-lisp :noweb yes
   (defun leoc/open-init-emacs ()
     (interactive)
     (find-file-other-window "~/.emacs.d/init-emacs.org"))
 
-  (bind-key "C-c 0" 'leoc/open-init-emacs)
+  <<bind-keys-from-table(table=emacs-init-bindings-table)>>
 #+END_SRC
 
-*** Search amazon order at point
+** Search amazon order at point
 
 This command wraps the thing at point and performs an amazon search
 via `xdg-open`.
@@ -3919,22 +4273,203 @@ via `xdg-open`.
   (require 'thingatpt)
 
   (defun leoc/search-amz-at-point ()
-      "Search amazon orders with order number at point or region if any."
-      (interactive)
-      (let ((term (if mark-active
-                      (buffer-substring (region-beginning) (region-end))
-                    (thing-at-point 'symbol t))))
-        (browse-url
-         (concat "https://www.amazon.de/gp/your-account/order-history?ie=UTF8&opt=ab&ref_=oh_aui_search&search="
-                 (url-hexify-string term)))))
+    "Search amazon orders with order number at point or region if any."
+    (interactive)
+    (let ((term (if mark-active
+                    (buffer-substring (region-beginning) (region-end))
+                  (thing-at-point 'symbol t))))
+      (browse-url
+       (concat "https://www.amazon.de/gp/your-account/order-history?ie=UTF8&opt=ab&ref_=oh_aui_search&search="
+               (url-hexify-string term)))))
 
   (global-set-key (kbd "C-c C-x C-a") 'leoc/search-amz-at-point)
 #+END_SRC
 
-#+RESULTS:
-: leoc/search-amz-at-point
-** Experiments
+* Experiments
 :PROPERTIES:
 :header-args: :tangle no
 :END:
-*** TODO mu4e yasnippet helper functions
+** TODO mu4e yasnippet helper functions
+** TODO Use ~org-table~ for editing markdown tables
+
+I found this snippet on [[https://stackoverflow.com/a/26297700/270201][Stack Overflow]], which seems to be working for now:
+
+#+BEGIN_SRC emacs-lisp
+  (require 'org-table)
+
+  (defun cleanup-org-tables ()
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward "-+-" nil t) (replace-match "-|-"))
+      ))
+
+  (add-hook 'markdown-mode-hook 'orgtbl-mode)
+  (add-hook 'markdown-mode-hook
+            (lambda()
+              (add-hook 'after-save-hook 'cleanup-org-tables  nil 'make-it-local)))
+#+END_SRC
+
+** TODO Disable lockfiles
+
+#+BEGIN_SRC emacs-lisp
+  (setq create-lockfiles nil)
+#+END_SRC
+
+** TODO Use nand2tetris for `.hdl` files
+
+#+BEGIN_SRC emacs-lisp
+  (use-package nand2tetris
+    :ensure t
+    :mode (("\\.hdl?\\'" . nand2tetris-mode))
+    :config
+    (defun leoc/nand2tetris-defaults ()
+      (setq tab-width 2
+            indent-tabs-mode nil))
+    (add-hook 'nand2tetris-mode-hook 'leoc/nand2tetris-defaults))
+#+END_SRC
+
+** TODO Camelize region or symbol at point
+:PROPERTIES:
+:CREATED:  [2019-11-11 Mon 15:59]
+:END:
+
+#+BEGIN_SRC emacs-lisp
+  (defun camelize (s)
+    "Convert dash-ed string S to CamelCase string."
+    (mapconcat 'identity (mapcar
+                          '(lambda (word) (capitalize (downcase word)))
+                          (split-string s "-")) ""))
+#+END_SRC
+
+** TODO anki-editor with direct mapping
+:PROPERTIES:
+:CREATED:  [2019-10-28 Mon 17:10]
+:END:
+
+#+BEGIN_SRC elisp :tangle yes
+  (setq anki-editor-quick-field-mapping '(("Basic" . ("Front" . "Back"))))
+  (setq anki-editor--ox-export-ext-plist '(:with-toc nil :anki-editor-mode t :with-drawers nil))
+
+  (defun anki-editor-get-quick-fields ()
+    ""
+    (interactive)
+    (let* (quick-fields
+           (note-heading (org-element-at-point))
+           (note-title (org-element-property :title note-heading))
+           (note-type (org-element-property :ANKI_NOTE_TYPE note-heading))
+           (quick-field-mapping (alist-get note-type anki-editor-quick-field-mapping nil nil 'equal))
+           (title-field (car quick-field-mapping))
+           (contents-field (cdr quick-field-mapping))
+           (contents-begin (org-element-property :contents-begin note-heading))
+           (contents-end (org-element-property :contents-end note-heading))
+           (point-of-first-child (- (save-excursion
+                                      (if (org-goto-first-child)
+                                          (point)
+                                        (point-max)))
+                                    1)))
+      (when title-field
+        (map-put quick-fields
+                 title-field
+                 (org-export-string-as note-title
+                                       anki-editor--ox-anki-html-backend
+                                       t
+                                       anki-editor--ox-export-ext-plist)
+                 'equal))
+      (when contents-field
+        (map-put quick-fields
+                 contents-field
+                 (cond
+                  ((and contents-begin contents-end)
+                   (org-export-string-as
+                    (buffer-substring
+                     contents-begin
+                     ;; in case the buffer is narrowed,
+                     ;; e.g. by `org-map-entries' when
+                     ;; scope is `tree'
+                     (min (point-max) contents-end point-of-first-child))
+                    anki-editor--ox-anki-html-backend
+                    t
+                    anki-editor--ox-export-ext-plist))
+                  (t ""))
+                 'equal))
+      quick-fields))
+
+  (defun anki-editor--build-fields ()
+    "Build a list of fields from subheadings of current heading, each element of which is a cons cell, the car of which is field name and the cdr of which is field content."
+    (save-excursion
+      (let ((fields (anki-editor-get-quick-fields))
+            (point-of-last-child (point)))
+        (when (org-goto-first-child)
+          (while (/= point-of-last-child (point))
+            (setq point-of-last-child (point))
+            (let* ((inhibit-message t)  ;; suppress echo message from `org-babel-exp-src-block'
+                   (field-heading (org-element-at-point))
+                   (field-name (substring-no-properties
+                                (org-element-property
+                                 :raw-value
+                                 field-heading)))
+                   (contents-begin (org-element-property :contents-begin field-heading))
+                   (contents-end (org-element-property :contents-end field-heading)))
+
+              (map-put fields
+                       field-name
+                       (cond
+                        ((and contents-begin contents-end) (or (org-export-string-as
+                                                                (buffer-substring
+                                                                 contents-begin
+                                                                 ;; in case the buffer is narrowed,
+                                                                 ;; e.g. by `org-map-entries' when
+                                                                 ;; scope is `tree'
+                                                                 (min (point-max) contents-end))
+                                                                anki-editor--ox-anki-html-backend
+                                                                t
+                                                                anki-editor--ox-export-ext-plist)
+
+                                                               ;; 8.2.10 version of
+                                                               ;; `org-export-filter-apply-functions'
+                                                               ;; returns nil for an input of empty string,
+                                                               ;; which will cause AnkiConnect to fail
+                                                               ""))
+                        (t ""))
+                       'equal)
+              (org-forward-heading-same-level nil t))))
+        (reverse fields))))
+#+END_SRC
+
+#+RESULTS:
+: anki-editor--build-fields
+
+#+BEGIN_SRC emacs-lisp
+  (defun anki-editor--anki-connect-store-media-file (path)
+    "Store media file for PATH, which is an absolute file name.
+  The result is the path to the newly stored media file."
+    (let* ((bytes (with-temp-buffer
+                    (insert-file-contents-literally path)
+                    (buffer-string)))
+           (hash (secure-hash 'sha1 bytes))
+           (media-file-name (format "%s-%s%s"
+                                    (file-name-base path)
+                                    hash
+                                    (file-name-extension path t)))
+           content)
+      (when (equal :json-false (anki-editor--anki-connect-invoke-result
+                                "retrieveMediaFile"
+                                `((filename . ,media-file-name))))
+        (message "Storing media file %s to Anki, this might take a while" path)
+        (setq content (base64-encode-string bytes))
+        (anki-editor--anki-connect-invoke-result
+         "storeMediaFile"
+         `((filename . ,media-file-name)
+           (data . ,content))))
+      media-file-name))
+#+END_SRC
+
+** TODO Configure `helpful` from MELPA
+:PROPERTIES:
+:CREATED:  [2019-11-08 Fri 10:06]
+:END:
+
+** TODO Configure `goto-chg` from MELPA
+:PROPERTIES:
+:CREATED:  [2019-11-08 Fri 10:06]
+:END:
