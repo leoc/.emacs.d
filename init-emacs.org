@@ -83,7 +83,7 @@ First require the ~package~ package with the correct package archives.
 | org   | http://orgmode.org/elpa/           |
 
 #+NAME: cons-table-tuples
-#+BEGIN_SRC emacs-lisp :results replace :exports none :tangle no :var table=package-archives
+#+BEGIN_SRC emacs-lisp :results replace pp :exports none :tangle no :var table=package-archives
   `(quote
    ,(mapcar '(lambda (row)
               (let ((name (nth 0 row))
@@ -93,7 +93,9 @@ First require the ~package~ package with the correct package archives.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :results replace :noweb yes :tangle yes :exports code
-  (setq package-archives <<cons-table-tuples()>>)
+  (setq package-archives
+        <<cons-table-tuples()>>
+        )
 #+END_SRC
 
 Since everything is based on ~use-package~ I refresh package contents if
