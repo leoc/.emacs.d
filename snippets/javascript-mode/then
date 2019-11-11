@@ -1,5 +1,0 @@
-#name: Promise .then block
-# --
-.then(function (${1:success}) {
-  $0
-})

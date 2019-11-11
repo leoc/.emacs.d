@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: then
+# key: then
+# --
+then(${1:($2) => ${3:{
+  $0
+}}})
