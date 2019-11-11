@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: function component
+# key: fc
+# --
+(${1:props}) => {
+  return (
+    <${2:div}>
+      $0
+    </$2>
+  )
+}

@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: export const function component
+# key: ecfc
+# --
+export const ${1:name} = (${2:props}) => {
+  return (
+    <${3:div}>
+      $0
+    </$3>
+  )
+}

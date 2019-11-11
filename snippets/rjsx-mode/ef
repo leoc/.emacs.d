@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: export default functional component
+# key: efc
+# --
+import React from 'react';
+
+export default (${1:props}) => {
+  return (
+    <${2:div}>
+      $0
+    </$2>
+  )
+}

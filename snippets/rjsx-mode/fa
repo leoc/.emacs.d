@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: react-fontawesome
+# key: fa
+# --
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { fa${1:$(camelize yas-text)} } from "@fortawesome/pro-light-svg-icons/fa${1:$(camelize yas-text)}";
+import { library } from "@fortawesome/fontawesome-svg-core";
+
+library.add(fa${1:$(camelize yas-text)});
+
+<FontAwesomeIcon fixedWidth icon={["fal", "${1:file-plus}"]} />$0
