@@ -2817,7 +2817,8 @@ helpers to work with pomodoros within the org-mode clocking function.
         org-refile-allow-creating-parent-nodes t
         org-refile-target-verify-function 'leoc/verify-refile-target
         org-refile-targets
-        <<extract-refile-targets(table=org-refile-targets-table)>>)
+        <<extract-refile-targets(table=org-refile-targets-table)>>
+  )
 #+END_SRC
 
 *** Replace Disputed Keys
