@@ -3479,6 +3479,16 @@ can tackle within a month, within a week etc.
   (advice-add 'org-archive-subtree :override 'leoc/org-archive-subtree)
 #+END_SRC
 
+** Inline Images
+
+When ~org-babel~ executes a code block org-mode should redisplay inlined
+images. This comes in handy when I generate GraphViz images for an
+org-mode document.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+#+END_SRC
+
 ** Exporting and Publishing
 
 To export blocks with syntax coloring we need the ~htmlize~ package.
