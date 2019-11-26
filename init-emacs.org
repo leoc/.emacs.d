@@ -2035,8 +2035,9 @@ for writing complex stylesheets.
     :ensure t
     :interpreter (("node" . rjsx-mode))
     :mode (("\\.jsx?\\'" . rjsx-mode))
-    :bind (("C-c i" . import-js-import)
-           ("C-c C-i" . import-js-fix))
+    :bind (:map rjsx-mode-map
+           ("C-c C-i C-i" . import-js-import)
+           ("C-c C-i C-f" . import-js-fix))
     :config
     (add-hook 'rjsx-mode-hook 'leoc/rjsx-mode-defaults))
 #+END_SRC
