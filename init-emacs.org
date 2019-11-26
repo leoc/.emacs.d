@@ -2662,8 +2662,23 @@ indent headings within the clocktable.
         ;; Separate drawers for clocking and logs
         org-drawers '("PROPERTIES" "LOGBOOK"))
 
-  ;; Other symbols: ▼ / ↴
-  (setq org-ellipsis "▼")
+  ;; Other symbols: ▼, ↴ , ⬎, ⤷, ⋱, …
+  ;; “↝” “⇉” “⇝” “⇢” “⇨” “⇰” “➔” “➙” “➛” “➜” “➝” “➞”
+  ;; “➟” “➠” “➡” “➥” “➦” “➧” “➨”
+  ;; “➩” “➪” “➮” “➯” “➱” “➲”
+  ;; “➳” “➵” “➸” “➺” “➻” “➼” “➽”
+  ;; arrow heads
+  ;; “➢” “➣” “➤” “≪”, “≫”, “«”, “»”
+  ;; other arrow
+  ;; “↞” “↠” “↟” “↡” “↺” “↻”
+  ;; lightening
+  ;; “⚡”
+  ;; other symbols
+  ;; …, ▼, ↴, , ∞, ⬎, ⤷, ⤵
+  (setq org-ellipsis " ➟")
+
+  (custom-set-faces
+   '(org-ellipsis ((t (:foreground "#393333" :height 0.8)))))
 #+END_SRC
 
 *** Markup
