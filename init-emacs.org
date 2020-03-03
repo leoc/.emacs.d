@@ -954,6 +954,27 @@ When switching windows, file buffers should be saved automatically.
     (yank t))
 #+END_SRC
 
+
+** DONE Atomic Editing via Emacs
+:PROPERTIES:
+:CREATED:  [2020-02-12 Wed 09:18]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-03 Tue 18:03]
+:END:
+
+Atomic editing allows to spin up a frame from chromium and edit
+textareas from within emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package atomic-chrome
+     :ensure t
+     :config
+     (atomic-chrome-start-server)
+     (setq atomic-chrome-default-major-mode 'markdown-mode)
+     (setq atomic-chrome-buffer-open-style 'frame))
+#+END_SRC
+
 * Packages
 ** Flycheck
 
