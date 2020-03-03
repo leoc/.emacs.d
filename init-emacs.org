@@ -623,17 +623,6 @@ Disable marking regions with ~Shift~:
   (setq shift-select-mode nil)
 #+END_SRC
 
-Unset unholy keys.
-
-#+BEGIN_SRC emacs-lisp
-  (global-unset-key [up])
-  (global-unset-key [down])
-  (global-unset-key [left])
-  (global-unset-key [right])
-  (global-unset-key [M-left])
-  (global-unset-key [M-right])
-#+END_SRC
-
 ** Auto-Refresh
 
 Auto-refresh buffers.
